@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Brand tokens */
+:root {
+  --brand-primary: 30 100% 50%; /* orange */
+  --brand-dark: 24 12% 10%;
+  --brand-light: 0 0% 100%;
+}
+
+/* Base resets */
+html, body, #root {
+  height: 100%;
+}
+body {
+  margin: 0;
+}
