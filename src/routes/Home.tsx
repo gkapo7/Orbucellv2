@@ -2,21 +2,29 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import type { Product } from '../data/products'
 import { products as localProducts } from '../data/products'
-import { fetchProducts } from '../lib/api'
+import type { BlogPost } from '../data/posts'
+import { posts as localPosts } from '../data/posts'
+import { fetchProducts, fetchPosts } from '../lib/api'
 import HeroAG from '../components/HeroAG'
 import BenefitsBand from '../components/BenefitsBand'
 import Testimonials from '../components/Testimonials'
-import { posts } from '../data/posts'
 import EmailCaptureModal from '../components/EmailCaptureModal'
 
 function Home() {
   const [items, setItems] = useState<Product[] | null>(null)
+  const [articles, setArticles] = useState<BlogPost[] | null>(null)
   useEffect(() => {
     let cancelled = false
     fetchProducts().then(p => { if (!cancelled) setItems(p) }).catch(() => { if (!cancelled) setItems(localProducts) })
     return () => { cancelled = true }
   }, [])
+  useEffect(() => {
+    let cancelled = false
+    fetchPosts().then(p => { if (!cancelled) setArticles(p) }).catch(() => { if (!cancelled) setArticles(localPosts) })
+    return () => { cancelled = true }
+  }, [])
   const best = (items ?? localProducts).slice(0, 4)
+  const recentPosts = (articles ?? localPosts).slice(0, 3)
 
   return (
     <div>
@@ -50,7 +58,7 @@ function Home() {
           <Link to="/blog" className="text-sm text-neutral-600 hover:text-black">View all</Link>
         </div>
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.slice(0,3).map(p => (
+          {recentPosts.map(p => (
             <Link key={p.id} to={`/blog/${p.slug}`} className="group rounded-2xl border border-neutral-200 bg-white p-3 shadow-sm hover:shadow-md">
               <div className="aspect-[4/3] overflow-hidden rounded-xl border border-neutral-100 bg-neutral-50">
                 {p.image ? (

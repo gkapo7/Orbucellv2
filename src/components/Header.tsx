@@ -14,12 +14,8 @@ function Header() {
           <NavLink to="/" className={({isActive}) => isActive ? 'text-black' : 'text-neutral-600 hover:text-black'}>Home</NavLink>
           <NavLink to="/products" className={({isActive}) => isActive ? 'text-black' : 'text-neutral-600 hover:text-black'}>Products</NavLink>
           <NavLink to="/blog" className={({isActive}) => isActive ? 'text-black' : 'text-neutral-600 hover:text-black'}>Blog</NavLink>
-          <a href="#benefits" className="text-neutral-600 hover:text-black">Benefits</a>
-          <a href="#about" className="text-neutral-600 hover:text-black">About</a>
-          <NavLink to="/admin" className={({isActive}) => isActive ? 'text-black' : 'text-neutral-600 hover:text-black'}>Admin</NavLink>
         </nav>
         <div className="flex items-center gap-3">
-          <Link to="/admin" className="inline-flex rounded-full border border-neutral-200 px-3 py-1.5 text-sm hover:border-neutral-300 md:hidden">Admin</Link>
           <Link to="/cart" className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-3 py-1.5 text-sm hover:border-neutral-300">
             <span aria-hidden>🛒</span>
             Cart{count > 0 && <span className="ml-1 rounded-full bg-black px-2 py-0.5 text-white">{count}</span>}

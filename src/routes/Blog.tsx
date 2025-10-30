@@ -1,7 +1,27 @@
 import { Link } from 'react-router-dom'
-import { posts } from '../data/posts'
+import { useEffect, useState } from 'react'
+import type { BlogPost } from '../data/posts'
+import { posts as localPosts } from '../data/posts'
+import { fetchPosts } from '../lib/api'
 
 function Blog() {
+  const [items, setItems] = useState<BlogPost[]>(localPosts)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    fetchPosts()
+      .then((remote) => {
+        if (!cancelled) setItems(remote)
+      })
+      .catch(() => {
+        if (!cancelled) setError('Offline mode: showing cached posts.')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8 flex items-end justify-between">
@@ -11,8 +31,10 @@ function Blog() {
         </div>
       </div>
 
+      {error && <p className="mb-6 text-sm text-neutral-500">{error}</p>}
+
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {posts.map(post => (
+        {items.map(post => (
           <Link
             key={post.id}
             to={`/blog/${post.slug}`}
@@ -40,5 +62,4 @@ function Blog() {
 }
 
 export default Blog
-
 

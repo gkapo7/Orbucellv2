@@ -12,8 +12,8 @@ function Footer() {
         <div>
           <p className="font-medium">Company</p>
           <ul className="mt-3 space-y-2 text-sm text-neutral-600">
-            <li><a href="#about" className="hover:text-black">About</a></li>
-            <li><a href="#benefits" className="hover:text-black">Benefits</a></li>
+            <li><a href="/products" className="hover:text-black">Products</a></li>
+            <li><a href="/blog" className="hover:text-black">Blog</a></li>
             <li><a href="#" className="hover:text-black">Contact</a></li>
           </ul>
         </div>
@@ -22,6 +22,7 @@ function Footer() {
           <ul className="mt-3 space-y-2 text-sm text-neutral-600">
             <li><a href="#" className="hover:text-black">Privacy</a></li>
             <li><a href="#" className="hover:text-black">Terms</a></li>
+            <li><a href="/admin" className="hover:text-black">Admin</a></li>
           </ul>
         </div>
       </div>
@@ -31,4 +32,3 @@ function Footer() {
 }
 
 export default Footer
-

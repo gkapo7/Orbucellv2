@@ -16,7 +16,7 @@ export default withCors(async function handler(req: VercelRequest, res: VercelRe
     if (!it || typeof it.id !== 'string' || typeof it.qty !== 'number' || it.qty <= 0) {
       return badRequest(res, 'Invalid item in cart')
     }
-    const product = getProductById(it.id)
+    const product = await getProductById(it.id)
     if (!product) return badRequest(res, `Unknown product: ${it.id}`)
     subtotal += product.price * it.qty
   }
@@ -28,5 +28,4 @@ export default withCors(async function handler(req: VercelRequest, res: VercelRe
   const orderId = `ord_${Math.random().toString(36).slice(2, 10)}`
   return res.status(200).json({ orderId, subtotal, shipping, total, currency: 'USD' })
 })
-
 

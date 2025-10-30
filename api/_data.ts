@@ -1,3 +1,5 @@
+import { readDb, writeDb } from './_storage'
+
 export type Product = {
   id: string
   name: string
@@ -9,30 +11,69 @@ export type Product = {
   highlights: string[]
 }
 
-export const products: Product[] = [
-  {
-    id: 'magnesium-bisglycinate',
-    name: 'Magnesium Bisglycinate',
-    slug: 'magnesium-bisglycinate',
-    description: 'Highly absorbable magnesium chelate to support deep sleep, relaxation, and muscle recovery.',
-    price: 29.0,
-    image: '/images/magnesium.svg',
-    category: 'Mineral',
-    highlights: ['Chelated for superior absorption', 'Promotes calm and sleep quality', 'Supports nerve and muscle function'],
-  },
-  {
-    id: 'psyllium-fiber',
-    name: 'Organic Psyllium Fiber',
-    slug: 'organic-psyllium-fiber',
-    description: 'Gentle prebiotic fiber to balance digestion, blood sugar, and satiety without bloating.',
-    price: 24.0,
-    image: '/images/fiber.svg',
-    category: 'Fiber',
-    highlights: ['Promotes regularity', 'Supports microbiome diversity', 'Helps manage cravings'],
-  },
-]
-
-export function getProductById(id: string) {
-  return products.find(p => p.id === id)
+export type BlogPost = {
+  id: string
+  title: string
+  slug: string
+  excerpt: string
+  content: string
+  image?: string
+  date: string
+  author: string
+  tags?: string[]
 }
 
+export type Customer = {
+  id: string
+  name: string
+  email: string
+  status: string
+  orders: number
+  lifetimeValue: number
+}
+
+export async function listProducts(): Promise<Product[]> {
+  const db = await readDb()
+  return db.products
+}
+
+export async function setProducts(next: Product[]): Promise<Product[]> {
+  const db = await readDb()
+  db.products = next
+  await writeDb(db)
+  return db.products
+}
+
+export async function getProductById(id: string): Promise<Product | undefined> {
+  const db = await readDb()
+  return db.products.find((p) => p.id === id)
+}
+
+export async function listPosts(): Promise<BlogPost[]> {
+  const db = await readDb()
+  return db.posts
+}
+
+export async function setPosts(next: BlogPost[]): Promise<BlogPost[]> {
+  const db = await readDb()
+  db.posts = next
+  await writeDb(db)
+  return db.posts
+}
+
+export async function getPostBySlug(slug: string): Promise<BlogPost | undefined> {
+  const db = await readDb()
+  return db.posts.find((p) => p.slug === slug)
+}
+
+export async function listCustomers(): Promise<Customer[]> {
+  const db = await readDb()
+  return db.customers
+}
+
+export async function setCustomers(next: Customer[]): Promise<Customer[]> {
+  const db = await readDb()
+  db.customers = next
+  await writeDb(db)
+  return db.customers
+}

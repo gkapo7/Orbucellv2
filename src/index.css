@@ -26,3 +26,13 @@ body {
   background-color: hsl(var(--surface));
   color: rgb(23 23 23);
 }
+
+@layer components {
+  .admin-input {
+    @apply rounded-2xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-700 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#f97316];
+  }
+
+  .admin-textarea {
+    @apply rounded-2xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-700 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#f97316];
+  }
+}

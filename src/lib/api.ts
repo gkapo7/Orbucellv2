@@ -1,4 +1,6 @@
 import type { Product as ApiProduct } from '../data/products'
+import type { BlogPost as ApiPost } from '../data/posts'
+import type { Customer } from '../data/customers'
 
 const BASE = '' // same origin (Vercel / local dev)
 
@@ -11,6 +13,54 @@ export async function fetchProducts(): Promise<ApiProduct[]> {
 export async function fetchProduct(id: string): Promise<ApiProduct> {
   const res = await fetch(`${BASE}/api/products?id=${encodeURIComponent(id)}`, { cache: 'no-store' })
   if (!res.ok) throw new Error('Failed to load product')
+  return res.json()
+}
+
+export async function saveProducts(next: ApiProduct[]): Promise<ApiProduct[]> {
+  const res = await fetch(`${BASE}/api/products`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ products: next }),
+  })
+  if (!res.ok) throw new Error('Failed to save products')
+  return res.json()
+}
+
+export async function fetchPosts(): Promise<ApiPost[]> {
+  const res = await fetch(`${BASE}/api/posts`, { cache: 'no-store' })
+  if (!res.ok) throw new Error('Failed to load posts')
+  return res.json()
+}
+
+export async function fetchPost(slug: string): Promise<ApiPost> {
+  const res = await fetch(`${BASE}/api/posts?slug=${encodeURIComponent(slug)}`, { cache: 'no-store' })
+  if (!res.ok) throw new Error('Failed to load post')
+  return res.json()
+}
+
+export async function savePosts(next: ApiPost[]): Promise<ApiPost[]> {
+  const res = await fetch(`${BASE}/api/posts`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ posts: next }),
+  })
+  if (!res.ok) throw new Error('Failed to save posts')
+  return res.json()
+}
+
+export async function fetchCustomers(): Promise<Customer[]> {
+  const res = await fetch(`${BASE}/api/customers`, { cache: 'no-store' })
+  if (!res.ok) throw new Error('Failed to load customers')
+  return res.json()
+}
+
+export async function saveCustomers(next: Customer[]): Promise<Customer[]> {
+  const res = await fetch(`${BASE}/api/customers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ customers: next }),
+  })
+  if (!res.ok) throw new Error('Failed to save customers')
   return res.json()
 }
 
@@ -28,5 +78,4 @@ export async function postCheckout(items: { id: string; qty: number }[]): Promis
   }
   return res.json()
 }
-
 

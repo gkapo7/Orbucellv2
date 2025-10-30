@@ -1,324 +1,711 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { NavLink, Route, Routes, Navigate, useLocation } from 'react-router-dom'
 import type { Product } from '../data/products'
-import { products as productSeed } from '../data/products'
 import type { BlogPost } from '../data/posts'
-import { posts as postSeed } from '../data/posts'
+import type { Customer } from '../data/customers'
+import { products as fallbackProducts } from '../data/products'
+import { posts as fallbackPosts } from '../data/posts'
+import { customers as fallbackCustomers } from '../data/customers'
+import {
+  fetchProducts,
+  fetchPosts,
+  fetchCustomers,
+  saveProducts,
+  savePosts,
+  saveCustomers,
+} from '../lib/api'
 
-type ProductDraft = Product
-type PostDraft = BlogPost
-
-const mockCustomers = [
-  { id: 'cust-101', name: 'Jordan Miles', email: 'jordan@example.com', status: 'Active', orders: 3, lifetimeValue: 197 },
-  { id: 'cust-102', name: 'Priya Shah', email: 'priya@example.com', status: 'VIP', orders: 8, lifetimeValue: 612 },
-  { id: 'cust-103', name: 'Leo Kim', email: 'leo@example.com', status: 'Lead', orders: 0, lifetimeValue: 0 },
+const tabs = [
+  { to: 'products', label: 'Products' },
+  { to: 'posts', label: 'Blog posts' },
+  { to: 'customers', label: 'Customers' },
 ]
 
-function Admin() {
-  const [productDrafts, setProductDrafts] = useState<ProductDraft[]>(() => productSeed.map(p => ({ ...p })))
-  const [postDrafts, setPostDrafts] = useState<PostDraft[]>(() => postSeed.map(p => ({ ...p })))
-  const [productMessage, setProductMessage] = useState<string | null>(null)
-  const [postMessage, setPostMessage] = useState<string | null>(null)
+function AdminLayout({ children }: { children: ReactNode }) {
+  const location = useLocation()
+  return (
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
+      <header className="text-center md:text-left">
+        <p className="text-xs uppercase tracking-[0.25em] text-neutral-500">Admin tools</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-neutral-900">Content &amp; Commerce Dashboard</h1>
+        <p className="mt-4 text-sm text-neutral-600 md:max-w-2xl">
+          Review and update products, blog posts, and customer records. Changes sync instantly to the live experience via the API
+          endpoints.
+        </p>
+      </header>
+      <nav className="mt-10 flex flex-wrap items-center gap-3 border-b border-neutral-200 pb-4">
+        {tabs.map((tab) => (
+          <NavLink
+            key={tab.to}
+            to={tab.to}
+            className={({ isActive }) =>
+              [
+                'rounded-full px-4 py-2 text-sm transition',
+                isActive || location.pathname.endsWith(`/${tab.to}`)
+                  ? 'bg-neutral-900 text-white shadow-sm'
+                  : 'bg-neutral-100 text-neutral-600 hover:text-neutral-900',
+              ].join(' ')
+            }
+          >
+            {tab.label}
+          </NavLink>
+        ))}
+      </nav>
+      <section className="mt-10">{children}</section>
+    </div>
+  )
+}
 
-  const productPayload = useMemo(() => JSON.stringify(productDrafts, null, 2), [productDrafts])
-  const postPayload = useMemo(() => JSON.stringify(postDrafts, null, 2), [postDrafts])
+type PanelState<T> = {
+  data: T[]
+  draft: T[]
+  loading: boolean
+  saving: boolean
+  message: string | null
+  error: string | null
+}
 
-  const handleProductField = <Key extends keyof ProductDraft>(index: number, key: Key, value: ProductDraft[Key]) => {
-    setProductDrafts((prev) => {
-      const clone = [...prev]
-      clone[index] = { ...clone[index], [key]: value }
-      return clone
-    })
+const initialPanelState = <T,>(seed: T[]): PanelState<T> => ({
+  data: seed,
+  draft: seed,
+  loading: false,
+  saving: false,
+  message: null,
+  error: null,
+})
+
+function ProductsPanel() {
+  const [state, setState] = useState<PanelState<Product>>(() => initialPanelState(fallbackProducts))
+
+  useEffect(() => {
+    let cancelled = false
+    setState((prev) => ({ ...prev, loading: true, error: null }))
+    fetchProducts()
+      .then((remote) => {
+        if (cancelled) return
+        setState({
+          data: remote,
+          draft: remote.map((item) => ({ ...item })),
+          loading: false,
+          saving: false,
+          message: null,
+          error: null,
+        })
+      })
+      .catch(() => {
+        if (cancelled) return
+        setState((prev) => ({ ...prev, loading: false, error: 'Offline mode: using local seed data.' }))
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const handleField =
+    <K extends keyof Product>(index: number, key: K) =>
+    (value: Product[K]) => {
+      setState((prev) => {
+        const nextDraft = prev.draft.map((item, i) => (i === index ? { ...item, [key]: value } : item))
+        return { ...prev, draft: nextDraft }
+      })
+    }
+
+  const addProduct = () => {
+    const timestamp = Date.now().toString(36)
+    const fresh: Product = {
+      id: `product-${timestamp}`,
+      name: 'New product',
+      slug: `new-product-${timestamp}`,
+      description: '',
+      price: 0,
+      image: '',
+      category: 'Mineral',
+      highlights: [],
+    }
+    setState((prev) => ({ ...prev, draft: [...prev.draft, fresh] }))
   }
 
-  const handlePostField = <Key extends keyof PostDraft>(index: number, key: Key, value: PostDraft[Key]) => {
-    setPostDrafts((prev) => {
-      const clone = [...prev]
-      clone[index] = { ...clone[index], [key]: value }
-      return clone
-    })
+  const removeProduct = (index: number) => {
+    setState((prev) => ({ ...prev, draft: prev.draft.filter((_, i) => i !== index) }))
   }
 
-  const saveProducts = () => {
-    console.table(productDrafts)
-    setProductMessage('Draft saved locally. Connect POST /api/products to persist.')
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+  const reset = () => setState((prev) => ({ ...prev, draft: prev.data.map((item) => ({ ...item })), message: null, error: null }))
+
+  const save = async () => {
+    try {
+      setState((prev) => ({ ...prev, saving: true, message: null, error: null }))
+      const persisted = await saveProducts(state.draft)
+      setState({
+        data: persisted,
+        draft: persisted.map((item) => ({ ...item })),
+        loading: false,
+        saving: false,
+        message: 'Products updated successfully.',
+        error: null,
+      })
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        saving: false,
+        error: error instanceof Error ? error.message : 'Unable to save products.',
+      }))
     }
   }
 
-  const resetProducts = () => {
-    setProductDrafts(productSeed.map(p => ({ ...p })))
-    setProductMessage('Products reset to published values.')
-  }
-
-  const savePosts = () => {
-    console.table(postDrafts)
-    setPostMessage('Draft saved locally. Connect POST /api/posts to persist.')
-  }
-
-  const resetPosts = () => {
-    setPostDrafts(postSeed.map(p => ({ ...p })))
-    setPostMessage('Posts reset to published values.')
-  }
+  const payload = useMemo(() => JSON.stringify(state.draft, null, 2), [state.draft])
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 space-y-16">
-      <header>
-        <p className="text-xs uppercase tracking-[0.25em] text-neutral-500">Admin tools</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Content &amp; Commerce Dashboard</h1>
-        <p className="mt-4 text-sm text-neutral-600">
-          Use these forms to adjust product details, manage blog posts, and review customer status. When your backend is live,
-          wire the save buttons to your API endpoints. The JSON previews update in real-time for easy copy/paste.
-        </p>
-        {productMessage && (
-          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            {productMessage}
-          </div>
-        )}
-      </header>
-
-      <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Products</h2>
-          <div className="flex items-center gap-3">
-            <button onClick={resetProducts} className="rounded-full border border-neutral-300 px-4 py-2 text-sm hover:border-neutral-400">
-              Reset
-            </button>
-            <button onClick={saveProducts} className="rounded-full bg-[#f97316] px-4 py-2 text-sm font-medium text-white hover:bg-[#ea580c]">
-              Save drafts
-            </button>
-          </div>
+    <div className="space-y-8">
+      <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1 text-center md:text-left">
+          <h2 className="text-xl font-semibold text-neutral-900">Products</h2>
+          <p className="text-sm text-neutral-600">Edit product metadata, pricing, and merchandising details.</p>
         </div>
+        <div className="flex justify-center gap-2 md:justify-end">
+          <button
+            onClick={addProduct}
+            className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+          >
+            Add product
+          </button>
+          <button
+            onClick={reset}
+            className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+          >
+            Reset
+          </button>
+          <button
+            onClick={save}
+            disabled={state.saving}
+            className="rounded-full bg-[#f97316] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#ea580c] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {state.saving ? 'Saving…' : 'Save changes'}
+          </button>
+        </div>
+      </header>
+      {state.error && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</div>}
+      {state.message && (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{state.message}</div>
+      )}
+      {state.loading ? (
+        <p className="text-sm text-neutral-500">Loading products…</p>
+      ) : (
         <div className="grid gap-6">
-          {productDrafts.map((product, index) => (
+          {state.draft.map((product, index) => (
             <div key={product.id} className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Name</label>
+              <div className="flex flex-col gap-4 md:flex-row md:justify-between md:gap-6">
+                <div className="grid flex-1 gap-4 sm:grid-cols-2">
+                  <Field label="Name">
                     <input
                       value={product.name}
-                      onChange={(event) => handleProductField(index, 'name', event.target.value)}
-                      className="mt-1 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
+                      onChange={(event) => handleField(index, 'name')(event.target.value)}
+                      className="admin-input"
                     />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Slug</label>
+                  </Field>
+                  <Field label="Slug">
                     <input
                       value={product.slug}
-                      onChange={(event) => handleProductField(index, 'slug', event.target.value)}
-                      className="mt-1 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
+                      onChange={(event) => handleField(index, 'slug')(event.target.value)}
+                      className="admin-input"
                     />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Category</label>
-                    <input
+                  </Field>
+                  <Field label="Category">
+                    <select
                       value={product.category}
-                      onChange={(event) => handleProductField(index, 'category', event.target.value as ProductDraft['category'])}
-                      className="mt-1 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Price</label>
+                      onChange={(event) => handleField(index, 'category')(event.target.value as Product['category'])}
+                      className="admin-input"
+                    >
+                      <option value="Mineral">Mineral</option>
+                      <option value="Fiber">Fiber</option>
+                    </select>
+                  </Field>
+                  <Field label="Price">
                     <input
                       type="number"
                       step="0.01"
+                      min="0"
                       value={product.price}
-                      onChange={(event) => handleProductField(index, 'price', Number(event.target.value))}
-                      className="mt-1 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
+                      onChange={(event) => handleField(index, 'price')(Number(event.target.value))}
+                      className="admin-input"
                     />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Image URL</label>
+                  </Field>
+                  <Field label="Image">
                     <input
                       value={product.image}
-                      onChange={(event) => handleProductField(index, 'image', event.target.value)}
-                      className="mt-1 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
+                      onChange={(event) => handleField(index, 'image')(event.target.value)}
+                      className="admin-input"
                     />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Highlights (comma separated)</label>
+                  </Field>
+                  <Field label="Highlights">
                     <input
                       value={product.highlights.join(', ')}
                       onChange={(event) =>
-                        handleProductField(
-                          index,
-                          'highlights',
+                        handleField(index, 'highlights')(
                           event.target.value
                             .split(',')
-                            .map((part) => part.trim())
+                            .map((item) => item.trim())
                             .filter(Boolean)
                         )
                       }
-                      className="mt-1 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
+                      className="admin-input"
                     />
-                  </div>
+                  </Field>
                 </div>
+                <button
+                  onClick={() => removeProduct(index)}
+                  className="self-start rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
+                >
+                  Remove
+                </button>
               </div>
-              <div className="mt-4">
-                <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Description</label>
+              <Field label="Description" stacked>
                 <textarea
                   value={product.description}
-                  onChange={(event) => handleProductField(index, 'description', event.target.value)}
-                  className="mt-1 h-28 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
+                  onChange={(event) => handleField(index, 'description')(event.target.value)}
+                  className="admin-textarea"
                 />
-              </div>
+              </Field>
             </div>
           ))}
         </div>
-        <details className="rounded-3xl border border-neutral-200 bg-white p-4 text-sm shadow-sm">
-          <summary className="cursor-pointer font-medium">JSON preview</summary>
-          <pre className="mt-3 overflow-auto rounded-2xl bg-neutral-900 p-4 text-xs text-white">{productPayload}</pre>
-        </details>
-      </section>
+      )}
+      <details className="rounded-3xl border border-neutral-200 bg-white p-4 text-sm shadow-sm">
+        <summary className="cursor-pointer font-medium text-neutral-800">JSON preview</summary>
+        <pre className="mt-3 overflow-auto rounded-2xl bg-neutral-900 p-4 text-xs text-white">{payload}</pre>
+      </details>
+    </div>
+  )
+}
 
-      <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Blog posts</h2>
-          <div className="flex items-center gap-3">
-            <button onClick={resetPosts} className="rounded-full border border-neutral-300 px-4 py-2 text-sm hover:border-neutral-400">
-              Reset
-            </button>
-            <button onClick={savePosts} className="rounded-full bg-[#f97316] px-4 py-2 text-sm font-medium text-white hover:bg-[#ea580c]">
-              Save drafts
-            </button>
-          </div>
+function PostsPanel() {
+  const [state, setState] = useState<PanelState<BlogPost>>(() => initialPanelState(fallbackPosts))
+
+  useEffect(() => {
+    let cancelled = false
+    setState((prev) => ({ ...prev, loading: true, error: null }))
+    fetchPosts()
+      .then((remote) => {
+        if (cancelled) return
+        setState({
+          data: remote,
+          draft: remote.map((item) => ({ ...item })),
+          loading: false,
+          saving: false,
+          message: null,
+          error: null,
+        })
+      })
+      .catch(() => {
+        if (cancelled) return
+        setState((prev) => ({ ...prev, loading: false, error: 'Offline mode: using local seed posts.' }))
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const handleField =
+    <K extends keyof BlogPost>(index: number, key: K) =>
+    (value: BlogPost[K]) => {
+      setState((prev) => {
+        const draft = prev.draft.map((item, i) => (i === index ? { ...item, [key]: value } : item))
+        return { ...prev, draft }
+      })
+    }
+
+  const addPost = () => {
+    const timestamp = Date.now().toString(36)
+    const fresh: BlogPost = {
+      id: `post-${timestamp}`,
+      title: 'New article title',
+      slug: `new-article-${timestamp}`,
+      excerpt: '',
+      content: '',
+      image: '',
+      date: new Date().toISOString().slice(0, 10),
+      author: 'Orbucell Team',
+      tags: [],
+    }
+    setState((prev) => ({ ...prev, draft: [...prev.draft, fresh] }))
+  }
+
+  const removePost = (index: number) => {
+    setState((prev) => ({ ...prev, draft: prev.draft.filter((_, i) => i !== index) }))
+  }
+
+  const reset = () => setState((prev) => ({ ...prev, draft: prev.data.map((item) => ({ ...item })), message: null, error: null }))
+
+  const save = async () => {
+    try {
+      setState((prev) => ({ ...prev, saving: true, message: null, error: null }))
+      const persisted = await savePosts(state.draft)
+      setState({
+        data: persisted,
+        draft: persisted.map((item) => ({ ...item })),
+        loading: false,
+        saving: false,
+        message: 'Posts updated successfully.',
+        error: null,
+      })
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        saving: false,
+        error: error instanceof Error ? error.message : 'Unable to save posts.',
+      }))
+    }
+  }
+
+  const payload = useMemo(() => JSON.stringify(state.draft, null, 2), [state.draft])
+
+  return (
+    <div className="space-y-8">
+      <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1 text-center md:text-left">
+          <h2 className="text-xl font-semibold text-neutral-900">Blog posts</h2>
+          <p className="text-sm text-neutral-600">Update SEO-friendly headlines, imagery, and long-form content.</p>
         </div>
-        {postMessage && (
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            {postMessage}
-          </div>
-        )}
+        <div className="flex justify-center gap-2 md:justify-end">
+          <button
+            onClick={addPost}
+            className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+          >
+            Add post
+          </button>
+          <button
+            onClick={reset}
+            className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+          >
+            Reset
+          </button>
+          <button
+            onClick={save}
+            disabled={state.saving}
+            className="rounded-full bg-[#f97316] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#ea580c] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {state.saving ? 'Saving…' : 'Save changes'}
+          </button>
+        </div>
+      </header>
+      {state.error && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</div>}
+      {state.message && (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{state.message}</div>
+      )}
+      {state.loading ? (
+        <p className="text-sm text-neutral-500">Loading posts…</p>
+      ) : (
         <div className="grid gap-6">
-          {postDrafts.map((post, index) => (
+          {state.draft.map((post, index) => (
             <div key={post.id} className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Title</label>
+              <div className="flex flex-col gap-4 md:flex-row md:justify-between md:gap-6">
+                <div className="grid flex-1 gap-4 sm:grid-cols-2">
+                  <Field label="Title">
                     <input
                       value={post.title}
-                      onChange={(event) => handlePostField(index, 'title', event.target.value)}
-                      className="mt-1 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
+                      onChange={(event) => handleField(index, 'title')(event.target.value)}
+                      className="admin-input"
                     />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Slug</label>
+                  </Field>
+                  <Field label="Slug">
                     <input
                       value={post.slug}
-                      onChange={(event) => handlePostField(index, 'slug', event.target.value)}
-                      className="mt-1 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
+                      onChange={(event) => handleField(index, 'slug')(event.target.value)}
+                      className="admin-input"
                     />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Image</label>
+                  </Field>
+                  <Field label="Image">
                     <input
                       value={post.image ?? ''}
-                      onChange={(event) => handlePostField(index, 'image', event.target.value)}
-                      className="mt-1 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
+                      onChange={(event) => handleField(index, 'image')(event.target.value || undefined)}
+                      className="admin-input"
                     />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Author</label>
-                    <input
-                      value={post.author}
-                      onChange={(event) => handlePostField(index, 'author', event.target.value)}
-                      className="mt-1 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Excerpt</label>
-                    <textarea
-                      value={post.excerpt}
-                      onChange={(event) => handlePostField(index, 'excerpt', event.target.value)}
-                      className="mt-1 h-24 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Tags (comma separated)</label>
-                    <input
-                      value={(post.tags ?? []).join(', ')}
-                      onChange={(event) =>
-                        handlePostField(
-                          index,
-                          'tags',
-                          event.target.value
-                            .split(',')
-                            .map((part) => part.trim())
-                            .filter(Boolean)
-                        )
-                      }
-                      className="mt-1 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Published date</label>
+                  </Field>
+                  <Field label="Published date">
                     <input
                       type="date"
                       value={post.date.slice(0, 10)}
-                      onChange={(event) => handlePostField(index, 'date', event.target.value)}
-                      className="mt-1 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
+                      onChange={(event) => handleField(index, 'date')(event.target.value)}
+                      className="admin-input"
                     />
-                  </div>
+                  </Field>
+                  <Field label="Author">
+                    <input
+                      value={post.author}
+                      onChange={(event) => handleField(index, 'author')(event.target.value)}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Tags">
+                    <input
+                      value={(post.tags ?? []).join(', ')}
+                      onChange={(event) =>
+                        handleField(index, 'tags')(
+                          event.target.value
+                            .split(',')
+                            .map((tag) => tag.trim())
+                            .filter(Boolean)
+                        )
+                      }
+                      className="admin-input"
+                    />
+                  </Field>
                 </div>
+                <button
+                  onClick={() => removePost(index)}
+                  className="self-start rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
+                >
+                  Remove
+                </button>
               </div>
-              <div className="mt-4">
-                <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Content</label>
+              <Field label="Excerpt" stacked>
+                <textarea
+                  value={post.excerpt}
+                  onChange={(event) => handleField(index, 'excerpt')(event.target.value)}
+                  className="admin-textarea"
+                />
+              </Field>
+              <Field label="Content" stacked>
                 <textarea
                   value={post.content}
-                  onChange={(event) => handlePostField(index, 'content', event.target.value)}
-                  className="mt-1 h-36 w-full rounded-2xl border border-neutral-300 px-4 py-2 text-sm"
+                  onChange={(event) => handleField(index, 'content')(event.target.value)}
+                  className="admin-textarea min-h-[160px]"
                 />
-              </div>
+              </Field>
             </div>
           ))}
         </div>
-        <details className="rounded-3xl border border-neutral-200 bg-white p-4 text-sm shadow-sm">
-          <summary className="cursor-pointer font-medium">JSON preview</summary>
-          <pre className="mt-3 overflow-auto rounded-2xl bg-neutral-900 p-4 text-xs text-white">{postPayload}</pre>
-        </details>
-      </section>
+      )}
+      <details className="rounded-3xl border border-neutral-200 bg-white p-4 text-sm shadow-sm">
+        <summary className="cursor-pointer font-medium text-neutral-800">JSON preview</summary>
+        <pre className="mt-3 overflow-auto rounded-2xl bg-neutral-900 p-4 text-xs text-white">{payload}</pre>
+      </details>
+    </div>
+  )
+}
 
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold">Customers</h2>
-        <p className="text-sm text-neutral-600">
-          Sync this table with your CRM or customer service tool. The current data is a mock dataset so you can design and test
-          before connecting to a live API.
-        </p>
+function CustomersPanel() {
+  const [state, setState] = useState<PanelState<Customer>>(() => initialPanelState(fallbackCustomers))
+
+  useEffect(() => {
+    let cancelled = false
+    setState((prev) => ({ ...prev, loading: true, error: null }))
+    fetchCustomers()
+      .then((remote) => {
+        if (cancelled) return
+        setState({
+          data: remote,
+          draft: remote.map((item) => ({ ...item })),
+          loading: false,
+          saving: false,
+          message: null,
+          error: null,
+        })
+      })
+      .catch(() => {
+        if (cancelled) return
+        setState((prev) => ({ ...prev, loading: false, error: 'Offline mode: using local customers.' }))
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const handleField =
+    <K extends keyof Customer>(index: number, key: K) =>
+    (value: Customer[K]) => {
+      setState((prev) => {
+        const draft = prev.draft.map((item, i) => (i === index ? { ...item, [key]: value } : item))
+        return { ...prev, draft }
+      })
+    }
+
+  const reset = () => setState((prev) => ({ ...prev, draft: prev.data.map((item) => ({ ...item })), message: null, error: null }))
+
+  const save = async () => {
+    try {
+      setState((prev) => ({ ...prev, saving: true, message: null, error: null }))
+      const persisted = await saveCustomers(state.draft)
+      setState({
+        data: persisted,
+        draft: persisted.map((item) => ({ ...item })),
+        loading: false,
+        saving: false,
+        message: 'Customers updated successfully.',
+        error: null,
+      })
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        saving: false,
+        error: error instanceof Error ? error.message : 'Unable to save customers.',
+      }))
+    }
+  }
+
+  const addCustomer = () => {
+    const timestamp = Date.now().toString(36)
+    const fresh: Customer = {
+      id: `cust-${timestamp}`,
+      name: 'New customer',
+      email: 'new@example.com',
+      status: 'Lead',
+      orders: 0,
+      lifetimeValue: 0,
+    }
+    setState((prev) => ({ ...prev, draft: [...prev.draft, fresh] }))
+  }
+
+  const removeCustomer = (index: number) => {
+    setState((prev) => ({ ...prev, draft: prev.draft.filter((_, i) => i !== index) }))
+  }
+
+  const payload = useMemo(() => JSON.stringify(state.draft, null, 2), [state.draft])
+
+  return (
+    <div className="space-y-8">
+      <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1 text-center md:text-left">
+          <h2 className="text-xl font-semibold text-neutral-900">Customers</h2>
+          <p className="text-sm text-neutral-600">Track lifecycle stages, order counts, and LTV.</p>
+        </div>
+        <div className="flex justify-center gap-2 md:justify-end">
+          <button
+            onClick={addCustomer}
+            className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+          >
+            Add customer
+          </button>
+          <button
+            onClick={reset}
+            className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+          >
+            Reset
+          </button>
+          <button
+            onClick={save}
+            disabled={state.saving}
+            className="rounded-full bg-[#f97316] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#ea580c] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {state.saving ? 'Saving…' : 'Save changes'}
+          </button>
+        </div>
+      </header>
+      {state.error && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</div>}
+      {state.message && (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{state.message}</div>
+      )}
+      {state.loading ? (
+        <p className="text-sm text-neutral-500">Loading customers…</p>
+      ) : (
         <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm">
-          <table className="min-w-full divide-y divide-neutral-200 text-sm">
-            <thead className="bg-neutral-50 text-left text-xs uppercase tracking-wide text-neutral-500">
+          <table className="min-w-full divide-y divide-neutral-200 text-sm text-left">
+            <thead className="bg-neutral-50 text-neutral-500">
               <tr>
-                <th className="px-4 py-3">Customer</th>
-                <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Orders</th>
-                <th className="px-4 py-3 text-right">Lifetime value</th>
+                <th className="px-4 py-3 font-semibold">Name</th>
+                <th className="px-4 py-3 font-semibold">Email</th>
+                <th className="px-4 py-3 font-semibold">Status</th>
+                <th className="px-4 py-3 font-semibold text-right">Orders</th>
+                <th className="px-4 py-3 font-semibold text-right">Lifetime value</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100 text-neutral-700">
-              {mockCustomers.map((customer) => (
+              {state.draft.map((customer, index) => (
                 <tr key={customer.id}>
-                  <td className="px-4 py-3 font-medium">{customer.name}</td>
-                  <td className="px-4 py-3">{customer.email}</td>
                   <td className="px-4 py-3">
-                    <span className="inline-flex rounded-full border border-neutral-300 px-2.5 py-1 text-xs text-neutral-600">
-                      {customer.status}
-                    </span>
+                    <input
+                      value={customer.name}
+                      onChange={(event) => handleField(index, 'name')(event.target.value)}
+                      className="admin-input w-full text-sm"
+                    />
                   </td>
-                  <td className="px-4 py-3 text-right">{customer.orders}</td>
-                  <td className="px-4 py-3 text-right">${customer.lifetimeValue.toFixed(2)}</td>
+                  <td className="px-4 py-3">
+                    <input
+                      value={customer.email}
+                      onChange={(event) => handleField(index, 'email')(event.target.value)}
+                      className="admin-input w-full text-sm"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <select
+                      value={customer.status}
+                      onChange={(event) => handleField(index, 'status')(event.target.value)}
+                      className="admin-input w-full text-sm"
+                    >
+                      <option value="Lead">Lead</option>
+                      <option value="Active">Active</option>
+                      <option value="VIP">VIP</option>
+                      <option value="Paused">Paused</option>
+                    </select>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <input
+                      type="number"
+                      min="0"
+                      value={customer.orders}
+                      onChange={(event) => handleField(index, 'orders')(Number(event.target.value))}
+                      className="admin-input w-full text-sm text-right"
+                    />
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <input
+                      type="number"
+                      min="0"
+                      value={customer.lifetimeValue}
+                      onChange={(event) => handleField(index, 'lifetimeValue')(Number(event.target.value))}
+                      className="admin-input w-full text-sm text-right"
+                    />
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => removeCustomer(index)}
+                      className="rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
+                    >
+                      Remove
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </section>
+      )}
+      <details className="rounded-3xl border border-neutral-200 bg-white p-4 text-sm shadow-sm">
+        <summary className="cursor-pointer font-medium text-neutral-800">JSON preview</summary>
+        <pre className="mt-3 overflow-auto rounded-2xl bg-neutral-900 p-4 text-xs text-white">{payload}</pre>
+      </details>
     </div>
+  )
+}
+
+function Field({
+  label,
+  children,
+  stacked = false,
+}: {
+  label: string
+  children: React.ReactNode
+  stacked?: boolean
+}) {
+  return (
+    <label className={stacked ? 'flex flex-col gap-2 text-left' : 'flex flex-col gap-2 text-left'}>
+      <span className="text-xs font-medium uppercase tracking-wide text-neutral-500">{label}</span>
+      {children}
+    </label>
+  )
+}
+
+function Admin() {
+  return (
+    <AdminLayout>
+      <Routes>
+        <Route index element={<Navigate to="products" replace />} />
+        <Route path="products" element={<ProductsPanel />} />
+        <Route path="posts" element={<PostsPanel />} />
+        <Route path="customers" element={<CustomersPanel />} />
+        <Route path="*" element={<Navigate to="products" replace />} />
+      </Routes>
+    </AdminLayout>
   )
 }
 

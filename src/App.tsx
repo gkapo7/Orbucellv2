@@ -8,7 +8,7 @@ import Product from './routes/Product'
 import CartPage from './routes/Cart'
 import Checkout from './routes/Checkout'
 import Blog from './routes/Blog'
-import BlogPost from './routes/BlogPost'
+import BlogPostRoute from './routes/BlogPost'
 import Admin from './routes/Admin'
 
 function App() {
@@ -21,10 +21,10 @@ function App() {
           <Route path="/products" element={<Catalog />} />
           <Route path="/products/:id" element={<Product />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/blog/:slug" element={<BlogPostRoute />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/*" element={<Admin />} />
         </Routes>
       </main>
       <Footer />
