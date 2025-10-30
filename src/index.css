@@ -4,8 +4,12 @@
 
 /* Brand tokens */
 :root {
-  --brand-primary: 30 100% 50%; /* orange */
-  --brand-dark: 24 12% 10%;
+  /* Warm red/orange brand */
+  --brand-primary: 18 90% 50%; /* vermilion */
+  --brand-primary-600: 18 88% 44%;
+  --brand-primary-700: 18 92% 38%;
+  --brand-accent: 28 95% 54%; /* orange */
+  --brand-dark: 14 15% 10%;
   --brand-light: 0 0% 100%;
 }
 

@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext'
 function Header() {
   const { count } = useCart()
   return (
-    <header className="sticky top-0 z-40 border-b border-neutral-200/60 bg-white/80 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-neutral-200/60 bg-white/70 backdrop-blur">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <img src="/logo.svg" alt="Orbucell" className="h-8 w-8" />
@@ -21,7 +21,7 @@ function Header() {
             <span aria-hidden>🛒</span>
             Cart{count > 0 && <span className="ml-1 rounded-full bg-black px-2 py-0.5 text-white">{count}</span>}
           </Link>
-          <Link to="/products" className="hidden sm:inline-flex rounded-full bg-[hsl(var(--brand-primary))] px-4 py-2 text-sm font-medium text-white shadow-sm hover:opacity-95">
+          <Link to="/products" className="hidden sm:inline-flex rounded-full bg-[hsl(var(--brand-primary))] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[hsl(var(--brand-primary-600))]">
             Shop now
           </Link>
         </div>
