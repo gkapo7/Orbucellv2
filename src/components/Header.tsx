@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
+import { products } from '../data/products'
 
 const ADMIN_EMAIL = 'admin@orbucell.com'
 
@@ -10,38 +12,99 @@ function Header() {
   const { user, logout } = useAuth()
 
   const isAdmin = user?.email === ADMIN_EMAIL
+  const [scrolled, setScrolled] = useState(false)
+  const [productsOpen, setProductsOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 24)
+    }
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const goToLogin = () => {
     navigate('/login')
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-neutral-200/60 bg-white/80 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-2 text-left">
+    <header className="sticky top-0 z-50 bg-transparent">
+      <div
+        className={[
+          'mx-auto flex w-full max-w-7xl items-center transition-all duration-300',
+          scrolled
+            ? 'mt-2 gap-4 rounded-[40px] border border-neutral-200 bg-white/90 px-5 py-3 shadow-lg backdrop-blur'
+            : 'gap-6 px-4 py-6 sm:px-6 lg:px-8',
+        ].join(' ')}
+      >
+        <Link to="/" className="flex items-center gap-2">
           <img src="/logo.svg" alt="Orbucell" className="h-8 w-8" />
           <span className="text-sm font-semibold uppercase tracking-[0.3em] text-neutral-900">Orbucell</span>
         </Link>
-        <nav className="hidden items-center gap-8 text-sm font-medium text-neutral-600 md:flex">
-          <NavLink to="/products" className={({ isActive }) => isActive ? 'text-neutral-900' : 'hover:text-neutral-900'}>
-            Products
-          </NavLink>
-          <NavLink to="/learn" className={({ isActive }) => isActive ? 'text-neutral-900' : 'hover:text-neutral-900'}>
+
+        <nav className="ml-2 hidden items-center gap-1 text-sm font-medium lg:flex">
+          <div
+            className="relative"
+            onMouseEnter={() => setProductsOpen(true)}
+            onMouseLeave={() => setProductsOpen(false)}
+          >
+            <NavLink
+              to="/products"
+              className={({ isActive }) =>
+                [
+                  'inline-flex items-center gap-1 rounded-full px-4 py-2 transition-colors',
+                  isActive ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900',
+                ].join(' ')
+              }
+            >
+              Products
+            </NavLink>
+            {productsOpen && (
+              <div className="absolute left-0 top-full z-40 mt-4 w-64 rounded-3xl border border-neutral-200 bg-white/95 p-4 shadow-xl backdrop-blur">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">Shop</p>
+                <ul className="mt-3 space-y-2 text-sm text-neutral-700">
+                  {products.map((product) => (
+                    <li key={product.id}>
+                      <Link
+                        to={`/products/${product.id}`}
+                        className="flex justify-between rounded-2xl px-3 py-2 hover:bg-neutral-100"
+                      >
+                        <span>{product.name}</span>
+                        <span className="text-xs text-neutral-500">${product.price.toFixed(0)}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+          <NavLink
+            to="/learn"
+            className={({ isActive }) =>
+              [
+                'inline-flex items-center gap-1 rounded-full px-4 py-2 transition-colors',
+                isActive ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900',
+              ].join(' ')
+            }
+          >
             Learn
           </NavLink>
         </nav>
-        <div className="flex items-center gap-3 text-sm">
+
+        <div className="ml-auto flex items-center gap-2 text-sm">
           {user ? (
             <>
               <Link
                 to={isAdmin ? '/admin' : '/account'}
-                className="hidden rounded-full px-3 py-1.5 text-neutral-600 transition hover:text-neutral-900 md:inline-flex"
+                className="hidden items-center rounded-full px-4 py-2 text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 lg:inline-flex"
               >
                 {isAdmin ? 'Dashboard' : 'Account'}
               </Link>
               <button
                 onClick={logout}
-                className="hidden rounded-full border border-neutral-200 px-3 py-1.5 text-neutral-600 transition hover:border-neutral-300 md:inline-flex"
+                className="hidden items-center rounded-full px-4 py-2 text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 lg:inline-flex"
               >
                 Log out
               </button>
@@ -49,41 +112,95 @@ function Header() {
           ) : (
             <button
               onClick={goToLogin}
-              className="hidden rounded-full px-3 py-1.5 text-neutral-600 transition hover:text-neutral-900 md:inline-flex"
+              className="hidden items-center rounded-full px-4 py-2 text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 lg:inline-flex"
             >
               Log in
             </button>
           )}
           <Link
             to="/cart"
-            className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-3 py-1.5 transition hover:border-neutral-300"
+            className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900"
           >
             <span aria-hidden>🛒</span>
             Cart{count > 0 && <span className="ml-1 rounded-full bg-neutral-900 px-2 py-0.5 text-white">{count}</span>}
           </Link>
-          <Link
-            to="/products"
-            className="hidden rounded-full bg-[#0f172a] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#111827] md:inline-flex"
+          <button
+            onClick={() => setMobileOpen((prev) => !prev)}
+            className="inline-flex items-center rounded-full px-3 py-2 text-neutral-700 transition hover:bg-neutral-100 lg:hidden"
+            aria-label="Toggle navigation"
           >
-            Shop
-          </Link>
-          {user ? (
-            <button
-              onClick={isAdmin ? () => navigate('/admin') : () => navigate('/account')}
-              className="md:hidden rounded-full border border-neutral-200 px-3 py-1.5 text-sm text-neutral-600 hover:border-neutral-300"
-            >
-              {isAdmin ? 'Dashboard' : 'Account'}
-            </button>
-          ) : (
-            <button
-              onClick={goToLogin}
-              className="md:hidden rounded-full border border-neutral-200 px-3 py-1.5 text-sm text-neutral-600 hover:border-neutral-300"
-            >
-              Log in
-            </button>
-          )}
+            {mobileOpen ? 'Close' : 'Menu'}
+          </button>
         </div>
       </div>
+
+      {mobileOpen && (
+        <div className="border-t border-neutral-200 bg-white px-4 py-6 text-sm text-neutral-700 shadow-lg lg:hidden">
+          <div className="space-y-4">
+            <Link to="/products" onClick={() => setMobileOpen(false)} className="block rounded-2xl px-3 py-2 hover:bg-neutral-100">
+              Products
+            </Link>
+            <div className="rounded-2xl border border-neutral-200">
+              <p className="px-3 pt-3 text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">All products</p>
+              <ul className="divide-y divide-neutral-100">
+                {products.map((product) => (
+                  <li key={product.id}>
+                    <Link
+                      to={`/products/${product.id}`}
+                      onClick={() => setMobileOpen(false)}
+                      className="flex justify-between px-3 py-2 hover:bg-neutral-50"
+                    >
+                      <span>{product.name}</span>
+                      <span className="text-xs text-neutral-500">${product.price.toFixed(0)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <Link to="/learn" onClick={() => setMobileOpen(false)} className="block rounded-2xl px-3 py-2 hover:bg-neutral-100">
+              Learn
+            </Link>
+            {user ? (
+              <>
+                <Link
+                  to={isAdmin ? '/admin' : '/account'}
+                  onClick={() => setMobileOpen(false)}
+                  className="block rounded-2xl px-3 py-2 hover:bg-neutral-100"
+                >
+                  {isAdmin ? 'Dashboard' : 'Account'}
+                </Link>
+                <button
+                  onClick={() => {
+                    logout()
+                    setMobileOpen(false)
+                  }}
+                  className="w-full rounded-2xl px-3 py-2 text-left hover:bg-neutral-100"
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => {
+                  setMobileOpen(false)
+                  goToLogin()
+                }}
+                className="w-full rounded-2xl px-3 py-2 text-left hover:bg-neutral-100"
+              >
+                Log in
+              </button>
+            )}
+            <Link
+              to="/cart"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2 rounded-2xl px-3 py-2 hover:bg-neutral-100"
+            >
+              <span aria-hidden>🛒</span>
+              Cart
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   )
 }

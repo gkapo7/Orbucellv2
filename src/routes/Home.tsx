@@ -52,10 +52,13 @@ function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between">
-          <h2 className="text-2xl font-semibold">From the blog</h2>
-          <Link to="/learn" className="text-sm text-neutral-600 hover:text-black">View all</Link>
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-neutral-500">Learn</p>
+            <h2 className="mt-1 text-2xl font-semibold">Educational articles</h2>
+          </div>
+            <Link to="/learn" className="text-sm text-neutral-600 hover:text-black">View all</Link>
         </div>
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {recentPosts.map(p => (
@@ -67,7 +70,7 @@ function Home() {
               </div>
               <div className="mt-3">
                 <p className="text-xs text-neutral-500">{new Date(p.date).toLocaleDateString()}</p>
-                <p className="font-medium">{p.title}</p>
+                <p className="font-medium text-neutral-900">{p.title}</p>
                 <p className="text-sm text-neutral-600 line-clamp-2">{p.excerpt}</p>
               </div>
             </Link>

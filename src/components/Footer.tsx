@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react'
 import { products } from '../data/products'
-import { posts } from '../data/posts'
 
 function Footer() {
   const [name, setName] = useState('')
@@ -16,7 +15,7 @@ function Footer() {
 
   return (
     <footer className="border-t border-neutral-200/60 bg-white">
-      <div className="bg-neutral-900">
+      <div className="bg-gradient-to-br from-[#0f172a] via-[#1f2937] to-[#312e81]">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 text-neutral-100 sm:px-6 lg:grid-cols-[1fr_1fr] lg:px-8">
           <div>
             <p className="inline-flex items-center rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-[0.3em] text-neutral-400">
@@ -34,7 +33,7 @@ function Footer() {
             ) : null}
           </div>
           <form onSubmit={handleSubmit} className="grid gap-4 rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur">
-            <label className="text-xs uppercase tracking-[0.3em] text-neutral-400">
+            <label className="text-xs uppercase tracking-[0.3em] text-neutral-300">
               Name
               <input
                 type="text"
@@ -45,7 +44,7 @@ function Footer() {
                 required
               />
             </label>
-            <label className="text-xs uppercase tracking-[0.3em] text-neutral-400">
+            <label className="text-xs uppercase tracking-[0.3em] text-neutral-300">
               Email
               <input
                 type="email"
@@ -56,7 +55,7 @@ function Footer() {
                 required
               />
             </label>
-            <label className="text-xs uppercase tracking-[0.3em] text-neutral-400">
+            <label className="text-xs uppercase tracking-[0.3em] text-neutral-300">
               Phone (optional)
               <input
                 type="tel"
@@ -76,7 +75,7 @@ function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-3 lg:grid-cols-[1.2fr_0.8fr_0.8fr] lg:px-8">
         <div className="space-y-4 text-left">
           <div className="flex items-center gap-2">
             <img src="/logo.svg" alt="Orbucell" className="h-8 w-8" />
@@ -94,17 +93,6 @@ function Footer() {
             {products.map((product) => (
               <li key={product.id}>
                 <a href={`/products/${product.id}`} className="hover:underline">{product.name}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-neutral-500">Learn</p>
-          <ul className="mt-4 space-y-2 text-sm text-neutral-700">
-            <li><a href="/learn" className="font-medium text-neutral-900 hover:underline">All articles</a></li>
-            {posts.slice(0, 4).map((post) => (
-              <li key={post.id}>
-                <a href={`/learn/${post.slug}`} className="hover:underline">{post.title}</a>
               </li>
             ))}
           </ul>

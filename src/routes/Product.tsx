@@ -101,7 +101,6 @@ const productGuides: Record<string, ProductGuide> = {
 function Product() {
   const { id } = useParams()
   const [product, setProduct] = useState<ProductType | undefined>(id ? getProductById(id) : undefined)
-  const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(Boolean(id && !product))
   const { add } = useCart()
 
@@ -113,14 +112,12 @@ function Product() {
       .then((remote) => {
         if (!cancelled) {
           setProduct(remote)
-          setError(null)
         }
       })
       .catch(() => {
         if (cancelled) return
         const fallback = getProductById(id)
         setProduct(fallback)
-        setError('Showing cached data while the API reconnects.')
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -214,7 +211,6 @@ function Product() {
                       View cart
                     </Link>
                   </div>
-                  {error && <p className="text-sm text-neutral-500">{error}</p>}
                   <p className="text-xs text-neutral-500">30-day risk-free • NSF Certified • Arrives in recyclable packaging</p>
                 </div>
               </div>
