@@ -15,7 +15,7 @@ function HeroAG() {
           metabolism, energy, and longevity — bioavailable, transparent, and rigorously tested.
           </p>
           <div className="mt-6 flex items-center gap-3">
-            <Link to="/products" className="rounded-full bg-[hsl(var(--brand-primary))] px-5 py-2.5 text-white shadow-sm hover:bg-[hsl(var(--brand-primary-600))]">Buy AG1 Now</Link>
+            <Link to="/products" className="rounded-full bg-[#f97316] px-5 py-2.5 text-white shadow-sm hover:bg-[#ea580c]">Shop Now</Link>
             <a href="#benefits" className="rounded-full border border-neutral-300 px-5 py-2.5 hover:border-neutral-400">See benefits</a>
           </div>
           <div className="mt-6 flex items-center gap-6 text-sm text-neutral-600">
@@ -39,5 +39,4 @@ function HeroAG() {
 }
 
 export default HeroAG
-
 
