@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { NavLink, Route, Routes, Navigate, useLocation } from 'react-router-dom'
 import type { Product } from '../data/products'
 import type { BlogPost } from '../data/posts'
@@ -92,9 +92,10 @@ function ProductsPanel() {
           error: null,
         })
       })
-      .catch(() => {
+      .catch((err) => {
+        console.warn('Falling back to local product data', err)
         if (cancelled) return
-        setState((prev) => ({ ...prev, loading: false, error: 'Offline mode: using local seed data.' }))
+        setState((prev) => ({ ...prev, loading: false }))
       })
     return () => {
       cancelled = true
@@ -151,8 +152,6 @@ function ProductsPanel() {
       }))
     }
   }
-
-  const payload = useMemo(() => JSON.stringify(state.draft, null, 2), [state.draft])
 
   return (
     <div className="space-y-8">
@@ -269,10 +268,6 @@ function ProductsPanel() {
           ))}
         </div>
       )}
-      <details className="rounded-3xl border border-neutral-200 bg-white p-4 text-sm shadow-sm">
-        <summary className="cursor-pointer font-medium text-neutral-800">JSON preview</summary>
-        <pre className="mt-3 overflow-auto rounded-2xl bg-neutral-900 p-4 text-xs text-white">{payload}</pre>
-      </details>
     </div>
   )
 }
@@ -295,9 +290,10 @@ function PostsPanel() {
           error: null,
         })
       })
-      .catch(() => {
+      .catch((err) => {
+        console.warn('Falling back to local posts', err)
         if (cancelled) return
-        setState((prev) => ({ ...prev, loading: false, error: 'Offline mode: using local seed posts.' }))
+        setState((prev) => ({ ...prev, loading: false }))
       })
     return () => {
       cancelled = true
@@ -355,8 +351,6 @@ function PostsPanel() {
       }))
     }
   }
-
-  const payload = useMemo(() => JSON.stringify(state.draft, null, 2), [state.draft])
 
   return (
     <div className="space-y-8">
@@ -475,10 +469,6 @@ function PostsPanel() {
           ))}
         </div>
       )}
-      <details className="rounded-3xl border border-neutral-200 bg-white p-4 text-sm shadow-sm">
-        <summary className="cursor-pointer font-medium text-neutral-800">JSON preview</summary>
-        <pre className="mt-3 overflow-auto rounded-2xl bg-neutral-900 p-4 text-xs text-white">{payload}</pre>
-      </details>
     </div>
   )
 }
@@ -501,9 +491,10 @@ function CustomersPanel() {
           error: null,
         })
       })
-      .catch(() => {
+      .catch((err) => {
+        console.warn('Falling back to local customers', err)
         if (cancelled) return
-        setState((prev) => ({ ...prev, loading: false, error: 'Offline mode: using local customers.' }))
+        setState((prev) => ({ ...prev, loading: false }))
       })
     return () => {
       cancelled = true
@@ -558,8 +549,6 @@ function CustomersPanel() {
   const removeCustomer = (index: number) => {
     setState((prev) => ({ ...prev, draft: prev.draft.filter((_, i) => i !== index) }))
   }
-
-  const payload = useMemo(() => JSON.stringify(state.draft, null, 2), [state.draft])
 
   return (
     <div className="space-y-8">
@@ -670,10 +659,6 @@ function CustomersPanel() {
           </table>
         </div>
       )}
-      <details className="rounded-3xl border border-neutral-200 bg-white p-4 text-sm shadow-sm">
-        <summary className="cursor-pointer font-medium text-neutral-800">JSON preview</summary>
-        <pre className="mt-3 overflow-auto rounded-2xl bg-neutral-900 p-4 text-xs text-white">{payload}</pre>
-      </details>
     </div>
   )
 }

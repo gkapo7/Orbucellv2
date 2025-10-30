@@ -41,16 +41,16 @@ function Login() {
   return (
     <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
       <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-        <div>
+        <div className="text-left">
           <p className="text-xs uppercase tracking-[0.3em] text-neutral-500">Account access</p>
           <h1 className="mt-2 font-display text-4xl font-semibold text-neutral-900 sm:text-5xl">
             Manage orders, subscriptions, and wellness guides.
           </h1>
           <p className="mt-4 text-sm text-neutral-600 sm:text-base">
-            Log in with the email you used at checkout. Admins can access the full dashboard using <code>admin@orbucell.com</code>.
-            We store your profile securely in your browser (localStorage) until our secure auth platform is connected.
+            Log in with the email you used at checkout. We store your profile securely in your browser until our full authentication
+            platform is connected.
           </p>
-          <div className="mt-6 flex gap-2 text-sm text-neutral-500">
+          <div className="mt-6 flex flex-wrap items-center gap-2 text-sm text-neutral-500">
             <button
               onClick={() => setMode('sign-in')}
               className={[

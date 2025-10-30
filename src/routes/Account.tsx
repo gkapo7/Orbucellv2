@@ -15,8 +15,7 @@ function Account() {
           <h1 className="mt-1 text-3xl font-semibold tracking-tight text-neutral-900">{user.name}</h1>
           <p className="mt-1 text-sm text-neutral-600">{user.email}{user.phone ? ` • ${user.phone}` : ''}</p>
           <p className="mt-2 text-xs text-neutral-500">
-            Your profile is stored securely in your browser while we prepare our full authentication service. Need admin tools? Use
-            <code className="ml-1 rounded bg-neutral-100 px-2 py-0.5">admin@orbucell.com</code>.
+            Your profile is stored securely in your browser while we prepare our full authentication service.
           </p>
         </div>
         <button

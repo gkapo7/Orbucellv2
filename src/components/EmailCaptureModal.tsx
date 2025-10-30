@@ -33,15 +33,23 @@ function EmailCaptureModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/60 px-4">
-      <div role="dialog" aria-modal="true" className="relative w-full max-w-md rounded-3xl border border-neutral-800/30 bg-white p-8 shadow-2xl">
-        <button onClick={close} aria-label="Close" className="absolute right-3 top-3 rounded-full border border-neutral-200 p-1 text-neutral-500 hover:text-black">
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-[#f97316] via-[#fb923c] to-[#f97316] p-8 text-white shadow-2xl"
+      >
+        <button
+          onClick={close}
+          aria-label="Close"
+          className="absolute right-3 top-3 rounded-full border border-white/40 p-1 text-white/80 transition hover:border-white hover:text-white"
+        >
           ×
         </button>
         {!submitted ? (
           <>
-            <p className="text-xs uppercase tracking-[0.2em] text-neutral-500">Free download</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Get our Wellness Guide PDF</h2>
-            <p className="mt-3 text-sm text-neutral-600">
+            <p className="text-xs uppercase tracking-[0.2em] text-white/80">Free download</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">Get our Wellness Guide PDF</h2>
+            <p className="mt-3 text-sm text-white/80">
               Drop your email and receive our 7-page guide to building a magnesium + fiber ritual, complete with recipes, timing tips, and supplement checklists.
             </p>
             <form className="mt-5 space-y-3" onSubmit={handleSubmit}>
@@ -53,27 +61,27 @@ function EmailCaptureModal() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="you@email.com"
-                className="w-full rounded-full border border-neutral-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#f97316]"
+                className="w-full rounded-full border border-white/30 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/70 focus:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/60"
               />
-              <button type="submit" className="w-full rounded-full bg-[#f97316] px-4 py-3 text-sm font-medium text-white hover:bg-[#ea580c]">
+              <button type="submit" className="w-full rounded-full bg-white px-4 py-3 text-sm font-medium text-[#f97316] transition hover:bg-white/90">
                 Email me the guide
               </button>
             </form>
           </>
         ) : (
           <div className="text-center">
-            <h2 className="text-2xl font-semibold tracking-tight">Guide on the way!</h2>
-            <p className="mt-3 text-sm text-neutral-600">
+            <h2 className="text-2xl font-semibold tracking-tight text-white">Guide on the way!</h2>
+            <p className="mt-3 text-sm text-white/80">
               Check your inbox for onboarding tips. You can also download the PDF instantly below.
             </p>
             <a
               href="/wellness-guide.pdf"
               download
-              className="mt-5 inline-flex items-center justify-center rounded-full bg-[#f97316] px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-[#ea580c]"
+              className="mt-5 inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-[#f97316] transition hover:bg-white/90"
             >
               Download wellness guide
             </a>
-            <button onClick={close} className="mt-4 block w-full rounded-full border border-neutral-300 px-4 py-2.5 text-sm hover:border-neutral-400">
+            <button onClick={close} className="mt-4 block w-full rounded-full border border-white/40 px-4 py-2.5 text-sm text-white transition hover:border-white">
               Close
             </button>
           </div>

@@ -62,17 +62,15 @@ function Header() {
               Products
             </NavLink>
             {productsOpen && (
-              <div className="absolute left-0 top-full z-40 mt-4 w-64 rounded-3xl border border-neutral-200 bg-white/95 p-4 shadow-xl backdrop-blur">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">Shop</p>
-                <ul className="mt-3 space-y-2 text-sm text-neutral-700">
+              <div className="absolute left-0 top-full z-40 mt-4 w-60 rounded-3xl border border-neutral-200 bg-white/95 p-4 shadow-xl backdrop-blur">
+                <ul className="space-y-2 text-sm text-neutral-700">
                   {products.map((product) => (
                     <li key={product.id}>
                       <Link
                         to={`/products/${product.id}`}
-                        className="flex justify-between rounded-2xl px-3 py-2 hover:bg-neutral-100"
+                        className="block rounded-2xl px-3 py-2 hover:bg-neutral-100"
                       >
-                        <span>{product.name}</span>
-                        <span className="text-xs text-neutral-500">${product.price.toFixed(0)}</span>
+                        {product.name}
                       </Link>
                     </li>
                   ))}

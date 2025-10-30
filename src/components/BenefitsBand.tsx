@@ -176,12 +176,12 @@ function BenefitsBand() {
               viewport={{ once: true }}
             >
               <Card className="h-full bg-white/80 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
-                <CardContent>
-                  <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-orange-100 to-rose-100">
-                    <benefit.icon className="h-8 w-8 text-[#f97316]" />
+                <CardContent className="p-6">
+                  <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-orange-200 via-amber-100 to-rose-200">
+                    <benefit.icon className="h-7 w-7 text-[#f97316]" />
                   </div>
                   <h3 className="text-center text-lg font-semibold text-neutral-900">{benefit.title}</h3>
-                  <p className="mt-2 text-center text-sm text-neutral-600">{benefit.description}</p>
+                  <p className="mt-3 text-center text-sm leading-relaxed text-neutral-600">{benefit.description}</p>
                 </CardContent>
               </Card>
             </motion.div>
