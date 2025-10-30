@@ -13,43 +13,42 @@ export type BlogPost = {
 export const posts: BlogPost[] = [
   {
     id: '1',
-    title: 'Fueling Performance: The Science Behind Whey Protein',
-    slug: 'science-behind-whey-protein',
+    title: 'Magnesium Bisglycinate Benefits for Sleep, Stress, and Recovery',
+    slug: 'magnesium-bisglycinate-benefits',
     excerpt:
-      'Discover how whey protein supports muscle recovery, lean mass, and sustained performance backed by research.',
+      'Learn how highly absorbable magnesium bisglycinate calms your nervous system, supports deep sleep, and eases muscle tension.',
     content:
-      'Whey protein is rapidly absorbed and rich in essential amino acids, especially leucine, which triggers muscle protein synthesis. For most people training 3-5x/week, 20-30g post-workout is an effective target. Pair with carbs for improved glycogen replenishment. Quality matters—look for transparent labeling, minimal additives, and third-party testing.',
-    image: '/images/whey.svg',
-    date: '2025-09-18',
+      'Magnesium bisglycinate pairs elemental magnesium with the amino acid glycine, creating a chelated form that the gut can absorb efficiently without the laxative effect common in oxide or citrate. Research shows that adequate magnesium intake helps regulate the parasympathetic nervous system, which in turn improves sleep latency and reduces restless legs. For athletes, magnesium accelerates muscle relaxation after intense training and keeps energy production humming by acting as a cofactor in ATP synthesis. \n\nTo get the most from magnesium bisglycinate, take it in the evening with a light snack that includes protein—the glycine may also support deeper slow-wave sleep. Consistency matters; stacking it with sun exposure early in the day, a high-quality electrolyte routine, and evening blue-light hygiene creates a holistic sleep hygiene protocol that searchers for “magnesium for sleep” and “magnesium for anxiety” are actively seeking. Always check labels for third-party testing and choose doses between 200-400 mg of elemental magnesium based on your healthcare provider’s guidance.',
+    image: '/images/magnesium.svg',
+    date: '2025-01-12',
     author: 'Orbucell Team',
-    tags: ['protein', 'recovery', 'training'],
+    tags: ['magnesium', 'sleep', 'stress relief'],
   },
   {
     id: '2',
-    title: 'Do You Really Need BCAAs?',
-    slug: 'do-you-need-bcaas',
+    title: 'Psyllium Fiber for Gut Health, Blood Sugar Balance, and Weight Loss',
+    slug: 'psyllium-fiber-benefits',
     excerpt:
-      'BCAAs vs complete proteins: when they help, when they don’t, and how to decide.',
+      'Discover why psyllium husk is the go-to soluble fiber for better digestion, cholesterol support, and long-lasting fullness.',
     content:
-      'BCAAs can help reduce perceived fatigue in long sessions, but for most people, complete protein sources (like whey) outperform isolated BCAAs for recovery and hypertrophy. Consider BCAAs when training fasted or during long endurance work where total protein intake is constrained.',
-    image: '/images/bcaa.svg',
-    date: '2025-10-05',
+      'If you are researching “psyllium fiber benefits” or comparing “psyllium vs chia,” start with its soluble fiber content. Psyllium forms a gel with water and feeds beneficial gut bacteria, increasing short-chain fatty acid production that heals the intestinal lining. That gel also slows glucose absorption, making psyllium husk a smart add-on for those managing fasting glucose or A1C levels. Clinical studies link eight grams of psyllium twice daily with modest LDL cholesterol reductions, which is why cardiologists often pair it with lifestyle coaching. \n\nFor weight management, blend one scoop of organic psyllium fiber into a smoothie 30 minutes before a meal. The increased satiety cues help prevent overeating while keeping digestion regular—a common search intent around “fiber for bloating” and “natural appetite control.” Always follow your serving with at least 12-16 ounces of water and introduce fiber gradually to avoid discomfort.',
+    image: '/images/fiber.svg',
+    date: '2025-01-26',
     author: 'Orbucell Team',
-    tags: ['BCAA', 'endurance'],
+    tags: ['fiber', 'gut health', 'weight management'],
   },
   {
     id: '3',
-    title: 'Pre-Workout: What Actually Works',
-    slug: 'pre-workout-what-works',
+    title: 'Morning Wellness Routine: Pair Magnesium and Fiber for All-Day Energy',
+    slug: 'magnesium-and-fiber-routine',
     excerpt:
-      'A simple, evidence-based stack: caffeine, beta-alanine, and citrulline malate.',
+      'Build a simple morning stack that stabilizes energy, digestion, and mood by combining magnesium bisglycinate with psyllium fiber.',
     content:
-      'Skip proprietary blends. Effective pre-workouts prioritize known actives at clinical doses: caffeine (3-6 mg/kg), beta-alanine (3.2-6.4 g/day, chronic), and citrulline malate (6-8 g pre). Hydration and electrolytes significantly impact performance—don’t overlook them.',
-    image: '/images/pre.svg',
-    date: '2025-10-20',
+      'The most searched morning rituals—think “wellness morning routine” and “healthy gut routine”—share the same pillars: mineral balance, digestive support, and mindful movement. Start with a tall glass of mineralized water, adding a scoop of psyllium fiber to support gentle detox and kick-start peristalsis. Wait 20 minutes, then enjoy a protein-forward breakfast to anchor blood sugar. \n\nAfter breakfast, take magnesium bisglycinate alongside vitamin D or omega-3s. This timing supports calm focus without the drowsiness that can come from taking magnesium mid-day. Layer in five minutes of breathing or sunlight to reinforce circadian rhythm. Customers who follow this stack report fewer energy crashes, more regular digestion, and better recovery from training sessions.',
+    image: '/images/wellness-stack.svg',
+    date: '2025-02-02',
     author: 'Orbucell Team',
-    tags: ['pre-workout', 'caffeine'],
+    tags: ['morning routine', 'energy', 'longevity'],
   },
 ]
-
 

@@ -5,54 +5,33 @@ export type Product = {
   description: string
   price: number
   image: string
-  category: 'Protein' | 'Pre-Workout' | 'Vitamins' | 'Recovery'
+  category: 'Mineral' | 'Fiber'
   highlights: string[]
 };
 
 export const products: Product[] = [
   {
-    id: 'whey-pro-1',
-    name: 'Whey Pro 100',
-    slug: 'whey-pro-100',
-    description: 'Ultra-filtered whey isolate for lean muscle and fast recovery.',
-    price: 49.99,
-    image: '/images/whey.svg',
-    category: 'Protein',
-    highlights: ['25g protein', 'Low carb', 'Fast absorption'],
+    id: 'magnesium-bisglycinate',
+    name: 'Magnesium Bisglycinate',
+    slug: 'magnesium-bisglycinate',
+    description: 'Highly absorbable magnesium chelate to support deep sleep, relaxation, and muscle recovery.',
+    price: 29.0,
+    image: '/images/magnesium.svg',
+    category: 'Mineral',
+    highlights: ['Chelated for superior absorption', 'Promotes calm and sleep quality', 'Supports nerve and muscle function'],
   },
   {
-    id: 'ignite-pre',
-    name: 'Ignite Pre-Workout',
-    slug: 'ignite-pre',
-    description: 'Clean energy and focus without the crash.',
-    price: 34.99,
-    image: '/images/pre.svg',
-    category: 'Pre-Workout',
-    highlights: ['200mg caffeine', 'No jitters', 'Laser focus'],
-  },
-  {
-    id: 'multi-vita',
-    name: 'Daily Multivitamin',
-    slug: 'daily-multivitamin',
-    description: 'Complete micronutrients to support daily performance.',
-    price: 19.99,
-    image: '/images/vitamins.svg',
-    category: 'Vitamins',
-    highlights: ['Immune support', 'Antioxidants', 'Highly bioavailable'],
-  },
-  {
-    id: 'rebuild-bcaa',
-    name: 'Rebuild BCAA + Electrolytes',
-    slug: 'rebuild-bcaa',
-    description: 'Hydration and muscle recovery with optimal 2:1:1 ratio.',
-    price: 29.99,
-    image: '/images/bcaa.svg',
-    category: 'Recovery',
-    highlights: ['2:1:1 ratio', 'Hydration', 'Sugar free'],
+    id: 'psyllium-fiber',
+    name: 'Organic Psyllium Fiber',
+    slug: 'organic-psyllium-fiber',
+    description: 'Gentle prebiotic fiber to balance digestion, blood sugar, and satiety without bloating.',
+    price: 24.0,
+    image: '/images/fiber.svg',
+    category: 'Fiber',
+    highlights: ['Promotes regularity', 'Supports microbiome diversity', 'Helps manage cravings'],
   },
 ];
 
 export function getProductById(id: string): Product | undefined {
   return products.find(p => p.id === id)
 }
-

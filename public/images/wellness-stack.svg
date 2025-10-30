@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 400">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="100%" stop-color="#ecfdf5"/>
+    </linearGradient>
+    <linearGradient id="jarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#fb7185"/>
+    </linearGradient>
+    <linearGradient id="canisterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="400" rx="48" fill="url(#bgGradient)"/>
+  <g transform="translate(60 60)">
+    <ellipse cx="180" cy="260" rx="180" ry="36" fill="#f1f5f9"/>
+    <g transform="translate(46 20)">
+      <rect x="20" y="40" width="160" height="220" rx="36" fill="#ffffff" stroke="#ffe4e6" stroke-width="4"/>
+      <rect x="40" y="60" width="120" height="80" rx="24" fill="#fff1f2"/>
+      <rect x="40" y="150" width="120" height="70" rx="20" fill="url(#jarGradient)" opacity="0.18"/>
+      <circle cx="100" cy="150" r="42" fill="#fff7ed" stroke="#f97316" stroke-width="6"/>
+      <text x="100" y="160" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="26" fill="#f97316" font-weight="600">Mg</text>
+      <rect x="36" y="0" width="128" height="40" rx="12" fill="url(#jarGradient)"/>
+    </g>
+    <g transform="translate(220 46)">
+      <rect x="24" y="34" width="140" height="190" rx="28" fill="#ffffff" stroke="#ccfbf1" stroke-width="4"/>
+      <rect x="44" y="54" width="100" height="70" rx="20" fill="#d1fae5"/>
+      <rect x="44" y="135" width="100" height="56" rx="18" fill="url(#canisterGradient)" opacity="0.2"/>
+      <rect x="60" y="0" width="68" height="44" rx="16" fill="url(#canisterGradient)"/>
+      <text x="94" y="150" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="20" fill="#0f766e" font-weight="600">Fiber</text>
+    </g>
+    <g transform="translate(110 220) rotate(-12)">
+      <rect x="0" y="0" width="80" height="120" rx="40" fill="#0f172a" opacity="0.14"/>
+      <rect x="12" y="12" width="60" height="96" rx="30" fill="#facc15"/>
+    </g>
+    <g transform="translate(270 236) rotate(8)">
+      <rect x="0" y="0" width="90" height="28" rx="14" fill="#fde68a"/>
+      <rect x="22" y="26" width="46" height="54" rx="22" fill="#fb7185" opacity="0.6"/>
+    </g>
+  </g>
+</svg>

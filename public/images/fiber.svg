@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+  <defs>
+    <linearGradient id="fiberGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="scoopGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#fb923c" stop-opacity="0.8"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="320" rx="32" fill="#ecfdf5"/>
+  <g transform="translate(36 32)">
+    <rect x="28" y="20" width="152" height="216" rx="36" fill="#ffffff"/>
+    <rect x="48" y="40" width="112" height="80" rx="24" fill="#ccfbf1"/>
+    <rect x="48" y="128" width="112" height="88" rx="24" fill="url(#fiberGradient)" opacity="0.18"/>
+    <path d="M48 196v14c0 26 21 48 48 48h16c26 0 48-22 48-48v-14z" fill="#0f172a" opacity="0.08"/>
+    <circle cx="104" cy="138" r="38" fill="#0f766e" opacity="0.12"/>
+    <path d="M74 146c10-16 26-26 46-26s36 10 46 26c-10 16-26 26-46 26s-36-10-46-26z" fill="#0f766e" opacity="0.1"/>
+    <text x="104" y="150" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="24" fill="#0f766e" font-weight="600">Fiber</text>
+  </g>
+  <g transform="translate(180 186) rotate(8)">
+    <path d="M0 40c0-22 18-40 40-40h40l18 18c8 8 12 18 12 30v6c0 22-18 40-40 40h-70z" fill="url(#scoopGradient)"/>
+    <rect x="58" y="6" width="66" height="22" rx="11" fill="#facc15" opacity="0.9"/>
+  </g>
+</svg>

@@ -1,8 +1,8 @@
 function Testimonials() {
   const items = [
-    { quote: 'I feel sustained energy and faster recovery.', name: 'Jordan, Marathoner' },
-    { quote: 'Finally a routine I can stick to every day.', name: 'Alex, Designer' },
-    { quote: 'Clean ingredients and a noticeable difference.', name: 'Sam, Trainer' },
+    { quote: 'My sleep score jumped 12 points after two weeks on the magnesium bisglycinate.', name: 'Jordan, Marathoner' },
+    { quote: 'The psyllium fiber keeps my digestion steady without the bloating of other blends.', name: 'Alex, Designer' },
+    { quote: 'I love that there are only two products but they cover stress, energy, and gut health.', name: 'Sam, Trainer' },
   ]
   return (
     <section className="bg-[hsl(var(--surface))]">
@@ -22,5 +22,4 @@ function Testimonials() {
 }
 
 export default Testimonials
-
 

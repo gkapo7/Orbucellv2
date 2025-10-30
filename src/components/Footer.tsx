@@ -7,7 +7,7 @@ function Footer() {
             <img src="/logo.svg" alt="Orbucell" className="h-7 w-7" />
             <span className="font-semibold">Orbucell</span>
           </div>
-          <p className="mt-3 text-sm text-neutral-600">Science‑backed daily nutrition. Transparent sourcing. Third‑party tested.</p>
+          <p className="mt-3 text-sm text-neutral-600">Magnesium + fiber rituals for sleep, digestion, and calm energy. Transparent sourcing. Third‑party tested.</p>
         </div>
         <div>
           <p className="font-medium">Company</p>
@@ -31,5 +31,4 @@ function Footer() {
 }
 
 export default Footer
-
 

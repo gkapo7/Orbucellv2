@@ -24,7 +24,7 @@ function Catalog() {
         <h1 className="text-3xl font-semibold tracking-tight">All Products</h1>
       </div>
       {error && <p className="mt-2 text-sm text-neutral-500">Showing local data (API unavailable).</p>}
-      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
         {list.map(p => (
           <Link key={p.id} to={`/products/${p.id}`} className="group rounded-2xl border border-neutral-200 bg-white p-3 shadow-sm hover:shadow-md">
             <div className="aspect-[4/3] overflow-hidden rounded-xl border border-neutral-100">
@@ -42,5 +42,4 @@ function Catalog() {
 }
 
 export default Catalog
-
 
