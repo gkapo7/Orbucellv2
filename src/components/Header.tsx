@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
@@ -15,6 +15,7 @@ function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [productsOpen, setProductsOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const hoverTimeout = useRef<number | null>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,6 +25,24 @@ function Header() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimeout.current) {
+        window.clearTimeout(hoverTimeout.current)
+      }
+    }
+  }, [])
+
+  const handleProductsEnter = () => {
+    if (hoverTimeout.current) window.clearTimeout(hoverTimeout.current)
+    setProductsOpen(true)
+  }
+
+  const handleProductsLeave = () => {
+    if (hoverTimeout.current) window.clearTimeout(hoverTimeout.current)
+    hoverTimeout.current = window.setTimeout(() => setProductsOpen(false), 150)
+  }
 
   const goToLogin = () => {
     navigate('/login')
@@ -47,8 +66,8 @@ function Header() {
         <nav className="ml-2 hidden items-center gap-1 text-sm font-medium lg:flex">
           <div
             className="relative"
-            onMouseEnter={() => setProductsOpen(true)}
-            onMouseLeave={() => setProductsOpen(false)}
+            onMouseEnter={handleProductsEnter}
+            onMouseLeave={handleProductsLeave}
           >
             <NavLink
               to="/products"
@@ -62,7 +81,10 @@ function Header() {
               Products
             </NavLink>
             {productsOpen && (
-              <div className="absolute left-0 top-full z-40 mt-4 w-60 rounded-3xl border border-neutral-200 bg-white/95 p-4 shadow-xl backdrop-blur">
+              <div className="absolute left-0 top-full z-40 mt-2 w-60 rounded-3xl border border-neutral-200 bg-white/95 p-4 shadow-xl backdrop-blur"
+                onMouseEnter={handleProductsEnter}
+                onMouseLeave={handleProductsLeave}
+              >
                 <ul className="space-y-2 text-sm text-neutral-700">
                   {products.map((product) => (
                     <li key={product.id}>
