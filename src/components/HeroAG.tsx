@@ -7,10 +7,12 @@ function HeroAG() {
         <div>
           <p className="inline-flex items-center rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs text-neutral-600">Clinically informed daily nutrition</p>
           <h1 className="mt-4 text-4xl/tight font-semibold tracking-tight sm:text-5xl">
-            Get started for less than $3/day
+          Science-Driven Nutrition for Modern Health.
+
           </h1>
           <p className="mt-4 text-neutral-700">
-            A complete daily blend supporting energy, focus, gut health, and immunity — backed by research and third‑party testing.
+          Formulated with clinically studied nutrients to support
+          metabolism, energy, and longevity — bioavailable, transparent, and rigorously tested.
           </p>
           <div className="mt-6 flex items-center gap-3">
             <Link to="/products" className="rounded-full bg-[hsl(var(--brand-primary))] px-5 py-2.5 text-white shadow-sm hover:bg-[hsl(var(--brand-primary-600))]">Buy AG1 Now</Link>
