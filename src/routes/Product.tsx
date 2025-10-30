@@ -1,11 +1,24 @@
 import { useParams, Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import type { Product as ProductType } from '../data/products'
 import { getProductById } from '../data/products'
+import { fetchProduct } from '../lib/api'
 import { useCart } from '../context/CartContext'
 
 function Product() {
   const { id } = useParams()
-  const product = id ? getProductById(id) : undefined
+  const [product, setProduct] = useState<ProductType | undefined>(id ? getProductById(id) : undefined)
+  const [error, setError] = useState<string | null>(null)
   const { add } = useCart()
+
+  useEffect(() => {
+    if (!id) return
+    let cancelled = false
+    fetchProduct(id)
+      .then((p) => { if (!cancelled) setProduct(p) })
+      .catch(() => { if (!cancelled) setError('offline') })
+    return () => { cancelled = true }
+  }, [id])
 
   if (!product) {
     return (
@@ -32,6 +45,7 @@ function Product() {
           <button onClick={() => product && add(product)} className="rounded-full bg-black px-5 py-2.5 text-white hover:opacity-90">Add to cart</button>
           <Link to="/cart" className="rounded-full border border-neutral-300 px-5 py-2.5 hover:border-neutral-400">View cart</Link>
         </div>
+        {error && <p className="mt-3 text-sm text-neutral-500">Showing local data (API unavailable).</p>}
         <ul className="mt-8 grid gap-3 sm:grid-cols-2">
           {product.highlights.map(h => (
             <li key={h} className="rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-700">{h}</li>

@@ -13,6 +13,7 @@ function Header() {
         <nav className="hidden md:flex items-center gap-6 text-sm">
           <NavLink to="/" className={({isActive}) => isActive ? 'text-black' : 'text-neutral-600 hover:text-black'}>Home</NavLink>
           <NavLink to="/products" className={({isActive}) => isActive ? 'text-black' : 'text-neutral-600 hover:text-black'}>Products</NavLink>
+          <NavLink to="/blog" className={({isActive}) => isActive ? 'text-black' : 'text-neutral-600 hover:text-black'}>Blog</NavLink>
           <a href="#benefits" className="text-neutral-600 hover:text-black">Benefits</a>
           <a href="#about" className="text-neutral-600 hover:text-black">About</a>
         </nav>

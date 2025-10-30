@@ -7,6 +7,8 @@ import Catalog from './routes/Catalog'
 import Product from './routes/Product'
 import CartPage from './routes/Cart'
 import Checkout from './routes/Checkout'
+import Blog from './routes/Blog'
+import BlogPost from './routes/BlogPost'
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Catalog />} />
           <Route path="/products/:id" element={<Product />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<Checkout />} />
         </Routes>
