@@ -10,6 +10,8 @@ import Checkout from './routes/Checkout'
 import Blog from './routes/Blog'
 import BlogPostRoute from './routes/BlogPost'
 import Admin from './routes/Admin'
+import Login from './routes/Login'
+import Account from './routes/Account'
 
 function App() {
   return (
@@ -20,11 +22,13 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Catalog />} />
           <Route path="/products/:id" element={<Product />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPostRoute />} />
+          <Route path="/learn" element={<Blog />} />
+          <Route path="/learn/:slug" element={<BlogPostRoute />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/admin/*" element={<Admin />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/account" element={<Account />} />
         </Routes>
       </main>
       <Footer />

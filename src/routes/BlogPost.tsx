@@ -51,7 +51,7 @@ function BlogPostRoute() {
     return (
       <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
         <p className="text-neutral-600">{error ?? 'Post not found.'}</p>
-        <Link to="/blog" className="mt-4 inline-block text-sm text-neutral-600 hover:text-black">← Back to blog</Link>
+        <Link to="/learn" className="mt-4 inline-block text-sm text-neutral-600 hover:text-black">← Back to learn</Link>
       </section>
     )
   }
@@ -60,7 +60,7 @@ function BlogPostRoute() {
 
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
-      <Link to="/blog" className="text-sm text-neutral-600 hover:text-black">← Back to blog</Link>
+      <Link to="/learn" className="text-sm text-neutral-600 hover:text-black">← Back to learn</Link>
       <header className="mt-3 text-left">
         <p className="text-xs text-neutral-500">
           {new Date(post.date).toLocaleDateString()} • {post.author}

@@ -37,7 +37,7 @@ function Blog() {
         {items.map(post => (
           <Link
             key={post.id}
-            to={`/blog/${post.slug}`}
+            to={`/learn/${post.slug}`}
             className="group rounded-2xl border border-neutral-200 bg-white p-3 shadow-sm hover:shadow-md"
           >
             <div className="aspect-[4/3] overflow-hidden rounded-xl border border-neutral-100 bg-neutral-50">
@@ -62,4 +62,3 @@ function Blog() {
 }
 
 export default Blog
-
