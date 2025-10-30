@@ -4,13 +4,13 @@
 
 /* Brand tokens */
 :root {
-  /* Warm red/orange brand */
-  --brand-primary: 18 90% 50%; /* vermilion */
-  --brand-primary-600: 18 88% 44%;
-  --brand-primary-700: 18 92% 38%;
-  --brand-accent: 28 95% 54%; /* orange */
-  --brand-dark: 14 15% 10%;
-  --brand-light: 0 0% 100%;
+  /* Clinical yet warm palette */
+  --brand-primary: 155 32% 25%; /* deep green */
+  --brand-primary-600: 155 32% 22%;
+  --brand-primary-700: 155 32% 18%;
+  --brand-accent: 155 28% 35%; /* softer green accent */
+  --surface: 40 20% 96%; /* off-white/beige */
+  --surface-contrast: 0 0% 100%; /* white */
 }
 
 /* Base resets */
@@ -19,4 +19,10 @@ html, body, #root {
 }
 body {
   margin: 0;
+}
+
+/* Base theme */
+body {
+  background-color: hsl(var(--surface));
+  color: rgb(23 23 23);
 }

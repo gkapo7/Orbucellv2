@@ -11,14 +11,14 @@ export type Product = {
 
 export const products: Product[] = [
   {
-    id: 'whey-pro-1',
-    name: 'Whey Pro 100',
-    slug: 'whey-pro-100',
-    description: 'Ultra-filtered whey isolate for lean muscle and fast recovery.',
-    price: 49.99,
+    id: 'mg',
+    name: 'Magnesium Bisglycinate',
+    slug: 'MgBg',
+    description: 'Highly absorbable magnesium for muscle relaxation and energy production.',
+    price: 19.99,
     image: '/images/whey.svg',
-    category: 'Protein',
-    highlights: ['25g protein', 'Low carb', 'Fast absorption'],
+    category: 'Supplements',
+    highlights: ['High bioavailability', 'Easy on the stomach', 'Helps with mood and sleep'],
   },
   {
     id: 'ignite-pre',

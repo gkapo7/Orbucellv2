@@ -7,7 +7,7 @@ function Footer() {
             <img src="/logo.svg" alt="Orbucell" className="h-7 w-7" />
             <span className="font-semibold">Orbucell</span>
           </div>
-          <p className="mt-3 text-sm text-neutral-600">Premium supplements to fuel performance, recovery, and wellness.</p>
+          <p className="mt-3 text-sm text-neutral-600">Science‑backed daily nutrition. Transparent sourcing. Third‑party tested.</p>
         </div>
         <div>
           <p className="font-medium">Company</p>
@@ -25,7 +25,7 @@ function Footer() {
           </ul>
         </div>
       </div>
-      <div className="py-4 text-center text-xs text-neutral-500">© {new Date().getFullYear()} Orbucell</div>
+      <div className="py-4 text-center text-xs text-neutral-500">© {new Date().getFullYear()} Orbucell • 90‑day money back guarantee</div>
     </footer>
   )
 }

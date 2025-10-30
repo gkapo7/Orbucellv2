@@ -23,7 +23,7 @@ function Header() {
             Cart{count > 0 && <span className="ml-1 rounded-full bg-black px-2 py-0.5 text-white">{count}</span>}
           </Link>
           <Link to="/products" className="hidden sm:inline-flex rounded-full bg-[hsl(var(--brand-primary))] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[hsl(var(--brand-primary-600))]">
-            Shop now
+            Buy AG1 Now
           </Link>
         </div>
       </div>
