@@ -1,4 +1,5 @@
 import { readDb, writeDb } from './_storage'
+import { supabaseSelectAll, supabaseUpsertMany } from './_db'
 
 export type SEO = {
   title: string
@@ -108,6 +109,27 @@ export type Order = {
 }
 
 export async function listProducts(): Promise<Product[]> {
+  const fromSupabase = await supabaseSelectAll<Product>('products')
+  if (fromSupabase) {
+    return (fromSupabase || []).map((p: any) => ({
+      id: p.id || '',
+      name: p.name || '',
+      slug: p.slug || '',
+      description: p.description || '',
+      longDescription: p.longDescription || p.description || '',
+      price: p.price || 0,
+      image: p.image || '',
+      gallery: Array.isArray(p.gallery) ? p.gallery : [],
+      category: p.category === 'Fiber' ? 'Fiber' : 'Mineral',
+      highlights: Array.isArray(p.highlights) ? p.highlights : [],
+      sku: p.sku || '',
+      stock: p.stock || 0,
+      reorderPoint: p.reorderPoint || 0,
+      allowBackorder: p.allowBackorder || false,
+      status: p.status === 'draft' || p.status === 'archived' ? p.status : 'active',
+      seo: p.seo || { title: p.name || '', description: p.description || '', keywords: [] },
+    }))
+  }
   const db = await readDb()
   // Normalize products to ensure all required fields exist
   return (db.products || []).map((p: any) => ({
@@ -137,6 +159,8 @@ export async function listProducts(): Promise<Product[]> {
 }
 
 export async function setProducts(next: Product[]): Promise<Product[]> {
+  const ok = await supabaseUpsertMany('products', next as any)
+  if (ok) return next
   const db = await readDb()
   db.products = next
   await writeDb(db)
@@ -175,6 +199,24 @@ export async function getProductById(id: string): Promise<Product | undefined> {
 }
 
 export async function listPosts(): Promise<BlogPost[]> {
+  const fromSupabase = await supabaseSelectAll<BlogPost>('posts')
+  if (fromSupabase) {
+    return (fromSupabase || []).map((p: any) => ({
+      id: p.id || '',
+      title: p.title || '',
+      slug: p.slug || '',
+      excerpt: p.excerpt || '',
+      content: p.content || '',
+      image: p.image,
+      date: p.date || new Date().toISOString().slice(0, 10),
+      author: p.author || 'Orbucell Team',
+      tags: Array.isArray(p.tags) ? p.tags : [],
+      category: p.category,
+      featured: p.featured || false,
+      readingTime: p.readingTime,
+      seo: p.seo || { title: p.title || '', description: p.excerpt || '', keywords: [] },
+    }))
+  }
   const db = await readDb()
   // Normalize posts to ensure all required fields exist
   return (db.posts || []).map((p: any) => ({
@@ -201,6 +243,8 @@ export async function listPosts(): Promise<BlogPost[]> {
 }
 
 export async function setPosts(next: BlogPost[]): Promise<BlogPost[]> {
+  const ok = await supabaseUpsertMany('posts', next as any)
+  if (ok) return next
   const db = await readDb()
   db.posts = next
   await writeDb(db)
@@ -236,6 +280,29 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | undefined>
 }
 
 export async function listCustomers(): Promise<Customer[]> {
+  const fromSupabase = await supabaseSelectAll<Customer>('customers')
+  if (fromSupabase) {
+    return (fromSupabase || []).map((c: any) => ({
+      id: c.id || '',
+      name: c.name || '',
+      email: c.email || '',
+      status: c.status || 'Lead',
+      phone: c.phone,
+      address: c.address,
+      city: c.city,
+      state: c.state,
+      postalCode: c.postalCode,
+      country: c.country,
+      dateJoined: c.dateJoined,
+      lastOrderDate: c.lastOrderDate,
+      tags: Array.isArray(c.tags) ? c.tags : [],
+      notes: c.notes,
+      preferredProducts: Array.isArray(c.preferredProducts) ? c.preferredProducts : [],
+      orders: c.orders || 0,
+      lifetimeValue: c.lifetimeValue || 0,
+      averageOrderValue: c.averageOrderValue,
+    }))
+  }
   const db = await readDb()
   // Normalize customers to ensure all required fields exist
   return (db.customers || []).map((c: any) => ({
@@ -261,6 +328,8 @@ export async function listCustomers(): Promise<Customer[]> {
 }
 
 export async function setCustomers(next: Customer[]): Promise<Customer[]> {
+  const ok = await supabaseUpsertMany('customers', next as any)
+  if (ok) return next
   const db = await readDb()
   db.customers = next
   await writeDb(db)
@@ -268,12 +337,16 @@ export async function setCustomers(next: Customer[]): Promise<Customer[]> {
 }
 
 export async function listInventory(): Promise<InventoryItem[]> {
+  const fromSupabase = await supabaseSelectAll<InventoryItem>('inventory')
+  if (fromSupabase) return fromSupabase
   const db = await readDb()
   // Default missing collection to an empty array to avoid runtime errors
   return Array.isArray((db as any).inventory) ? (db as any).inventory : []
 }
 
 export async function setInventory(next: InventoryItem[]): Promise<InventoryItem[]> {
+  const ok = await supabaseUpsertMany('inventory', next as any)
+  if (ok) return next
   const db = await readDb()
   db.inventory = Array.isArray(next) ? next : []
   await writeDb(db)
@@ -293,12 +366,16 @@ export async function getInventoryItemById(id: string): Promise<InventoryItem | 
 }
 
 export async function listOrders(): Promise<Order[]> {
+  const fromSupabase = await supabaseSelectAll<Order>('orders')
+  if (fromSupabase) return fromSupabase
   const db = await readDb()
   // Default missing collection to an empty array to avoid runtime errors
   return Array.isArray((db as any).orders) ? (db as any).orders : []
 }
 
 export async function setOrders(next: Order[]): Promise<Order[]> {
+  const ok = await supabaseUpsertMany('orders', next as any)
+  if (ok) return next
   const db = await readDb()
   db.orders = Array.isArray(next) ? next : []
   await writeDb(db)

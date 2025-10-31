@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs'
 import path from 'path'
+import os from 'os'
 import type { Product, BlogPost, Customer, InventoryItem, Order } from './_data'
 
 export type Database = {
@@ -10,7 +11,17 @@ export type Database = {
   orders: Order[]
 }
 
-const dataPath = path.join(process.cwd(), 'data', 'content.json')
+// Use writable temp storage on Vercel, and a local file during local dev
+declare const process: {
+  env: { [key: string]: string | undefined }
+  cwd: () => string
+}
+
+const isVercel = typeof process !== 'undefined' && Boolean(process.env.VERCEL)
+const dataPath = isVercel
+  ? path.join(os.tmpdir(), 'orbucell-content.json')
+  : path.join(typeof process !== 'undefined' ? process.cwd() : '.', 'data', 'content.json')
+
 
 async function ensureFile() {
   try {
