@@ -26,6 +26,34 @@ export type Product = {
   allowBackorder: boolean
   status: 'active' | 'draft' | 'archived'
   seo: SEO
+  // New optional fields for enhanced product pages
+  rating?: number
+  reviewCount?: number
+  reviews?: Array<{
+    id: string
+    name: string
+    rating: number
+    date: string
+    text: string
+    verified?: boolean
+    country?: string
+  }>
+  ingredients?: Array<{
+    name: string
+    amount: string
+    description: string
+  }>
+  qualityClaims?: Array<{
+    title: string
+    description: string
+    icon?: string
+  }>
+  scienceDescription?: string
+  howToUse?: string[]
+  faq?: Array<{
+    question: string
+    answer: string
+  }>
 }
 
 export type BlogPost = {
@@ -128,6 +156,14 @@ export async function listProducts(): Promise<Product[]> {
       allowBackorder: p.allowBackorder || false,
       status: p.status === 'draft' || p.status === 'archived' ? p.status : 'active',
       seo: p.seo || { title: p.name || '', description: p.description || '', keywords: [] },
+      rating: p.rating,
+      reviewCount: p.reviewCount,
+      reviews: Array.isArray(p.reviews) ? p.reviews : undefined,
+      ingredients: Array.isArray(p.ingredients) ? p.ingredients : undefined,
+      qualityClaims: Array.isArray(p.qualityClaims) ? p.qualityClaims : undefined,
+      scienceDescription: p.scienceDescription,
+      howToUse: Array.isArray(p.howToUse) ? p.howToUse : undefined,
+      faq: Array.isArray(p.faq) ? p.faq : undefined,
     }))
   }
   const db = await readDb()
@@ -155,6 +191,14 @@ export async function listProducts(): Promise<Product[]> {
       ogImage: undefined,
       canonicalUrl: undefined,
     },
+    rating: (p as any).rating,
+    reviewCount: (p as any).reviewCount,
+    reviews: Array.isArray((p as any).reviews) ? (p as any).reviews : undefined,
+    ingredients: Array.isArray((p as any).ingredients) ? (p as any).ingredients : undefined,
+    qualityClaims: Array.isArray((p as any).qualityClaims) ? (p as any).qualityClaims : undefined,
+    scienceDescription: (p as any).scienceDescription,
+    howToUse: Array.isArray((p as any).howToUse) ? (p as any).howToUse : undefined,
+    faq: Array.isArray((p as any).faq) ? (p as any).faq : undefined,
   }))
 }
 
@@ -195,6 +239,14 @@ export async function getProductById(id: string): Promise<Product | undefined> {
         ogImage: undefined,
         canonicalUrl: undefined,
       },
+      rating: p.rating,
+      reviewCount: p.reviewCount,
+      reviews: Array.isArray(p.reviews) ? p.reviews : undefined,
+      ingredients: Array.isArray(p.ingredients) ? p.ingredients : undefined,
+      qualityClaims: Array.isArray(p.qualityClaims) ? p.qualityClaims : undefined,
+      scienceDescription: p.scienceDescription,
+      howToUse: Array.isArray(p.howToUse) ? p.howToUse : undefined,
+      faq: Array.isArray(p.faq) ? p.faq : undefined,
     }
   }
   
@@ -226,6 +278,14 @@ export async function getProductById(id: string): Promise<Product | undefined> {
       ogImage: undefined,
       canonicalUrl: undefined,
     },
+    rating: (product as any).rating,
+    reviewCount: (product as any).reviewCount,
+    reviews: Array.isArray((product as any).reviews) ? (product as any).reviews : undefined,
+    ingredients: Array.isArray((product as any).ingredients) ? (product as any).ingredients : undefined,
+    qualityClaims: Array.isArray((product as any).qualityClaims) ? (product as any).qualityClaims : undefined,
+    scienceDescription: (product as any).scienceDescription,
+    howToUse: Array.isArray((product as any).howToUse) ? (product as any).howToUse : undefined,
+    faq: Array.isArray((product as any).faq) ? (product as any).faq : undefined,
   }
 }
 

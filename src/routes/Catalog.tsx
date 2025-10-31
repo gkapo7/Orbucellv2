@@ -10,12 +10,22 @@ function Catalog() {
   useEffect(() => {
     let cancelled = false
     fetchProducts()
-      .then((data) => { if (!cancelled) setItems(data) })
-      .catch((err) => { if (!cancelled) { console.warn('Falling back to local catalog data', err); setItems(localProducts) } })
+      .then((data) => { 
+        if (!cancelled) {
+          // If API returns empty array, use local fallback
+          setItems(data && data.length > 0 ? data : localProducts)
+        }
+      })
+      .catch((err) => { 
+        if (!cancelled) { 
+          console.warn('Falling back to local catalog data', err)
+          setItems(localProducts) 
+        } 
+      })
     return () => { cancelled = true }
   }, [])
 
-  const list = items ?? localProducts
+  const list = items && items.length > 0 ? items : localProducts
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">

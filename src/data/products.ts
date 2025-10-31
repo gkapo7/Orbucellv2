@@ -8,6 +8,28 @@ export type ProductSEO = {
   canonicalUrl?: string
 }
 
+export type Ingredient = {
+  name: string
+  amount: string
+  description: string
+}
+
+export type Review = {
+  id: string
+  name: string
+  rating: number
+  date: string
+  text: string
+  verified?: boolean
+  country?: string
+}
+
+export type QualityClaim = {
+  title: string
+  description: string
+  icon?: string
+}
+
 export type Product = {
   id: string
   name: string
@@ -25,6 +47,15 @@ export type Product = {
   allowBackorder: boolean
   status: ProductStatus
   seo: ProductSEO
+  // New optional fields for enhanced product pages
+  rating?: number
+  reviewCount?: number
+  reviews?: Review[]
+  ingredients?: Ingredient[]
+  qualityClaims?: QualityClaim[]
+  scienceDescription?: string
+  howToUse?: string[]
+  faq?: { question: string; answer: string }[]
 }
 
 export const products: Product[] = [

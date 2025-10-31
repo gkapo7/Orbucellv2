@@ -15,15 +15,32 @@ function Home() {
   const [articles, setArticles] = useState<BlogPost[] | null>(null)
   useEffect(() => {
     let cancelled = false
-    fetchProducts().then(p => { if (!cancelled) setItems(p) }).catch(() => { if (!cancelled) setItems(localProducts) })
+    fetchProducts()
+      .then(p => { 
+        if (!cancelled) {
+          // If API returns empty array, use local fallback
+          setItems(p && p.length > 0 ? p : localProducts)
+        }
+      })
+      .catch(() => { 
+        if (!cancelled) setItems(localProducts) 
+      })
     return () => { cancelled = true }
   }, [])
   useEffect(() => {
     let cancelled = false
-    fetchPosts().then(p => { if (!cancelled) setArticles(p) }).catch(() => { if (!cancelled) setArticles(localPosts) })
+    fetchPosts()
+      .then(p => { 
+        if (!cancelled) {
+          setArticles(p && p.length > 0 ? p : localPosts)
+        }
+      })
+      .catch(() => { 
+        if (!cancelled) setArticles(localPosts) 
+      })
     return () => { cancelled = true }
   }, [])
-  const best = (items ?? localProducts).slice(0, 4)
+  const best = (items && items.length > 0 ? items : localProducts).slice(0, 4)
   const recentPosts = (articles ?? localPosts).slice(0, 3)
 
   return (
