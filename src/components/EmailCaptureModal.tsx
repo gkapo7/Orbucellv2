@@ -50,7 +50,7 @@ function EmailCaptureModal() {
             <p className="text-xs uppercase tracking-[0.2em] text-white/80">Free download</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">Get our Wellness Guide PDF</h2>
             <p className="mt-3 text-sm text-white/80">
-              Drop your email and receive our 7-page guide to building a magnesium + fiber ritual, complete with recipes, timing tips, and supplement checklists.
+              Drop your email and receive our 7-page guide to building a magnesium + fiber routine, complete with recipes, timing tips, and supplement checklists.
             </p>
             <form className="mt-5 space-y-3" onSubmit={handleSubmit}>
               <label className="sr-only" htmlFor="orbucell-email">Email address</label>

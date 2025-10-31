@@ -32,8 +32,8 @@ function Home() {
       <HeroAG />
       <BenefitsBand />
 
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="flex items-end justify-between">
+      <section className="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+        <div className="flex items-end justify-between px-1 sm:px-0">
           <h2 className="text-2xl font-semibold">Best sellers</h2>
           <Link to="/products" className="text-sm text-neutral-600 hover:text-black">View all</Link>
         </div>
@@ -55,8 +55,7 @@ function Home() {
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-neutral-500">Learn</p>
-            <h2 className="mt-1 text-2xl font-semibold">Educational articles</h2>
+            <h2 className="text-2xl font-semibold">Learn</h2>
           </div>
             <Link to="/learn" className="text-sm text-neutral-600 hover:text-black">View all</Link>
         </div>
@@ -78,36 +77,36 @@ function Home() {
         </div>
       </section>
 
-      <section className="bg-gradient-to-br from-[#f97316] via-[#fb923c] to-[#f97316] text-white">
-        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:px-8">
-          <div className="space-y-6 text-left">
-            <p className="inline-flex items-center rounded-full border border-white/40 px-3 py-1 text-xs uppercase tracking-[0.3em] text-white/80">
+      <section className="bg-gradient-to-br from-[#f97316] via-[#fb923c] to-[#f97316] py-20">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
+          <div className="rounded-[32px] bg-white/90 p-8 shadow-xl shadow-[#f97316]/20">
+            <p className="inline-flex items-center rounded-full border border-[#f97316]/20 bg-[#f97316]/10 px-3 py-1 text-xs uppercase tracking-[0.3em] text-[#9a3412]">
               Why Orbucell
             </p>
-            <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+            <h2 className="mt-4 text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl">
               We’re redefining what it means to feel good.
             </h2>
-            <p className="text-base text-white/80 sm:text-lg">
-              Our science-backed supplements target the root causes of daily struggles—sleep, stress, gut balance, and metabolic
-              health—so you can show up as your best self. Every formula is pharmacist-approved, clinically studied, and built with
+            <p className="mt-4 text-base text-neutral-600 sm:text-lg">
+              Our science-backed formulations target the root causes of everyday struggles—sleep, stress, gut balance, and metabolic
+              health—so you can show up as your best self. Every formula is pharmacist-reviewed, clinically studied, and built with
               clean, natural ingredients that deliver measurable results.
             </p>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-white/80">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2">Clinically backed</span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2">Clean ingredients</span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2">High standards</span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2">Pharmacist-approved</span>
+            <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-neutral-700">
+              <span className="inline-flex items-center gap-2 rounded-full bg-neutral-100 px-4 py-2">Clinically backed</span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-neutral-100 px-4 py-2">Clean ingredients</span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-neutral-100 px-4 py-2">High standards</span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-neutral-100 px-4 py-2">Pharmacist-approved</span>
             </div>
-            <div className="flex gap-4 pt-4">
+            <div className="mt-6 flex gap-4">
               <Link
                 to="/products"
-                className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#f97316] transition hover:bg-white/90"
+                className="rounded-full bg-[#f97316] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-[#f97316]/30 transition hover:bg-[#fb7c22]"
               >
-                Explore the stack
+                Shop now
               </Link>
               <Link
                 to="/learn"
-                className="rounded-full border border-white/40 px-5 py-3 text-sm font-semibold text-white transition hover:border-white"
+                className="rounded-full border border-[#f97316]/40 px-5 py-3 text-sm font-semibold text-[#9a3412] transition hover:border-[#9a3412] hover:text-[#7c2d12]"
               >
                 Learn more
               </Link>
@@ -120,9 +119,9 @@ function Home() {
               { title: 'High standards, real results', desc: 'Transparent COAs with measurable outcome tracking across sleep, stress, and digestion.' },
               { title: 'Pharmacist-approved', desc: 'Developed alongside clinical pharmacists to harmonize with modern routines.' },
             ].map((item) => (
-              <div key={item.title} className="rounded-3xl border border-white/15 bg-white/10 p-6 backdrop-blur">
-                <p className="text-sm uppercase tracking-[0.25em] text-white/80">{item.title}</p>
-                <p className="mt-3 text-sm text-white/80">{item.desc}</p>
+              <div key={item.title} className="rounded-3xl border border-white/40 bg-white/70 p-6 text-neutral-800 shadow-md shadow-[#f97316]/10">
+                <p className="text-sm uppercase tracking-[0.25em] text-[#9a3412]">{item.title}</p>
+                <p className="mt-3 text-sm text-neutral-700">{item.desc}</p>
               </div>
             ))}
           </div>

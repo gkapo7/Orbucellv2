@@ -7,7 +7,7 @@ import Catalog from './routes/Catalog'
 import Product from './routes/Product'
 import CartPage from './routes/Cart'
 import Checkout from './routes/Checkout'
-import Blog from './routes/Blog'
+import Learn from './routes/Blog'
 import BlogPostRoute from './routes/BlogPost'
 import Admin from './routes/Admin'
 import Login from './routes/Login'
@@ -22,7 +22,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Catalog />} />
           <Route path="/products/:id" element={<Product />} />
-          <Route path="/learn" element={<Blog />} />
+          <Route path="/learn" element={<Learn />} />
           <Route path="/learn/:slug" element={<BlogPostRoute />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<Checkout />} />

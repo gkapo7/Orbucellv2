@@ -14,14 +14,11 @@ function HeroAG() {
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-24 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
         <div className="space-y-8 text-left">
           <div className="space-y-4">
-            <p className="inline-flex items-center rounded-full border border-neutral-200 px-3 py-1 text-xs uppercase tracking-[0.35em] text-neutral-500">
-              The Orbucell ritual
-            </p>
             <h1 className="font-display text-4xl leading-tight text-neutral-900 sm:text-5xl md:text-6xl">
               We’re redefining what it means to feel good—daily.
             </h1>
             <p className="text-base text-neutral-600 sm:text-lg">
-              Our magnesium bisglycinate and psyllium fiber stack addresses the root causes of restless sleep, daily stress, and
+              Our magnesium bisglycinate and psyllium fiber formulas address the root causes of restless sleep, daily stress, and
               metabolic slowdowns so you can move, digest, and recover with ease.
             </p>
           </div>
@@ -30,7 +27,7 @@ function HeroAG() {
               to="/products"
               className="inline-flex items-center justify-center rounded-full bg-neutral-900 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-neutral-900/10 transition hover:bg-neutral-800"
             >
-              Shop the stack
+              Shop now
             </Link>
             <a
               href="#benefits"
@@ -60,13 +57,13 @@ function HeroAG() {
                 </div>
                 <img
                   src="/images/wellness-stack.svg"
-                  alt="Orbucell wellness ritual mockup"
+                  alt="Orbucell wellness collection mockup"
                   className="absolute inset-0 h-full w-full object-cover object-center"
                 />
               </div>
             </div>
             <div className="border-t border-neutral-200 bg-white/90 px-6 py-4 text-sm text-neutral-600">
-              Night + morning ritual • Magnesium + fiber synergy • Results in 2–4 weeks
+              Day & night support • Magnesium + fiber synergy • Results in 2–4 weeks
             </div>
           </div>
         </div>

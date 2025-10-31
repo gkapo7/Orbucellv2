@@ -15,59 +15,59 @@ function Footer() {
 
   return (
     <footer className="border-t border-neutral-200/60 bg-white">
-      <div className="bg-gradient-to-br from-[#0f172a] via-[#1f2937] to-[#312e81]">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 text-neutral-100 sm:px-6 lg:grid-cols-[1fr_1fr] lg:px-8">
-          <div>
-            <p className="inline-flex items-center rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-[0.3em] text-neutral-400">
+      <div className="bg-gradient-to-br from-[#f97316] via-[#fb923c] to-[#f97316]">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_1fr] lg:px-8">
+          <div className="rounded-[28px] bg-white/90 p-6 shadow-xl shadow-[#f97316]/20">
+            <p className="inline-flex items-center rounded-full border border-[#f97316]/20 bg-[#f97316]/10 px-3 py-1 text-xs uppercase tracking-[0.3em] text-[#9a3412]">
               Unlock your wellness guide
             </p>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Get the Orbucell daily ritual playbook.</h2>
-            <p className="mt-4 text-sm text-neutral-300">
-              Download our pharmacist-crafted guide featuring magnesium + fiber protocols, morning and evening rituals, and
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">Get the Orbucell daily essentials guide.</h2>
+            <p className="mt-4 text-sm text-neutral-600">
+              Download our pharmacist-crafted guide featuring magnesium + fiber protocols, morning and evening routines, and
               metabolic-friendly recipes.
             </p>
             {submitted ? (
-              <p className="mt-6 rounded-3xl bg-white/10 px-4 py-3 text-sm text-emerald-300">
+              <p className="mt-6 rounded-3xl bg-[#f97316]/10 px-4 py-3 text-sm text-[#9a3412]">
                 Guide unlocked! Check your inbox and <a href="/wellness-guide.pdf" download className="underline">download the PDF</a> anytime.
               </p>
             ) : null}
           </div>
-          <form onSubmit={handleSubmit} className="grid gap-4 rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur">
-            <label className="text-xs uppercase tracking-[0.3em] text-neutral-300">
+          <form onSubmit={handleSubmit} className="grid gap-4 rounded-[32px] border border-[#f97316]/20 bg-white/85 p-6 shadow-lg shadow-[#f97316]/10">
+            <label className="text-xs uppercase tracking-[0.3em] text-[#9a3412]">
               Name
               <input
                 type="text"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="Full name"
-                className="mt-2 h-11 w-full rounded-2xl border border-white/10 bg-white/10 px-4 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/40"
+                className="mt-2 h-11 w-full rounded-2xl border border-[#f97316]/20 bg-white px-4 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#fb923c]"
                 required
               />
             </label>
-            <label className="text-xs uppercase tracking-[0.3em] text-neutral-300">
+            <label className="text-xs uppercase tracking-[0.3em] text-[#9a3412]">
               Email
               <input
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="you@email.com"
-                className="mt-2 h-11 w-full rounded-2xl border border-white/10 bg-white/10 px-4 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/40"
+                className="mt-2 h-11 w-full rounded-2xl border border-[#f97316]/20 bg-white px-4 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#fb923c]"
                 required
               />
             </label>
-            <label className="text-xs uppercase tracking-[0.3em] text-neutral-300">
+            <label className="text-xs uppercase tracking-[0.3em] text-[#9a3412]">
               Phone (optional)
               <input
                 type="tel"
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
                 placeholder="+1 (555) 555-1234"
-                className="mt-2 h-11 w-full rounded-2xl border border-white/10 bg-white/10 px-4 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/40"
+                className="mt-2 h-11 w-full rounded-2xl border border-[#f97316]/20 bg-white px-4 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#fb923c]"
               />
             </label>
             <button
               type="submit"
-              className="mt-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-200"
+              className="mt-2 rounded-full bg-[#f97316] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#fb7c22]"
             >
               Email me the guide
             </button>
@@ -117,7 +117,7 @@ function Footer() {
       </div>
 
       <div className="border-t border-neutral-200 py-4 text-center text-xs text-neutral-500">
-        © {new Date().getFullYear()} Orbucell • Pharmacist-backed wellness rituals • Designed in California
+        © {new Date().getFullYear()} Orbucell • Pharmacist-backed daily wellness • Designed in California
       </div>
     </footer>
   )

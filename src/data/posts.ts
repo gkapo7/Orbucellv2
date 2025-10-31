@@ -18,7 +18,7 @@ export const posts: BlogPost[] = [
     excerpt:
       'Learn how highly absorbable magnesium bisglycinate calms your nervous system, supports deep sleep, and eases muscle tension.',
     content:
-      'Magnesium bisglycinate pairs elemental magnesium with the amino acid glycine, creating a chelated form that the gut can absorb efficiently without the laxative effect common in oxide or citrate. Research shows that adequate magnesium intake helps regulate the parasympathetic nervous system, which in turn improves sleep latency and reduces restless legs. For athletes, magnesium accelerates muscle relaxation after intense training and keeps energy production humming by acting as a cofactor in ATP synthesis. \n\nTo get the most from magnesium bisglycinate, take it in the evening with a light snack that includes protein—the glycine may also support deeper slow-wave sleep. Consistency matters; stacking it with sun exposure early in the day, a high-quality electrolyte routine, and evening blue-light hygiene creates a holistic sleep hygiene protocol that searchers for “magnesium for sleep” and “magnesium for anxiety” are actively seeking. Always check labels for third-party testing and choose doses between 200-400 mg of elemental magnesium based on your healthcare provider’s guidance.',
+      'Magnesium bisglycinate pairs elemental magnesium with the amino acid glycine, creating a chelated form that the gut can absorb efficiently without the laxative effect common in oxide or citrate. Research shows that adequate magnesium intake helps regulate the parasympathetic nervous system, which in turn improves sleep latency and reduces restless legs. For athletes, magnesium accelerates muscle relaxation after intense training and keeps energy production humming by acting as a cofactor in ATP synthesis. \n\nTo get the most from magnesium bisglycinate, take it in the evening with a light snack that includes protein—the glycine may also support deeper slow-wave sleep. Consistency matters; complementing it with sun exposure early in the day, a high-quality electrolyte routine, and evening blue-light hygiene creates a holistic approach that searchers for “magnesium for sleep” and “magnesium for anxiety” are actively seeking. Always check labels for third-party testing and choose doses between 200-400 mg of elemental magnesium based on your healthcare provider’s guidance.',
     image: '/images/magnesium.svg',
     date: '2025-01-12',
     author: 'Orbucell Team',
@@ -42,13 +42,12 @@ export const posts: BlogPost[] = [
     title: 'Morning Wellness Routine: Pair Magnesium and Fiber for All-Day Energy',
     slug: 'magnesium-and-fiber-routine',
     excerpt:
-      'Build a simple morning stack that stabilizes energy, digestion, and mood by combining magnesium bisglycinate with psyllium fiber.',
+      'Build a simple morning practice that stabilizes energy, digestion, and mood by combining magnesium bisglycinate with psyllium fiber.',
     content:
-      'The most searched morning rituals—think “wellness morning routine” and “healthy gut routine”—share the same pillars: mineral balance, digestive support, and mindful movement. Start with a tall glass of mineralized water, adding a scoop of psyllium fiber to support gentle detox and kick-start peristalsis. Wait 20 minutes, then enjoy a protein-forward breakfast to anchor blood sugar. \n\nAfter breakfast, take magnesium bisglycinate alongside vitamin D or omega-3s. This timing supports calm focus without the drowsiness that can come from taking magnesium mid-day. Layer in five minutes of breathing or sunlight to reinforce circadian rhythm. Customers who follow this stack report fewer energy crashes, more regular digestion, and better recovery from training sessions.',
+      'The most searched morning routines—think “wellness morning routine” and “healthy gut routine”—share the same pillars: mineral balance, digestive support, and mindful movement. Start with a tall glass of mineralized water, adding a scoop of psyllium fiber to support gentle detox and kick-start peristalsis. Wait 20 minutes, then enjoy a protein-forward breakfast to anchor blood sugar. \n\nAfter breakfast, take magnesium bisglycinate alongside vitamin D or omega-3s. This timing supports calm focus without the drowsiness that can come from taking magnesium mid-day. Layer in five minutes of breathing or sunlight to reinforce circadian rhythm. Customers who follow this plan report fewer energy crashes, more regular digestion, and better recovery from training sessions.',
     image: '/images/wellness-stack.svg',
     date: '2025-02-02',
     author: 'Orbucell Team',
     tags: ['morning routine', 'energy', 'longevity'],
   },
 ]
-

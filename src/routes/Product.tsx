@@ -52,7 +52,7 @@ const productGuides: Record<string, ProductGuide> = {
       { title: 'Prebiotic inulin', detail: 'Supports mineral uptake while feeding beneficial gut bacteria.' },
     ],
     pairings: [
-      { title: 'Nightly ritual', detail: 'Layer with blue-light blocking and a 5-minute breathing practice to reinforce circadian rhythm.' },
+      { title: 'Nightly wind-down', detail: 'Layer with blue-light blocking and a 5-minute breathing practice to reinforce circadian rhythm.' },
       { title: 'Morning sunlight', detail: 'Early light exposure syncs cortisol-awakening response, improving the downstream impact of evening magnesium.' },
     ],
     faq: [
@@ -88,7 +88,7 @@ const productGuides: Record<string, ProductGuide> = {
       { title: 'Trace electrolytes', detail: 'Helps the fiber disperse evenly while supporting hydration.' },
     ],
     pairings: [
-      { title: 'Metabolic stack', detail: 'Combine with a protein-rich breakfast to extend satiety through the afternoon.' },
+      { title: 'Metabolic mornings', detail: 'Combine with a protein-rich breakfast to extend satiety through the afternoon.' },
       { title: 'Gut health protocol', detail: 'Alternate psyllium and fermented foods throughout the day to feed diverse microbiota.' },
     ],
     faq: [
@@ -189,7 +189,7 @@ function Product() {
                     <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
                   </div>
                   <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs uppercase tracking-[0.3em] text-neutral-600">
-                    Daily ritual
+                    Daily essentials
                   </div>
                 </div>
                 <div className="space-y-4 p-6">
@@ -267,7 +267,7 @@ function Product() {
               </section>
 
               <section className="rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm">
-                <h2 className="text-2xl font-semibold text-neutral-900">Ritual pairings</h2>
+                <h2 className="text-2xl font-semibold text-neutral-900">Smart pairings</h2>
                 <div className="mt-8 grid gap-6 md:grid-cols-2">
                   {guide.pairings.map((pairing) => (
                     <div key={pairing.title} className="rounded-3xl border border-neutral-100 bg-neutral-50 p-6 text-left">
