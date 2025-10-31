@@ -1,8 +1,7 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { listInventory, setInventory, getInventoryItemByProductId, type InventoryItem } from './_data'
 import { withCors, badRequest } from './_utils'
 
-export default withCors(async function handler(req: VercelRequest, res: VercelResponse) {
+export default withCors(async function handler(req: any, res: any) {
   try {
     if (req.method === 'GET') {
       const { productId } = req.query

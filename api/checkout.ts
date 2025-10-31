@@ -1,10 +1,9 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { withCors, badRequest } from './_utils'
 import { getProductById } from './_data'
 
 type CheckoutItem = { id: string; qty: number }
 
-export default withCors(async function handler(req: VercelRequest, res: VercelResponse) {
+export default withCors(async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
   const body = req.body || {}
   const items: CheckoutItem[] = Array.isArray(body.items) ? body.items : []
