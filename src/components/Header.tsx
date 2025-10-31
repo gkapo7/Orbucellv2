@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
-import { products } from '../data/products'
+import { fetchProducts } from '../lib/api'
+import type { Product } from '../data/products'
 
 const ADMIN_EMAIL = 'admin@orbucell.com'
 
@@ -15,7 +16,16 @@ function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [productsOpen, setProductsOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [products, setProducts] = useState<Product[]>([])
   const hoverTimeout = useRef<number | null>(null)
+
+  useEffect(() => {
+    fetchProducts()
+      .then((data) => setProducts(data.filter((p) => p.status === 'active')))
+      .catch(() => {
+        // Silently fail - products menu will just be empty
+      })
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {

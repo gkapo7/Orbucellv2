@@ -86,6 +86,7 @@ const initialPanelState = <T,>(seed: T[]): PanelState<T> => ({
 
 function ProductsPanel() {
   const [state, setState] = useState<PanelState<Product>>(() => initialPanelState(fallbackProducts))
+  const [selectedProduct, setSelectedProduct] = useState<number | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -212,230 +213,295 @@ function ProductsPanel() {
       )}
       {state.loading ? (
         <p className="text-sm text-neutral-500">Loading products…</p>
+      ) : state.draft.length === 0 ? (
+        <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-8 text-center">
+          <p className="text-sm text-neutral-600">No products yet. Click "Add product" to create your first one.</p>
+        </div>
       ) : (
-        <div className="grid gap-6">
+        <div className="space-y-4">
           {state.draft.map((product, index) => (
-            <div key={product.id} className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm">
-              <div className="flex flex-col gap-4 md:flex-row md:justify-between md:gap-6">
-                <div className="grid flex-1 gap-4 sm:grid-cols-2">
-                  <Field label="Name">
-                    <input
-                      value={product.name}
-                      onChange={(event) => handleField(index, 'name')(event.target.value)}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Slug">
-                    <input
-                      value={product.slug}
-                      onChange={(event) => handleField(index, 'slug')(event.target.value)}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="SKU">
-                    <input
-                      value={product.sku ?? ''}
-                      onChange={(event) => handleField(index, 'sku')(event.target.value)}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Status">
-                    <select
-                      value={product.status ?? 'active'}
-                      onChange={(event) => handleField(index, 'status')(event.target.value as Product['status'])}
-                      className="admin-input"
+            <div key={product.id} className="rounded-2xl border border-neutral-200 bg-white shadow-sm">
+              {selectedProduct === index ? (
+                <div className="p-6">
+                  <div className="flex flex-col gap-4 md:flex-row md:justify-between md:gap-6">
+                    <div className="grid flex-1 gap-4 sm:grid-cols-2">
+                      <Field label="Name">
+                        <input
+                          value={product.name}
+                          onChange={(event) => handleField(index, 'name')(event.target.value)}
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="Slug">
+                        <input
+                          value={product.slug}
+                          onChange={(event) => handleField(index, 'slug')(event.target.value)}
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="SKU">
+                        <input
+                          value={product.sku ?? ''}
+                          onChange={(event) => handleField(index, 'sku')(event.target.value)}
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="Status">
+                        <select
+                          value={product.status ?? 'active'}
+                          onChange={(event) => handleField(index, 'status')(event.target.value as Product['status'])}
+                          className="admin-input"
+                        >
+                          <option value="active">Active</option>
+                          <option value="draft">Draft</option>
+                          <option value="archived">Archived</option>
+                        </select>
+                      </Field>
+                      <Field label="Category">
+                        <select
+                          value={product.category}
+                          onChange={(event) => handleField(index, 'category')(event.target.value as Product['category'])}
+                          className="admin-input"
+                        >
+                          <option value="Mineral">Mineral</option>
+                          <option value="Fiber">Fiber</option>
+                        </select>
+                      </Field>
+                      <Field label="Price">
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={product.price}
+                          onChange={(event) => handleField(index, 'price')(Number(event.target.value))}
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="Stock">
+                        <input
+                          type="number"
+                          min="0"
+                          value={product.stock ?? 0}
+                          onChange={(event) => handleField(index, 'stock')(Number(event.target.value))}
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="Reorder Point">
+                        <input
+                          type="number"
+                          min="0"
+                          value={product.reorderPoint ?? 0}
+                          onChange={(event) => handleField(index, 'reorderPoint')(Number(event.target.value))}
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="Allow Backorder">
+                        <input
+                          type="checkbox"
+                          checked={product.allowBackorder ?? false}
+                          onChange={(event) => handleField(index, 'allowBackorder')(event.target.checked)}
+                          className="h-4 w-4"
+                        />
+                      </Field>
+                      <Field label="Image">
+                        <input
+                          value={product.image}
+                          onChange={(event) => handleField(index, 'image')(event.target.value)}
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="Gallery (comma-separated URLs)">
+                        <input
+                          value={(product.gallery ?? []).join(', ')}
+                          onChange={(event) =>
+                            handleField(index, 'gallery')(
+                              event.target.value
+                                .split(',')
+                                .map((item) => item.trim())
+                                .filter(Boolean)
+                            )
+                          }
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="Highlights (comma-separated)">
+                        <input
+                          value={(product.highlights ?? []).join(', ')}
+                          onChange={(event) =>
+                            handleField(index, 'highlights')(
+                              event.target.value
+                                .split(',')
+                                .map((item) => item.trim())
+                                .filter(Boolean)
+                            )
+                          }
+                          className="admin-input"
+                        />
+                      </Field>
+                    </div>
+                    <button
+                      onClick={() => removeProduct(index)}
+                      className="self-start rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
                     >
-                      <option value="active">Active</option>
-                      <option value="draft">Draft</option>
-                      <option value="archived">Archived</option>
-                    </select>
+                      Remove
+                    </button>
+                  </div>
+                  <Field label="Description" stacked>
+                    <textarea
+                      value={product.description}
+                      onChange={(event) => handleField(index, 'description')(event.target.value)}
+                      className="admin-textarea"
+                    />
                   </Field>
-                  <Field label="Category">
-                    <select
-                      value={product.category}
-                      onChange={(event) => handleField(index, 'category')(event.target.value as Product['category'])}
-                      className="admin-input"
+                  <Field label="Long Description" stacked>
+                    <textarea
+                      value={product.longDescription ?? ''}
+                      onChange={(event) => handleField(index, 'longDescription')(event.target.value)}
+                      className="admin-textarea min-h-[120px]"
+                    />
+                  </Field>
+                  <div className="mt-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+                    <h3 className="mb-4 text-sm font-semibold text-neutral-700">SEO Settings</h3>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <Field label="SEO Title">
+                        <input
+                          value={product.seo?.title ?? ''}
+                          onChange={(event) =>
+                            handleField(index, 'seo')({
+                              title: event.target.value,
+                              description: product.seo?.description ?? '',
+                              keywords: product.seo?.keywords ?? [],
+                              ogImage: product.seo?.ogImage,
+                              canonicalUrl: product.seo?.canonicalUrl,
+                            })
+                          }
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="OG Image URL">
+                        <input
+                          value={product.seo?.ogImage ?? ''}
+                          onChange={(event) =>
+                            handleField(index, 'seo')({
+                              title: product.seo?.title ?? '',
+                              description: product.seo?.description ?? '',
+                              keywords: product.seo?.keywords ?? [],
+                              ogImage: event.target.value || undefined,
+                              canonicalUrl: product.seo?.canonicalUrl,
+                            })
+                          }
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="Canonical URL">
+                        <input
+                          value={product.seo?.canonicalUrl ?? ''}
+                          onChange={(event) =>
+                            handleField(index, 'seo')({
+                              title: product.seo?.title ?? '',
+                              description: product.seo?.description ?? '',
+                              keywords: product.seo?.keywords ?? [],
+                              ogImage: product.seo?.ogImage,
+                              canonicalUrl: event.target.value || undefined,
+                            })
+                          }
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="Keywords (comma-separated)">
+                        <input
+                          value={(product.seo?.keywords ?? []).join(', ')}
+                          onChange={(event) =>
+                            handleField(index, 'seo')({
+                              title: product.seo?.title ?? '',
+                              description: product.seo?.description ?? '',
+                              keywords: event.target.value
+                                .split(',')
+                                .map((k) => k.trim())
+                                .filter(Boolean),
+                              ogImage: product.seo?.ogImage,
+                              canonicalUrl: product.seo?.canonicalUrl,
+                            })
+                          }
+                          className="admin-input"
+                        />
+                      </Field>
+                    </div>
+                    <Field label="SEO Description" stacked>
+                      <textarea
+                        value={product.seo?.description ?? ''}
+                        onChange={(event) =>
+                          handleField(index, 'seo')({
+                            title: product.seo?.title ?? '',
+                            description: event.target.value,
+                            keywords: product.seo?.keywords ?? [],
+                            ogImage: product.seo?.ogImage,
+                            canonicalUrl: product.seo?.canonicalUrl,
+                          })
+                        }
+                        className="admin-textarea"
+                      />
+                    </Field>
+                  </div>
+                  <div className="mt-4 flex gap-2">
+                    <button
+                      onClick={async () => {
+                        try {
+                          await save()
+                          setSelectedProduct(null)
+                        } catch (error) {
+                          // Error already shown in state.error
+                        }
+                      }}
+                      className="rounded-full bg-[#f97316] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#ea580c]"
                     >
-                      <option value="Mineral">Mineral</option>
-                      <option value="Fiber">Fiber</option>
-                    </select>
-                  </Field>
-                  <Field label="Price">
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={product.price}
-                      onChange={(event) => handleField(index, 'price')(Number(event.target.value))}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Stock">
-                    <input
-                      type="number"
-                      min="0"
-                      value={product.stock ?? 0}
-                      onChange={(event) => handleField(index, 'stock')(Number(event.target.value))}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Reorder Point">
-                    <input
-                      type="number"
-                      min="0"
-                      value={product.reorderPoint ?? 0}
-                      onChange={(event) => handleField(index, 'reorderPoint')(Number(event.target.value))}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Allow Backorder">
-                    <input
-                      type="checkbox"
-                      checked={product.allowBackorder ?? false}
-                      onChange={(event) => handleField(index, 'allowBackorder')(event.target.checked)}
-                      className="h-4 w-4"
-                    />
-                  </Field>
-                  <Field label="Image">
-                    <input
-                      value={product.image}
-                      onChange={(event) => handleField(index, 'image')(event.target.value)}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Gallery (comma-separated URLs)">
-                    <input
-                      value={(product.gallery ?? []).join(', ')}
-                      onChange={(event) =>
-                        handleField(index, 'gallery')(
-                          event.target.value
-                            .split(',')
-                            .map((item) => item.trim())
-                            .filter(Boolean)
-                        )
-                      }
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Highlights (comma-separated)">
-                    <input
-                      value={(product.highlights ?? []).join(', ')}
-                      onChange={(event) =>
-                        handleField(index, 'highlights')(
-                          event.target.value
-                            .split(',')
-                            .map((item) => item.trim())
-                            .filter(Boolean)
-                        )
-                      }
-                      className="admin-input"
-                    />
-                  </Field>
+                      Save & Close
+                    </button>
+                    <button
+                      onClick={() => {
+                        window.open(`/products/${product.id}`, '_blank')
+                      }}
+                      className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+                    >
+                      Preview
+                    </button>
+                  </div>
                 </div>
-                <button
-                  onClick={() => removeProduct(index)}
-                  className="self-start rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
-                >
-                  Remove
-                </button>
-              </div>
-              <Field label="Description" stacked>
-                <textarea
-                  value={product.description}
-                  onChange={(event) => handleField(index, 'description')(event.target.value)}
-                  className="admin-textarea"
-                />
-              </Field>
-              <Field label="Long Description" stacked>
-                <textarea
-                  value={product.longDescription ?? ''}
-                  onChange={(event) => handleField(index, 'longDescription')(event.target.value)}
-                  className="admin-textarea min-h-[120px]"
-                />
-              </Field>
-              <div className="mt-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
-                <h3 className="mb-4 text-sm font-semibold text-neutral-700">SEO Settings</h3>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="SEO Title">
-                    <input
-                      value={product.seo?.title ?? ''}
-                      onChange={(event) =>
-                        handleField(index, 'seo')({
-                          title: event.target.value,
-                          description: product.seo?.description ?? '',
-                          keywords: product.seo?.keywords ?? [],
-                          ogImage: product.seo?.ogImage,
-                          canonicalUrl: product.seo?.canonicalUrl,
-                        })
-                      }
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="OG Image URL">
-                    <input
-                      value={product.seo?.ogImage ?? ''}
-                      onChange={(event) =>
-                        handleField(index, 'seo')({
-                          title: product.seo?.title ?? '',
-                          description: product.seo?.description ?? '',
-                          keywords: product.seo?.keywords ?? [],
-                          ogImage: event.target.value || undefined,
-                          canonicalUrl: product.seo?.canonicalUrl,
-                        })
-                      }
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Canonical URL">
-                    <input
-                      value={product.seo?.canonicalUrl ?? ''}
-                      onChange={(event) =>
-                        handleField(index, 'seo')({
-                          title: product.seo?.title ?? '',
-                          description: product.seo?.description ?? '',
-                          keywords: product.seo?.keywords ?? [],
-                          ogImage: product.seo?.ogImage,
-                          canonicalUrl: event.target.value || undefined,
-                        })
-                      }
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Keywords (comma-separated)">
-                    <input
-                      value={(product.seo?.keywords ?? []).join(', ')}
-                      onChange={(event) =>
-                        handleField(index, 'seo')({
-                          title: product.seo?.title ?? '',
-                          description: product.seo?.description ?? '',
-                          keywords: event.target.value
-                            .split(',')
-                            .map((k) => k.trim())
-                            .filter(Boolean),
-                          ogImage: product.seo?.ogImage,
-                          canonicalUrl: product.seo?.canonicalUrl,
-                        })
-                      }
-                      className="admin-input"
-                    />
-                  </Field>
+              ) : (
+                <div className="flex items-center justify-between p-4">
+                  <div className="flex items-center gap-4">
+                    {product.image && (
+                      <img src={product.image} alt={product.name} className="h-16 w-16 rounded-xl object-cover" />
+                    )}
+                    <div>
+                      <h3 className="font-medium text-neutral-900">{product.name}</h3>
+                      <p className="text-sm text-neutral-600">
+                        ${product.price.toFixed(2)} • {product.sku || 'No SKU'} • {product.status || 'active'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setSelectedProduct(index)}
+                      className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => window.open(`/products/${product.id}`, '_blank')}
+                      className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+                    >
+                      Preview
+                    </button>
+                    <button
+                      onClick={() => removeProduct(index)}
+                      className="rounded-full border border-red-300 px-4 py-2 text-sm text-red-700 hover:border-red-400"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
-                <Field label="SEO Description" stacked>
-                  <textarea
-                    value={product.seo?.description ?? ''}
-                    onChange={(event) =>
-                      handleField(index, 'seo')({
-                        title: product.seo?.title ?? '',
-                        description: event.target.value,
-                        keywords: product.seo?.keywords ?? [],
-                        ogImage: product.seo?.ogImage,
-                        canonicalUrl: product.seo?.canonicalUrl,
-                      })
-                    }
-                    className="admin-textarea"
-                  />
-                </Field>
-              </div>
+              )}
             </div>
           ))}
         </div>

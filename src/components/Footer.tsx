@@ -1,11 +1,21 @@
-import { useState, type FormEvent } from 'react'
-import { products } from '../data/products'
+import { useState, useEffect, type FormEvent } from 'react'
+import { fetchProducts } from '../lib/api'
+import type { Product } from '../data/products'
 
 function Footer() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [products, setProducts] = useState<Product[]>([])
+
+  useEffect(() => {
+    fetchProducts()
+      .then((data) => setProducts(data.filter((p) => p.status === 'active')))
+      .catch(() => {
+        // Silently fail - footer products will just be empty
+      })
+  }, [])
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
