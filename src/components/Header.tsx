@@ -41,7 +41,7 @@ function Header() {
 
   const handleProductsLeave = () => {
     if (hoverTimeout.current) window.clearTimeout(hoverTimeout.current)
-    hoverTimeout.current = window.setTimeout(() => setProductsOpen(false), 150)
+    hoverTimeout.current = window.setTimeout(() => setProductsOpen(false), 320)
   }
 
   const goToLogin = () => {
@@ -63,7 +63,7 @@ function Header() {
           <span className="text-sm font-semibold uppercase tracking-[0.3em] text-neutral-900">Orbucell</span>
         </Link>
 
-        <nav className="ml-2 hidden items-center gap-1 text-sm font-medium lg:flex">
+        <nav className="ml-8 hidden items-center gap-1 text-sm font-medium lg:flex">
           <div
             className="relative"
             onMouseEnter={handleProductsEnter}
@@ -73,15 +73,17 @@ function Header() {
               to="/products"
               className={({ isActive }) =>
                 [
-                  'inline-flex items-center gap-1 rounded-full px-4 py-2 transition-colors',
-                  isActive ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900',
+                  'inline-flex items-center gap-1 rounded-full px-4 py-2 transition-colors hover:bg-neutral-200/70 hover:text-neutral-900',
+                  isActive ? 'bg-neutral-900 text-white' : 'text-neutral-600',
                 ].join(' ')
               }
+              onFocus={handleProductsEnter}
             >
               Products
             </NavLink>
             {productsOpen && (
-              <div className="absolute left-0 top-full z-40 mt-2 w-60 rounded-3xl border border-neutral-200 bg-white/95 p-4 shadow-xl backdrop-blur"
+              <div
+                className="absolute left-0 top-full z-40 mt-1 w-60 rounded-3xl border border-neutral-200 bg-white/95 p-4 shadow-xl backdrop-blur"
                 onMouseEnter={handleProductsEnter}
                 onMouseLeave={handleProductsLeave}
               >
@@ -90,7 +92,7 @@ function Header() {
                     <li key={product.id}>
                       <Link
                         to={`/products/${product.id}`}
-                        className="block rounded-2xl px-3 py-2 hover:bg-neutral-100"
+                        className="block rounded-2xl px-3 py-2 transition hover:bg-neutral-100"
                       >
                         {product.name}
                       </Link>
@@ -104,8 +106,8 @@ function Header() {
             to="/learn"
             className={({ isActive }) =>
               [
-                'inline-flex items-center gap-1 rounded-full px-4 py-2 transition-colors',
-                isActive ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900',
+                'inline-flex items-center gap-1 rounded-full px-4 py-2 transition-colors hover:bg-neutral-200/70 hover:text-neutral-900',
+                isActive ? 'bg-neutral-900 text-white' : 'text-neutral-600',
               ].join(' ')
             }
           >
@@ -124,7 +126,7 @@ function Header() {
               </Link>
               <button
                 onClick={logout}
-                className="hidden items-center rounded-full px-4 py-2 text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 lg:inline-flex"
+                className="hidden items-center rounded-full px-4 py-2 text-neutral-600 transition hover:bg-neutral-200/70 hover:text-neutral-900 lg:inline-flex"
               >
                 Log out
               </button>
@@ -132,21 +134,21 @@ function Header() {
           ) : (
             <button
               onClick={goToLogin}
-              className="hidden items-center rounded-full px-4 py-2 text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 lg:inline-flex"
+              className="hidden items-center rounded-full px-4 py-2 text-neutral-600 transition hover:bg-neutral-200/70 hover:text-neutral-900 lg:inline-flex"
             >
               Log in
             </button>
           )}
           <Link
             to="/cart"
-            className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900"
+            className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-neutral-600 transition hover:bg-neutral-200/70 hover:text-neutral-900"
           >
             <span aria-hidden>🛒</span>
             Cart{count > 0 && <span className="ml-1 rounded-full bg-neutral-900 px-2 py-0.5 text-white">{count}</span>}
           </Link>
           <button
             onClick={() => setMobileOpen((prev) => !prev)}
-            className="inline-flex items-center rounded-full px-3 py-2 text-neutral-700 transition hover:bg-neutral-100 lg:hidden"
+            className="inline-flex items-center rounded-full px-3 py-2 text-neutral-700 transition hover:bg-neutral-200/70 lg:hidden"
             aria-label="Toggle navigation"
           >
             {mobileOpen ? 'Close' : 'Menu'}
@@ -160,23 +162,19 @@ function Header() {
             <Link to="/products" onClick={() => setMobileOpen(false)} className="block rounded-2xl px-3 py-2 hover:bg-neutral-100">
               Products
             </Link>
-            <div className="rounded-2xl border border-neutral-200">
-              <p className="px-3 pt-3 text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">All products</p>
-              <ul className="divide-y divide-neutral-100">
-                {products.map((product) => (
-                  <li key={product.id}>
-                    <Link
-                      to={`/products/${product.id}`}
-                      onClick={() => setMobileOpen(false)}
-                      className="flex justify-between px-3 py-2 hover:bg-neutral-50"
-                    >
-                      <span>{product.name}</span>
-                      <span className="text-xs text-neutral-500">${product.price.toFixed(0)}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ul className="rounded-2xl border border-neutral-200">
+              {products.map((product) => (
+                <li key={product.id} className="border-b border-neutral-100 last:border-none">
+                  <Link
+                    to={`/products/${product.id}`}
+                    onClick={() => setMobileOpen(false)}
+                    className="block px-3 py-2 hover:bg-neutral-50"
+                  >
+                    {product.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
             <Link to="/learn" onClick={() => setMobileOpen(false)} className="block rounded-2xl px-3 py-2 hover:bg-neutral-100">
               Learn
             </Link>

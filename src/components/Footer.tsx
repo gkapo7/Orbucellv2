@@ -15,10 +15,10 @@ function Footer() {
 
   return (
     <footer className="border-t border-neutral-200/60 bg-white">
-      <div className="bg-gradient-to-br from-[#f97316] via-[#fb923c] to-[#f97316]">
+      <div className="bg-gradient-to-br from-[#ee6b4d] via-[#f59f82] to-[#ee6b4d]">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_1fr] lg:px-8">
-          <div className="rounded-[28px] bg-white/90 p-6 shadow-xl shadow-[#f97316]/20">
-            <p className="inline-flex items-center rounded-full border border-[#f97316]/20 bg-[#f97316]/10 px-3 py-1 text-xs uppercase tracking-[0.3em] text-[#9a3412]">
+          <div className="rounded-[28px] bg-white/92 p-6 shadow-xl shadow-[#ee6b4d]/20">
+            <p className="inline-flex items-center rounded-full border border-[#ee6b4d]/20 bg-[#ee6b4d]/10 px-3 py-1 text-xs uppercase tracking-[0.3em] text-[#9a3412]">
               Unlock your wellness guide
             </p>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">Get the Orbucell daily essentials guide.</h2>
@@ -27,12 +27,12 @@ function Footer() {
               metabolic-friendly recipes.
             </p>
             {submitted ? (
-              <p className="mt-6 rounded-3xl bg-[#f97316]/10 px-4 py-3 text-sm text-[#9a3412]">
+              <p className="mt-6 rounded-3xl bg-[#ee6b4d]/10 px-4 py-3 text-sm text-[#9a3412]">
                 Guide unlocked! Check your inbox and <a href="/wellness-guide.pdf" download className="underline">download the PDF</a> anytime.
               </p>
             ) : null}
           </div>
-          <form onSubmit={handleSubmit} className="grid gap-4 rounded-[32px] border border-[#f97316]/20 bg-white/85 p-6 shadow-lg shadow-[#f97316]/10">
+          <form onSubmit={handleSubmit} className="grid gap-4 rounded-[32px] border border-[#ee6b4d]/20 bg-white/88 p-6 shadow-lg shadow-[#ee6b4d]/15">
             <label className="text-xs uppercase tracking-[0.3em] text-[#9a3412]">
               Name
               <input
@@ -40,7 +40,7 @@ function Footer() {
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="Full name"
-                className="mt-2 h-11 w-full rounded-2xl border border-[#f97316]/20 bg-white px-4 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#fb923c]"
+                className="mt-2 h-11 w-full rounded-2xl border border-[#ee6b4d]/25 bg-white px-4 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-[#ee6b4d] focus:outline-none focus:ring-2 focus:ring-[#f59f82]"
                 required
               />
             </label>
@@ -51,7 +51,7 @@ function Footer() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="you@email.com"
-                className="mt-2 h-11 w-full rounded-2xl border border-[#f97316]/20 bg-white px-4 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#fb923c]"
+                className="mt-2 h-11 w-full rounded-2xl border border-[#ee6b4d]/25 bg-white px-4 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-[#ee6b4d] focus:outline-none focus:ring-2 focus:ring-[#f59f82]"
                 required
               />
             </label>
@@ -62,12 +62,12 @@ function Footer() {
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
                 placeholder="+1 (555) 555-1234"
-                className="mt-2 h-11 w-full rounded-2xl border border-[#f97316]/20 bg-white px-4 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#fb923c]"
+                className="mt-2 h-11 w-full rounded-2xl border border-[#ee6b4d]/25 bg-white px-4 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-[#ee6b4d] focus:outline-none focus:ring-2 focus:ring-[#f59f82]"
               />
             </label>
             <button
               type="submit"
-              className="mt-2 rounded-full bg-[#f97316] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#fb7c22]"
+              className="mt-2 rounded-full bg-[#ee6b4d] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#db5a3d]"
             >
               Email me the guide
             </button>
@@ -82,7 +82,7 @@ function Footer() {
             <span className="text-sm font-semibold uppercase tracking-[0.3em] text-neutral-900">Orbucell</span>
           </div>
           <p className="text-sm text-neutral-600">
-            Rituals rooted in clinical research. Clean, transparent, and designed to help you sleep deeply, digest smoothly, and
+            Formulas rooted in clinical research. Clean, transparent, and designed to help you sleep deeply, digest smoothly, and
             glow from within.
           </p>
         </div>

@@ -109,7 +109,7 @@ const WindIcon = ({ className, ...props }: IconProps) => (
 type CardProps = HTMLAttributes<HTMLDivElement>
 
 function Card({ className, ...props }: CardProps) {
-  const base = 'rounded-3xl border border-neutral-200 bg-white'
+  const base = 'rounded-3xl border border-neutral-200/70 bg-white/90 backdrop-blur'
   const combined = className ? `${base} ${className}` : base
   return <div className={combined} {...props} />
 }
@@ -166,7 +166,7 @@ function BenefitsBand() {
           </p>
         </motion.div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {benefits.map((benefit, index) => (
             <motion.div
               key={benefit.title}
@@ -175,13 +175,13 @@ function BenefitsBand() {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <Card className="h-full bg-white/80 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
-                <CardContent className="p-6">
-                  <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-orange-200 via-amber-100 to-rose-200">
-                    <benefit.icon className="h-7 w-7 text-[#f97316]" />
+              <Card className="group h-full text-left shadow-sm shadow-[#ee6b4d]/5 transition duration-300 hover:-translate-y-[6px] hover:shadow-xl">
+                <CardContent className="flex h-full flex-col gap-4 p-7">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#fbe2d8] via-[#f7b49b] to-[#ee6b4d] text-white">
+                    <benefit.icon className="h-7 w-7" />
                   </div>
-                  <h3 className="text-center text-lg font-semibold text-neutral-900">{benefit.title}</h3>
-                  <p className="mt-3 text-center text-sm leading-relaxed text-neutral-600">{benefit.description}</p>
+                  <h3 className="text-lg font-semibold tracking-tight text-neutral-900">{benefit.title}</h3>
+                  <p className="text-sm leading-relaxed text-neutral-600">{benefit.description}</p>
                 </CardContent>
               </Card>
             </motion.div>

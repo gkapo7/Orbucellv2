@@ -15,7 +15,7 @@ function Learn() {
         if (!cancelled) setItems(remote)
       })
       .catch(() => {
-        if (!cancelled) setError('Offline mode: showing cached posts.')
+        if (!cancelled) setError('Showing cached articles while we refresh the connection.')
       })
     return () => {
       cancelled = true

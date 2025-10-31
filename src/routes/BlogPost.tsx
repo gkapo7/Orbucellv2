@@ -29,7 +29,7 @@ function BlogPostRoute() {
         if (cancelled) return
         const fallback = localPosts.find((p) => p.slug === slug) ?? null
         setPost(fallback)
-        setError(fallback ? 'Offline mode: showing cached article.' : 'Post not found.')
+        setError(fallback ? 'Showing a cached article while we refresh the connection.' : 'Post not found.')
       })
       .finally(() => {
         if (!cancelled) setLoading(false)

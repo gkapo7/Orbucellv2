@@ -10,7 +10,7 @@ const highlights = [
 function HeroAG() {
   return (
     <section className="relative overflow-hidden bg-white">
-      <div className="pointer-events-none absolute inset-x-0 top-[-40%] h-[120%] bg-gradient-to-br from-orange-100/40 via-white to-emerald-100/40 blur-3xl" />
+      <div className="pointer-events-none absolute inset-x-0 top-[-40%] h-[120%] bg-gradient-to-br from-[#ee6b4d]/30 via-white to-[#f9c0ae]/40 blur-3xl" />
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-24 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
         <div className="space-y-8 text-left">
           <div className="space-y-4">
@@ -25,13 +25,13 @@ function HeroAG() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
               to="/products"
-              className="inline-flex items-center justify-center rounded-full bg-neutral-900 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-neutral-900/10 transition hover:bg-neutral-800"
+              className="inline-flex items-center justify-center rounded-full bg-[#ee6b4d] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#ee6b4d]/20 transition hover:bg-[#db5a3d]"
             >
               Shop now
             </Link>
             <a
               href="#benefits"
-              className="inline-flex items-center justify-center rounded-full border border-neutral-300 px-6 py-3 text-sm font-semibold text-neutral-800 transition hover:border-neutral-400 hover:text-neutral-900"
+              className="inline-flex items-center justify-center rounded-full border border-[#ee6b4d]/30 px-6 py-3 text-sm font-semibold text-neutral-800 transition hover:border-[#ee6b4d] hover:text-neutral-900"
             >
               Explore benefits
             </a>
@@ -40,7 +40,7 @@ function HeroAG() {
             {highlights.map((item) => (
               <div
                 key={item}
-                className="rounded-3xl border border-neutral-200 bg-white/70 px-5 py-4 text-sm text-neutral-700 shadow-sm backdrop-blur transition hover:translate-y-[-2px] hover:shadow-lg"
+                className="rounded-3xl border border-[#ee6b4d]/20 bg-white px-5 py-4 text-sm text-neutral-700 shadow-sm transition hover:-translate-y-[2px] hover:shadow-lg"
               >
                 {item}
               </div>
@@ -48,12 +48,12 @@ function HeroAG() {
           </div>
         </div>
         <div className="relative">
-          <div className="absolute inset-0 -translate-y-6 rounded-[48px] bg-gradient-to-br from-[#f97316]/10 via-[#0ea5e9]/10 to-[#22c55e]/10 blur-2xl" />
+          <div className="absolute inset-0 -translate-y-6 rounded-[48px] bg-gradient-to-br from-[#ee6b4d]/10 via-[#f9c0ae]/20 to-[#f5d7cb]/10 blur-2xl" />
           <div className="relative overflow-hidden rounded-[40px] border border-neutral-200 bg-white shadow-xl shadow-neutral-900/10">
             <div className="aspect-[4/5] w-full overflow-hidden">
               <div className="relative h-full w-full">
                 <div className="absolute inset-6 rounded-[28px] border border-neutral-200/60 bg-white/80 backdrop-blur">
-                  <div className="absolute inset-0 animate-[pulse_8s_ease-in-out_infinite] rounded-[28px] bg-gradient-to-br from-[#f97316]/20 via-transparent to-[#0ea5e9]/20" />
+                  <div className="absolute inset-0 animate-[pulse_8s_ease-in-out_infinite] rounded-[28px] bg-gradient-to-br from-[#ee6b4d]/15 via-transparent to-[#fbd4c7]/20" />
                 </div>
                 <img
                   src="/images/wellness-stack.svg"

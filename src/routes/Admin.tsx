@@ -17,7 +17,7 @@ import {
 
 const tabs = [
   { to: 'products', label: 'Products' },
-  { to: 'posts', label: 'Blog posts' },
+  { to: 'posts', label: 'Articles' },
   { to: 'customers', label: 'Customers' },
 ]
 
@@ -291,7 +291,7 @@ function PostsPanel() {
         })
       })
       .catch((err) => {
-        console.warn('Falling back to local posts', err)
+        console.warn('Falling back to cached articles', err)
         if (cancelled) return
         setState((prev) => ({ ...prev, loading: false }))
       })
@@ -340,14 +340,14 @@ function PostsPanel() {
         draft: persisted.map((item) => ({ ...item })),
         loading: false,
         saving: false,
-        message: 'Posts updated successfully.',
+        message: 'Articles updated successfully.',
         error: null,
       })
     } catch (error) {
       setState((prev) => ({
         ...prev,
         saving: false,
-        error: error instanceof Error ? error.message : 'Unable to save posts.',
+        error: error instanceof Error ? error.message : 'Unable to save articles.',
       }))
     }
   }
@@ -356,15 +356,15 @@ function PostsPanel() {
     <div className="space-y-8">
       <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="space-y-1 text-center md:text-left">
-          <h2 className="text-xl font-semibold text-neutral-900">Blog posts</h2>
-          <p className="text-sm text-neutral-600">Update SEO-friendly headlines, imagery, and long-form content.</p>
+          <h2 className="text-xl font-semibold text-neutral-900">Articles</h2>
+          <p className="text-sm text-neutral-600">Update educational headlines, imagery, and long-form content.</p>
         </div>
         <div className="flex justify-center gap-2 md:justify-end">
           <button
             onClick={addPost}
             className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
           >
-            Add post
+            Add article
           </button>
           <button
             onClick={reset}
@@ -386,7 +386,7 @@ function PostsPanel() {
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{state.message}</div>
       )}
       {state.loading ? (
-        <p className="text-sm text-neutral-500">Loading posts…</p>
+        <p className="text-sm text-neutral-500">Loading articles…</p>
       ) : (
         <div className="grid gap-6">
           {state.draft.map((post, index) => (

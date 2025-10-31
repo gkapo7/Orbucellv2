@@ -36,7 +36,7 @@ function EmailCaptureModal() {
       <div
         role="dialog"
         aria-modal="true"
-        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-[#f97316] via-[#fb923c] to-[#f97316] p-8 text-white shadow-2xl"
+        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-[#ee6b4d] via-[#f59f82] to-[#ee6b4d] p-8 text-white shadow-2xl"
       >
         <button
           onClick={close}
@@ -63,7 +63,7 @@ function EmailCaptureModal() {
                 placeholder="you@email.com"
                 className="w-full rounded-full border border-white/30 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/70 focus:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/60"
               />
-              <button type="submit" className="w-full rounded-full bg-white px-4 py-3 text-sm font-medium text-[#f97316] transition hover:bg-white/90">
+              <button type="submit" className="w-full rounded-full bg-white px-4 py-3 text-sm font-medium text-[#ee6b4d] transition hover:bg-white/90">
                 Email me the guide
               </button>
             </form>
@@ -77,7 +77,7 @@ function EmailCaptureModal() {
             <a
               href="/wellness-guide.pdf"
               download
-              className="mt-5 inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-[#f97316] transition hover:bg-white/90"
+              className="mt-5 inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-[#ee6b4d] transition hover:bg-white/90"
             >
               Download wellness guide
             </a>

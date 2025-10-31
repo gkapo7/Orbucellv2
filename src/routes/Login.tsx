@@ -50,12 +50,12 @@ function Login() {
             Log in with the email you used at checkout. We store your profile securely in your browser until our full authentication
             platform is connected.
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-2 text-sm text-neutral-500">
+          <div className="mt-8 flex flex-wrap gap-3 text-sm text-neutral-500">
             <button
               onClick={() => setMode('sign-in')}
               className={[
-                'rounded-full px-4 py-2 transition',
-                mode === 'sign-in' ? 'bg-neutral-900 text-white' : 'bg-neutral-100 hover:bg-neutral-200',
+                'rounded-full px-5 py-2 transition',
+                mode === 'sign-in' ? 'bg-[#ee6b4d] text-white shadow-sm shadow-[#ee6b4d]/25' : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200',
               ].join(' ')}
             >
               Sign in
@@ -63,8 +63,8 @@ function Login() {
             <button
               onClick={() => setMode('sign-up')}
               className={[
-                'rounded-full px-4 py-2 transition',
-                mode === 'sign-up' ? 'bg-neutral-900 text-white' : 'bg-neutral-100 hover:bg-neutral-200',
+                'rounded-full px-5 py-2 transition',
+                mode === 'sign-up' ? 'bg-[#ee6b4d] text-white shadow-sm shadow-[#ee6b4d]/25' : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200',
               ].join(' ')}
             >
               Create account
@@ -140,16 +140,10 @@ function Login() {
               />
             </div>
             {error && <p className="text-sm text-red-600">{error}</p>}
-            <button
-              type="submit"
-              className="w-full rounded-full bg-[#0f172a] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#111827]"
-            >
+            <button type="submit" className="w-full rounded-full bg-[#ee6b4d] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#db5a3d]">
               {mode === 'sign-up' ? 'Create account' : 'Continue with email'}
             </button>
           </form>
-          <p className="mt-4 text-xs text-neutral-500">
-            Admin access: sign in with <code>admin@orbucell.com</code> to jump directly to the dashboard.
-          </p>
         </div>
       </div>
     </section>
