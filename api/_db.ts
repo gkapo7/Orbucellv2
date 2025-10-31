@@ -23,6 +23,28 @@ export async function supabaseSelectAll<T>(table: Tables): Promise<T[] | null> {
 	return (data as T[]) || []
 }
 
+export async function supabaseSelectOne<T extends { id: string }>(table: Tables, id: string): Promise<T | null> {
+	const supabase = getSupabase()
+	if (!supabase) return null
+	const { data, error } = await supabase.from(table).select('*').eq('id', id).single()
+	if (error) {
+		console.error(`[supabase] select ${table} by id ${id} error`, error)
+		return null
+	}
+	return (data as T) || null
+}
+
+export async function supabaseSelectByField<T>(table: Tables, field: string, value: string): Promise<T | null> {
+	const supabase = getSupabase()
+	if (!supabase) return null
+	const { data, error } = await supabase.from(table).select('*').eq(field, value).single()
+	if (error) {
+		console.error(`[supabase] select ${table} by ${field} ${value} error`, error)
+		return null
+	}
+	return (data as T) || null
+}
+
 export async function supabaseUpsertMany<T extends { id: string }>(table: Tables, rows: T[]): Promise<boolean> {
 	const supabase = getSupabase()
 	if (!supabase) return false

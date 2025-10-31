@@ -1,5 +1,5 @@
 import { readDb, writeDb } from './_storage.js'
-import { supabaseSelectAll, supabaseUpsertMany } from './_db.js'
+import { supabaseSelectAll, supabaseSelectOne, supabaseSelectByField, supabaseUpsertMany } from './_db.js'
 
 export type SEO = {
   title: string
@@ -168,6 +168,37 @@ export async function setProducts(next: Product[]): Promise<Product[]> {
 }
 
 export async function getProductById(id: string): Promise<Product | undefined> {
+  // Try Supabase first
+  const fromSupabase = await supabaseSelectOne<Product>('products', id)
+  if (fromSupabase) {
+    const p = fromSupabase as any
+    return {
+      id: p.id || '',
+      name: p.name || '',
+      slug: p.slug || '',
+      description: p.description || '',
+      longDescription: p.longDescription || p.description || '',
+      price: p.price || 0,
+      image: p.image || '',
+      gallery: Array.isArray(p.gallery) ? p.gallery : [],
+      category: p.category === 'Fiber' ? 'Fiber' : 'Mineral',
+      highlights: Array.isArray(p.highlights) ? p.highlights : [],
+      sku: p.sku || '',
+      stock: p.stock || 0,
+      reorderPoint: p.reorderPoint || 0,
+      allowBackorder: p.allowBackorder || false,
+      status: p.status === 'draft' || p.status === 'archived' ? p.status : 'active',
+      seo: p.seo || {
+        title: p.name || '',
+        description: p.description || '',
+        keywords: [],
+        ogImage: undefined,
+        canonicalUrl: undefined,
+      },
+    }
+  }
+  
+  // Fallback to file storage
   const db = await readDb()
   const product = db.products.find((p) => p.id === id)
   if (!product) return undefined
@@ -252,6 +283,34 @@ export async function setPosts(next: BlogPost[]): Promise<BlogPost[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | undefined> {
+  // Try Supabase first (query by slug)
+  const fromSupabase = await supabaseSelectByField<BlogPost>('posts', 'slug', slug)
+  if (fromSupabase) {
+    const p = fromSupabase as any
+    return {
+      id: p.id || '',
+      title: p.title || '',
+      slug: p.slug || '',
+      excerpt: p.excerpt || '',
+      content: p.content || '',
+      image: p.image,
+      date: p.date || new Date().toISOString().slice(0, 10),
+      author: p.author || 'Orbucell Team',
+      tags: Array.isArray(p.tags) ? p.tags : [],
+      category: p.category,
+      featured: p.featured || false,
+      readingTime: p.readingTime,
+      seo: p.seo || {
+        title: p.title || '',
+        description: p.excerpt || '',
+        keywords: [],
+        ogImage: undefined,
+        canonicalUrl: undefined,
+      },
+    }
+  }
+  
+  // Fallback to file storage
   const db = await readDb()
   const post = db.posts.find((p) => p.slug === slug)
   if (!post) return undefined
@@ -360,6 +419,11 @@ export async function getInventoryItemByProductId(productId: string): Promise<In
 }
 
 export async function getInventoryItemById(id: string): Promise<InventoryItem | undefined> {
+  // Try Supabase first
+  const fromSupabase = await supabaseSelectOne<InventoryItem>('inventory', id)
+  if (fromSupabase) return fromSupabase
+  
+  // Fallback to file storage
   const db = await readDb()
   const inventory = Array.isArray((db as any).inventory) ? (db as any).inventory : []
   return inventory.find((item: any) => item.id === id)
@@ -383,6 +447,11 @@ export async function setOrders(next: Order[]): Promise<Order[]> {
 }
 
 export async function getOrderById(id: string): Promise<Order | undefined> {
+  // Try Supabase first
+  const fromSupabase = await supabaseSelectOne<Order>('orders', id)
+  if (fromSupabase) return fromSupabase
+  
+  // Fallback to file storage
   const db = await readDb()
   const orders = Array.isArray((db as any).orders) ? (db as any).orders : []
   return orders.find((order: any) => order.id === id)

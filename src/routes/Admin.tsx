@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { NavLink, Route, Routes, Navigate, useLocation } from 'react-router-dom'
+import { NavLink, Route, Routes, Navigate } from 'react-router-dom'
 import type { Product } from '../data/products'
 import type { BlogPost } from '../data/posts'
 import type { Customer } from '../data/customers'
@@ -32,7 +32,6 @@ const tabs = [
 ]
 
 function AdminLayout({ children }: { children: ReactNode }) {
-  const location = useLocation()
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
       <header className="text-center md:text-left">
@@ -47,11 +46,12 @@ function AdminLayout({ children }: { children: ReactNode }) {
         {tabs.map((tab) => (
           <NavLink
             key={tab.to}
-            to={tab.to}
+            to={`/admin/${tab.to}`}
+            end={tab.to === 'products'}
             className={({ isActive }) =>
               [
                 'rounded-full px-4 py-2 text-sm transition',
-                isActive || location.pathname.endsWith(`/${tab.to}`)
+                isActive
                   ? 'bg-neutral-900 text-white shadow-sm'
                   : 'bg-neutral-100 text-neutral-600 hover:text-neutral-900',
               ].join(' ')
@@ -635,6 +635,10 @@ function PostsPanel() {
       )}
       {state.loading ? (
         <p className="text-sm text-neutral-500">Loading articles…</p>
+      ) : state.draft.length === 0 ? (
+        <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-8 text-center">
+          <p className="text-sm text-neutral-600">No articles yet. Click "Add article" to create your first one.</p>
+        </div>
       ) : (
         <div className="grid gap-6">
           {state.draft.map((post, index) => (
@@ -951,6 +955,10 @@ function CustomersPanel() {
       )}
       {state.loading ? (
         <p className="text-sm text-neutral-500">Loading customers…</p>
+      ) : state.draft.length === 0 ? (
+        <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-8 text-center">
+          <p className="text-sm text-neutral-600">No customers yet. Click "Add customer" to create your first one.</p>
+        </div>
       ) : (
         <div className="grid gap-6">
           {state.draft.map((customer, index) => (
@@ -1246,6 +1254,10 @@ function InventoryPanel() {
       )}
       {state.loading ? (
         <p className="text-sm text-neutral-500">Loading inventory…</p>
+      ) : state.draft.length === 0 ? (
+        <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-8 text-center">
+          <p className="text-sm text-neutral-600">No inventory items yet. Click "Add item" to create your first one.</p>
+        </div>
       ) : (
         <div className="grid gap-6">
           {state.draft.map((item, index) => (
@@ -1526,6 +1538,10 @@ function OrdersPanel() {
       )}
       {state.loading ? (
         <p className="text-sm text-neutral-500">Loading orders…</p>
+      ) : state.draft.length === 0 ? (
+        <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-8 text-center">
+          <p className="text-sm text-neutral-600">No orders yet. Orders will appear here when customers make purchases.</p>
+        </div>
       ) : (
         <div className="grid gap-6">
           {state.draft.map((order, index) => (
@@ -1763,13 +1779,13 @@ function Admin() {
   return (
     <AdminLayout>
       <Routes>
-        <Route index element={<Navigate to="products" replace />} />
+        <Route index element={<Navigate to="/admin/products" replace />} />
         <Route path="products" element={<ProductsPanel />} />
         <Route path="posts" element={<PostsPanel />} />
         <Route path="customers" element={<CustomersPanel />} />
         <Route path="inventory" element={<InventoryPanel />} />
         <Route path="orders" element={<OrdersPanel />} />
-        <Route path="*" element={<Navigate to="products" replace />} />
+        <Route path="*" element={<Navigate to="/admin/products" replace />} />
       </Routes>
     </AdminLayout>
   )
