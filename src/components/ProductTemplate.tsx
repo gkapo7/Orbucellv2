@@ -283,12 +283,28 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
               )}
             </div>
             
-            {/* Product Image Card */}
+            {/* Product Image Card with Gallery */}
             <div className="lg:sticky lg:top-24">
               <div className="overflow-hidden rounded-[32px] border bg-white/95 shadow-xl" style={{ borderColor: `${theme.cardBorder}55` }}>
+                {/* Main Product Image */}
                 <div className="aspect-[4/5] w-full overflow-hidden bg-white">
                   <img src={product.image} alt={product.name} className="h-full w-full object-cover object-center" />
                 </div>
+                
+                {/* Gallery Images */}
+                {product.gallery && product.gallery.length > 1 && (
+                  <div className="grid grid-cols-4 gap-2 p-4 border-t border-neutral-200">
+                    {product.gallery.slice(0, 4).map((img, i) => (
+                      <div
+                        key={i}
+                        className="aspect-square overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 cursor-pointer hover:border-neutral-400 transition"
+                      >
+                        <img src={img} alt={`${product.name} ${i + 1}`} className="h-full w-full object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
                 <div className="space-y-5 p-6">
                   <div className="flex items-center justify-between">
                     <p className="text-3xl font-semibold text-neutral-900">${product.price.toFixed(2)}</p>
@@ -328,6 +344,15 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
                   className="rounded-3xl border p-6 text-left shadow-sm"
                   style={{ borderColor: theme.cardBorder, backgroundColor: theme.chipBg }}
                 >
+                  {product.gallery && product.gallery[i] && (
+                    <div className="mb-4 aspect-video rounded-xl overflow-hidden border border-neutral-200">
+                      <img 
+                        src={product.gallery[i]} 
+                        alt={benefit.title}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  )}
                   <h3 className="text-lg font-medium text-neutral-900">{benefit.title}</h3>
                   <p className="mt-3 text-sm text-neutral-600">{benefit.detail}</p>
                 </div>
@@ -342,6 +367,17 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
             <div>
               <h2 className="text-2xl font-semibold text-neutral-900">{guide?.overviewTitle || 'The Science'}</h2>
               <p className="mt-4 text-sm text-neutral-600 whitespace-pre-line">{science}</p>
+              
+              {/* Science Image */}
+              {product.gallery && product.gallery.length > 0 && (
+                <div className="mt-6 rounded-2xl overflow-hidden border border-neutral-200">
+                  <img 
+                    src={product.gallery[0]} 
+                    alt={`${product.name} science illustration`}
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              )}
             </div>
             {formulation.length > 0 && (
               <div className="space-y-4">
@@ -368,13 +404,22 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
             <div className="mt-6 space-y-4">
               {product.ingredients.map((ingredient, i) => (
                 <div key={i} className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
-                  <div className="flex items-start justify-between">
-                    <div>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
                       <h3 className="font-medium text-neutral-900">{ingredient.name}</h3>
                       <p className="mt-1 text-sm text-neutral-600">{ingredient.amount}</p>
+                      <p className="mt-2 text-sm text-neutral-700">{ingredient.description}</p>
                     </div>
+                    {product.gallery && product.gallery[i % product.gallery.length] && (
+                      <div className="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border border-neutral-200">
+                        <img 
+                          src={product.gallery[i % product.gallery.length]} 
+                          alt={ingredient.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    )}
                   </div>
-                  <p className="mt-2 text-sm text-neutral-700">{ingredient.description}</p>
                 </div>
               ))}
             </div>
@@ -396,7 +441,7 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
               </div>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              {product.reviews.slice(0, 6).map((review) => (
+              {product.reviews.slice(0, 6).map((review, i) => (
                 <div key={review.id} className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
                   <div className="mb-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -410,6 +455,15 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
                     </div>
                   </div>
                   <p className="text-sm text-neutral-700">{review.text}</p>
+                  {product.gallery && product.gallery[i % product.gallery.length] && (
+                    <div className="mt-3 aspect-video rounded-lg overflow-hidden border border-neutral-200">
+                      <img 
+                        src={product.gallery[i % product.gallery.length]} 
+                        alt={`Review image ${i + 1}`}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  )}
                   <p className="mt-2 text-xs text-neutral-500">{review.date}</p>
                 </div>
               ))}
@@ -424,6 +478,11 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
             <div className="mt-6 grid gap-4 md:grid-cols-3">
               {product.qualityClaims.map((claim, i) => (
                 <div key={i} className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
+                  {claim.icon && (
+                    <div className="mb-3 aspect-square w-12 rounded-lg overflow-hidden border border-neutral-200">
+                      <img src={claim.icon} alt={claim.title} className="h-full w-full object-cover" />
+                    </div>
+                  )}
                   <h3 className="font-medium text-neutral-900">{claim.title}</h3>
                   <p className="mt-2 text-sm text-neutral-600">{claim.description}</p>
                 </div>

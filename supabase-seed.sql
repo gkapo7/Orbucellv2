@@ -1,5 +1,6 @@
 -- Seed Supabase with initial products
 -- Run this in Supabase SQL Editor after creating the tables
+-- This includes all product data with full descriptions
 
 INSERT INTO products (id, name, slug, description, "longDescription", price, image, gallery, category, highlights, sku, stock, "reorderPoint", "allowBackorder", status, seo)
 VALUES 
