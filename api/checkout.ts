@@ -29,3 +29,4 @@ export default withCors(async function handler(req: VercelRequest, res: VercelRe
   return res.status(200).json({ orderId, subtotal, shipping, total, currency: 'USD' })
 })
 
+
