@@ -47,6 +47,8 @@ export type Product = {
   allowBackorder: boolean
   status: ProductStatus
   seo: ProductSEO
+  // Theme customization
+  themeColor?: string // Hex color for product page theme
   // New optional fields for enhanced product pages
   rating?: number
   reviewCount?: number
@@ -54,7 +56,12 @@ export type Product = {
   ingredients?: Ingredient[]
   qualityClaims?: QualityClaim[]
   scienceDescription?: string
+  scienceImage?: string // Image for science section
   howToUse?: string[]
+  benefits?: Array<{ title: string; detail: string; image?: string }> // Benefits with images
+  whyItWorks?: Array<{ title: string; detail: string }> // Why it works items
+  labNotes?: string // Need to know / Lab notes
+  labNotesImage?: string // Image for lab notes section
   faq?: { question: string; answer: string }[]
 }
 

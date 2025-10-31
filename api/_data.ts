@@ -26,6 +26,8 @@ export type Product = {
   allowBackorder: boolean
   status: 'active' | 'draft' | 'archived'
   seo: SEO
+  // Theme customization
+  themeColor?: string
   // New optional fields for enhanced product pages
   rating?: number
   reviewCount?: number
@@ -49,7 +51,19 @@ export type Product = {
     icon?: string
   }>
   scienceDescription?: string
+  scienceImage?: string
+  benefits?: Array<{
+    title: string
+    detail: string
+    image?: string
+  }>
+  whyItWorks?: Array<{
+    title: string
+    detail: string
+  }>
   howToUse?: string[]
+  labNotes?: string
+  labNotesImage?: string
   faq?: Array<{
     question: string
     answer: string

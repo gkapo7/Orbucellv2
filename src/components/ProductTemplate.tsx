@@ -160,20 +160,80 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
     highlights: product.highlights && product.highlights.length > 0 ? product.highlights : (guide?.hero.highlights || []),
   }
   const heroCta = guide?.heroCta || 'Shop now'
-  const benefits = product.faq?.map((faq, i) => ({
-    title: guide?.benefits[i]?.title || `Benefit ${i + 1}`,
-    detail: guide?.benefits[i]?.detail || faq.answer,
-  })) || guide?.benefits || []
+  // Use product benefits if available, otherwise fallback to guide
+  const benefits = product.benefits && product.benefits.length > 0 
+    ? product.benefits 
+    : (product.faq?.map((faq, i) => ({
+        title: guide?.benefits[i]?.title || `Benefit ${i + 1}`,
+        detail: guide?.benefits[i]?.detail || faq.answer,
+        image: undefined,
+      })) || guide?.benefits || [])
   const howToUse = product.howToUse && product.howToUse.length > 0 ? product.howToUse : (guide?.howToUse || [])
   const science = product.scienceDescription || guide?.science || product.longDescription || ''
-  const labNotes = guide?.labNotes || 'Tested for quality and purity.'
-  const formulation = product.qualityClaims?.map(qc => ({ title: qc.title, detail: qc.description })) || guide?.formulation || []
+  const scienceImage = product.scienceImage
+  const labNotes = product.labNotes || guide?.labNotes || 'Tested for quality and purity.'
+  const labNotesImage = product.labNotesImage
+  const whyItWorks = product.whyItWorks && product.whyItWorks.length > 0 
+    ? product.whyItWorks 
+    : (product.qualityClaims?.map(qc => ({ title: qc.title, detail: qc.description })) || guide?.formulation || [])
   const faq = product.faq && product.faq.length > 0 ? product.faq : (guide?.faq || [])
   
+  // Helper function to generate theme from hex color
+  const generateThemeFromColor = (hex: string): ProductTheme => {
+    // Convert hex to RGB
+    const r = parseInt(hex.slice(1, 3), 16)
+    const g = parseInt(hex.slice(3, 5), 16)
+    const b = parseInt(hex.slice(5, 7), 16)
+    
+    // Create lighter and darker variants
+    const lighten = (color: number, amount: number) => Math.min(255, color + amount)
+    const darken = (color: number, amount: number) => Math.max(0, color - amount)
+    
+    const rLight = lighten(r, 60)
+    const gLight = lighten(g, 60)
+    const bLight = lighten(b, 60)
+    
+    const rLighter = lighten(r, 120)
+    const gLighter = lighten(g, 120)
+    const bLighter = lighten(b, 120)
+    
+    const rDark = darken(r, 30)
+    const gDark = darken(g, 30)
+    const bDark = darken(b, 30)
+    
+    const rDarker = darken(r, 50)
+    const gDarker = darken(g, 50)
+    const bDarker = darken(b, 50)
+    
+    const toHex = (n: number) => n.toString(16).padStart(2, '0')
+    const button = `#${toHex(r)}${toHex(g)}${toHex(b)}`
+    const buttonHover = `#${toHex(rDark)}${toHex(gDark)}${toHex(bDark)}`
+    const cardBorder = `#${toHex(rLight)}${toHex(gLight)}${toHex(bLight)}`
+    const chipBg = `rgb(${rLighter}, ${gLighter}, ${bLighter})`
+    const chipBorder = `#${toHex(rLight)}${toHex(gLight)}${toHex(bLight)}`
+    const accentText = `#${toHex(rDarker)}${toHex(gDarker)}${toHex(bDarker)}`
+    const heroGradient = `linear-gradient(135deg, ${button} 0%, ${cardBorder} 60%, ${chipBg} 100%)`
+    
+    return {
+      heroGradient,
+      cardBorder,
+      button,
+      buttonHover,
+      chipBg,
+      chipBorder,
+      accentText,
+    }
+  }
+  
   const theme = useMemo(() => {
+    // Use custom theme color if provided
+    if (product.themeColor) {
+      return generateThemeFromColor(product.themeColor)
+    }
+    // Fall back to predefined themes
     const key = product.id as keyof typeof productThemes | undefined
     return (key && productThemes[key]) ? productThemes[key] : productThemes.default
-  }, [product.id])
+  }, [product.id, product.themeColor])
   
   const rating = product.rating || 4.8
   const reviewCount = product.reviewCount || 1200
@@ -344,10 +404,10 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
                   className="rounded-3xl border p-6 text-left shadow-sm"
                   style={{ borderColor: theme.cardBorder, backgroundColor: theme.chipBg }}
                 >
-                  {product.gallery && product.gallery[i] && (
+                  {(benefit as any).image && (
                     <div className="mb-4 aspect-video rounded-xl overflow-hidden border border-neutral-200">
                       <img 
-                        src={product.gallery[i]} 
+                        src={(benefit as any).image} 
                         alt={benefit.title}
                         className="h-full w-full object-cover"
                       />
@@ -362,27 +422,27 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
         )}
 
         {/* D. Product Science / Why It Works */}
-        {(science || formulation.length > 0) && (
+        {(science || whyItWorks.length > 0) && (
           <section className="grid gap-10 rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm lg:grid-cols-[1.1fr_0.9fr]">
             <div>
               <h2 className="text-2xl font-semibold text-neutral-900">{guide?.overviewTitle || 'The Science'}</h2>
               <p className="mt-4 text-sm text-neutral-600 whitespace-pre-line">{science}</p>
               
               {/* Science Image */}
-              {product.gallery && product.gallery.length > 0 && (
+              {scienceImage && (
                 <div className="mt-6 rounded-2xl overflow-hidden border border-neutral-200">
                   <img 
-                    src={product.gallery[0]} 
+                    src={scienceImage} 
                     alt={`${product.name} science illustration`}
                     className="w-full h-auto object-cover"
                   />
                 </div>
               )}
             </div>
-            {formulation.length > 0 && (
+            {whyItWorks.length > 0 && (
               <div className="space-y-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">{guide?.reasonsTitle || 'Why It Works'}</p>
-                {formulation.map((item, i) => (
+                {whyItWorks.map((item, i) => (
                   <div
                     key={i}
                     className="rounded-3xl border p-5 text-left shadow-sm"
@@ -513,10 +573,19 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
                 ))}
               </ol>
             </div>
-            {labNotes && !product.qualityClaims && (
+            {labNotes && (
               <div className="rounded-3xl border p-6 shadow-sm" style={{ borderColor: theme.cardBorder, backgroundColor: theme.chipBg }}>
-                <h3 className="text-lg font-medium text-neutral-900">{guide?.labNotesTitle || 'Lab Notes'}</h3>
+                <h3 className="text-lg font-medium text-neutral-900">{guide?.labNotesTitle || 'Need to Know'}</h3>
                 <p className="mt-3 text-sm text-neutral-600">{labNotes}</p>
+                {labNotesImage && (
+                  <div className="mt-4 rounded-xl overflow-hidden border border-neutral-200">
+                    <img 
+                      src={labNotesImage} 
+                      alt="Lab notes illustration"
+                      className="w-full h-auto object-cover"
+                    />
+                  </div>
+                )}
               </div>
             )}
           </section>
