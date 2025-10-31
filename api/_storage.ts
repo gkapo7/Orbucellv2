@@ -25,7 +25,15 @@ async function ensureFile() {
 export async function readDb(): Promise<Database> {
   await ensureFile()
   const raw = await fs.readFile(dataPath, 'utf-8')
-  return JSON.parse(raw) as Database
+  const parsed = JSON.parse(raw) as any
+  // Ensure all required collections exist
+  return {
+    products: Array.isArray(parsed.products) ? parsed.products : [],
+    posts: Array.isArray(parsed.posts) ? parsed.posts : [],
+    customers: Array.isArray(parsed.customers) ? parsed.customers : [],
+    inventory: Array.isArray(parsed.inventory) ? parsed.inventory : [],
+    orders: Array.isArray(parsed.orders) ? parsed.orders : [],
+  }
 }
 
 export async function writeDb(data: Database): Promise<void> {

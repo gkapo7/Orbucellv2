@@ -109,7 +109,31 @@ export type Order = {
 
 export async function listProducts(): Promise<Product[]> {
   const db = await readDb()
-  return db.products
+  // Normalize products to ensure all required fields exist
+  return (db.products || []).map((p: any) => ({
+    id: p.id || '',
+    name: p.name || '',
+    slug: p.slug || '',
+    description: p.description || '',
+    longDescription: p.longDescription || p.description || '',
+    price: p.price || 0,
+    image: p.image || '',
+    gallery: Array.isArray(p.gallery) ? p.gallery : [],
+    category: p.category === 'Fiber' ? 'Fiber' : 'Mineral',
+    highlights: Array.isArray(p.highlights) ? p.highlights : [],
+    sku: p.sku || '',
+    stock: p.stock || 0,
+    reorderPoint: p.reorderPoint || 0,
+    allowBackorder: p.allowBackorder || false,
+    status: p.status === 'draft' || p.status === 'archived' ? p.status : 'active',
+    seo: p.seo || {
+      title: p.name || '',
+      description: p.description || '',
+      keywords: [],
+      ogImage: undefined,
+      canonicalUrl: undefined,
+    },
+  }))
 }
 
 export async function setProducts(next: Product[]): Promise<Product[]> {
@@ -121,12 +145,59 @@ export async function setProducts(next: Product[]): Promise<Product[]> {
 
 export async function getProductById(id: string): Promise<Product | undefined> {
   const db = await readDb()
-  return db.products.find((p) => p.id === id)
+  const product = db.products.find((p) => p.id === id)
+  if (!product) return undefined
+  // Normalize product to ensure all required fields exist
+  return {
+    id: product.id || '',
+    name: product.name || '',
+    slug: product.slug || '',
+    description: product.description || '',
+    longDescription: (product as any).longDescription || product.description || '',
+    price: product.price || 0,
+    image: product.image || '',
+    gallery: Array.isArray((product as any).gallery) ? (product as any).gallery : [],
+    category: product.category === 'Fiber' ? 'Fiber' : 'Mineral',
+    highlights: Array.isArray(product.highlights) ? product.highlights : [],
+    sku: (product as any).sku || '',
+    stock: (product as any).stock || 0,
+    reorderPoint: (product as any).reorderPoint || 0,
+    allowBackorder: (product as any).allowBackorder || false,
+    status: (product as any).status === 'draft' || (product as any).status === 'archived' ? (product as any).status : 'active',
+    seo: (product as any).seo || {
+      title: product.name || '',
+      description: product.description || '',
+      keywords: [],
+      ogImage: undefined,
+      canonicalUrl: undefined,
+    },
+  }
 }
 
 export async function listPosts(): Promise<BlogPost[]> {
   const db = await readDb()
-  return db.posts
+  // Normalize posts to ensure all required fields exist
+  return (db.posts || []).map((p: any) => ({
+    id: p.id || '',
+    title: p.title || '',
+    slug: p.slug || '',
+    excerpt: p.excerpt || '',
+    content: p.content || '',
+    image: p.image,
+    date: p.date || new Date().toISOString().slice(0, 10),
+    author: p.author || 'Orbucell Team',
+    tags: Array.isArray(p.tags) ? p.tags : [],
+    category: p.category,
+    featured: p.featured || false,
+    readingTime: p.readingTime,
+    seo: p.seo || {
+      title: p.title || '',
+      description: p.excerpt || '',
+      keywords: [],
+      ogImage: undefined,
+      canonicalUrl: undefined,
+    },
+  }))
 }
 
 export async function setPosts(next: BlogPost[]): Promise<BlogPost[]> {
@@ -138,12 +209,55 @@ export async function setPosts(next: BlogPost[]): Promise<BlogPost[]> {
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | undefined> {
   const db = await readDb()
-  return db.posts.find((p) => p.slug === slug)
+  const post = db.posts.find((p) => p.slug === slug)
+  if (!post) return undefined
+  // Normalize post to ensure all required fields exist
+  return {
+    id: post.id || '',
+    title: post.title || '',
+    slug: post.slug || '',
+    excerpt: post.excerpt || '',
+    content: post.content || '',
+    image: post.image,
+    date: post.date || new Date().toISOString().slice(0, 10),
+    author: post.author || 'Orbucell Team',
+    tags: Array.isArray(post.tags) ? post.tags : [],
+    category: (post as any).category,
+    featured: (post as any).featured || false,
+    readingTime: (post as any).readingTime,
+    seo: (post as any).seo || {
+      title: post.title || '',
+      description: post.excerpt || '',
+      keywords: [],
+      ogImage: undefined,
+      canonicalUrl: undefined,
+    },
+  }
 }
 
 export async function listCustomers(): Promise<Customer[]> {
   const db = await readDb()
-  return db.customers
+  // Normalize customers to ensure all required fields exist
+  return (db.customers || []).map((c: any) => ({
+    id: c.id || '',
+    name: c.name || '',
+    email: c.email || '',
+    status: c.status || 'Lead',
+    phone: c.phone,
+    address: c.address,
+    city: c.city,
+    state: c.state,
+    postalCode: c.postalCode,
+    country: c.country,
+    dateJoined: c.dateJoined,
+    lastOrderDate: c.lastOrderDate,
+    tags: Array.isArray(c.tags) ? c.tags : [],
+    notes: c.notes,
+    preferredProducts: Array.isArray(c.preferredProducts) ? c.preferredProducts : [],
+    orders: c.orders || 0,
+    lifetimeValue: c.lifetimeValue || 0,
+    averageOrderValue: c.averageOrderValue,
+  }))
 }
 
 export async function setCustomers(next: Customer[]): Promise<Customer[]> {
@@ -168,12 +282,14 @@ export async function setInventory(next: InventoryItem[]): Promise<InventoryItem
 
 export async function getInventoryItemByProductId(productId: string): Promise<InventoryItem | undefined> {
   const db = await readDb()
-  return db.inventory.find((item) => item.productId === productId)
+  const inventory = Array.isArray((db as any).inventory) ? (db as any).inventory : []
+  return inventory.find((item: any) => item.productId === productId)
 }
 
 export async function getInventoryItemById(id: string): Promise<InventoryItem | undefined> {
   const db = await readDb()
-  return db.inventory.find((item) => item.id === id)
+  const inventory = Array.isArray((db as any).inventory) ? (db as any).inventory : []
+  return inventory.find((item: any) => item.id === id)
 }
 
 export async function listOrders(): Promise<Order[]> {
@@ -191,5 +307,6 @@ export async function setOrders(next: Order[]): Promise<Order[]> {
 
 export async function getOrderById(id: string): Promise<Order | undefined> {
   const db = await readDb()
-  return db.orders.find((order) => order.id === id)
+  const orders = Array.isArray((db as any).orders) ? (db as any).orders : []
+  return orders.find((order: any) => order.id === id)
 }
