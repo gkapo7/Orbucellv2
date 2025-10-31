@@ -1,5 +1,5 @@
-import { listProducts, getProductById, setProducts, type Product } from './_data'
-import { withCors, badRequest } from './_utils'
+import { listProducts, getProductById, setProducts, type Product } from './_data.js'
+import { withCors, badRequest } from './_utils.js'
 
 export default withCors(async function handler(req: any, res: any) {
   try {

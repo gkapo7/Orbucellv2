@@ -1,5 +1,5 @@
-import { withCors, badRequest } from './_utils'
-import { getProductById } from './_data'
+import { withCors, badRequest } from './_utils.js'
+import { getProductById } from './_data.js'
 
 type CheckoutItem = { id: string; qty: number }
 

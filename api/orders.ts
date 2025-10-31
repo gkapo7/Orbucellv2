@@ -1,5 +1,5 @@
-import { listOrders, setOrders, getOrderById, type Order } from './_data'
-import { withCors, badRequest } from './_utils'
+import { listOrders, setOrders, getOrderById, type Order } from './_data.js'
+import { withCors, badRequest } from './_utils.js'
 
 export default withCors(async function handler(req: any, res: any) {
   try {
