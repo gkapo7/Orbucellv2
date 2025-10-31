@@ -1,5 +1,5 @@
 import { readDb, writeDb } from './_storage.js'
-import { supabaseSelectAll, supabaseSelectOne, supabaseSelectByField, supabaseUpsertMany } from './_db.js'
+import { supabaseSelectAll, supabaseSelectOne, supabaseSelectByField, supabaseUpsertMany, supabaseDeleteMany } from './_db.js'
 
 export type SEO = {
   title: string
@@ -172,11 +172,17 @@ export async function listProducts(): Promise<Product[]> {
       seo: p.seo || { title: p.name || '', description: p.description || '', keywords: [] },
       rating: p.rating,
       reviewCount: p.reviewCount,
+      themeColor: p.themeColor,
       reviews: Array.isArray(p.reviews) ? p.reviews : undefined,
       ingredients: Array.isArray(p.ingredients) ? p.ingredients : undefined,
       qualityClaims: Array.isArray(p.qualityClaims) ? p.qualityClaims : undefined,
+      benefits: Array.isArray(p.benefits) ? p.benefits : undefined,
+      whyItWorks: Array.isArray(p.whyItWorks) ? p.whyItWorks : undefined,
       scienceDescription: p.scienceDescription,
+      scienceImage: p.scienceImage,
       howToUse: Array.isArray(p.howToUse) ? p.howToUse : undefined,
+      labNotes: p.labNotes,
+      labNotesImage: p.labNotesImage,
       faq: Array.isArray(p.faq) ? p.faq : undefined,
     }))
   }
@@ -207,18 +213,44 @@ export async function listProducts(): Promise<Product[]> {
     },
     rating: (p as any).rating,
     reviewCount: (p as any).reviewCount,
+    themeColor: (p as any).themeColor,
     reviews: Array.isArray((p as any).reviews) ? (p as any).reviews : undefined,
     ingredients: Array.isArray((p as any).ingredients) ? (p as any).ingredients : undefined,
     qualityClaims: Array.isArray((p as any).qualityClaims) ? (p as any).qualityClaims : undefined,
+    benefits: Array.isArray((p as any).benefits) ? (p as any).benefits : undefined,
+    whyItWorks: Array.isArray((p as any).whyItWorks) ? (p as any).whyItWorks : undefined,
     scienceDescription: (p as any).scienceDescription,
+    scienceImage: (p as any).scienceImage,
     howToUse: Array.isArray((p as any).howToUse) ? (p as any).howToUse : undefined,
+    labNotes: (p as any).labNotes,
+    labNotesImage: (p as any).labNotesImage,
     faq: Array.isArray((p as any).faq) ? (p as any).faq : undefined,
   }))
 }
 
 export async function setProducts(next: Product[]): Promise<Product[]> {
+  // Get existing products to find deleted ones
+  const existing = await listProducts()
+  const existingIds = new Set(existing.map(p => p.id))
+  const nextIds = new Set(next.map(p => p.id))
+  const deletedIds = Array.from(existingIds).filter(id => !nextIds.has(id))
+  
+  // Delete removed products from Supabase
+  if (deletedIds.length > 0) {
+    await supabaseDeleteMany('products', deletedIds)
+  }
+  
+  // Upsert remaining/updated products
   const ok = await supabaseUpsertMany('products', next as any)
-  if (ok) return next
+  if (ok) {
+    // Also update file storage as backup
+    const db = await readDb()
+    db.products = next
+    await writeDb(db)
+    return next
+  }
+  
+  // Fallback to file storage only
   const db = await readDb()
   db.products = next
   await writeDb(db)
@@ -255,11 +287,17 @@ export async function getProductById(id: string): Promise<Product | undefined> {
       },
       rating: p.rating,
       reviewCount: p.reviewCount,
+      themeColor: p.themeColor,
       reviews: Array.isArray(p.reviews) ? p.reviews : undefined,
       ingredients: Array.isArray(p.ingredients) ? p.ingredients : undefined,
       qualityClaims: Array.isArray(p.qualityClaims) ? p.qualityClaims : undefined,
+      benefits: Array.isArray(p.benefits) ? p.benefits : undefined,
+      whyItWorks: Array.isArray(p.whyItWorks) ? p.whyItWorks : undefined,
       scienceDescription: p.scienceDescription,
+      scienceImage: p.scienceImage,
       howToUse: Array.isArray(p.howToUse) ? p.howToUse : undefined,
+      labNotes: p.labNotes,
+      labNotesImage: p.labNotesImage,
       faq: Array.isArray(p.faq) ? p.faq : undefined,
     }
   }
@@ -294,11 +332,17 @@ export async function getProductById(id: string): Promise<Product | undefined> {
     },
     rating: (product as any).rating,
     reviewCount: (product as any).reviewCount,
+    themeColor: (product as any).themeColor,
     reviews: Array.isArray((product as any).reviews) ? (product as any).reviews : undefined,
     ingredients: Array.isArray((product as any).ingredients) ? (product as any).ingredients : undefined,
     qualityClaims: Array.isArray((product as any).qualityClaims) ? (product as any).qualityClaims : undefined,
+    benefits: Array.isArray((product as any).benefits) ? (product as any).benefits : undefined,
+    whyItWorks: Array.isArray((product as any).whyItWorks) ? (product as any).whyItWorks : undefined,
     scienceDescription: (product as any).scienceDescription,
+    scienceImage: (product as any).scienceImage,
     howToUse: Array.isArray((product as any).howToUse) ? (product as any).howToUse : undefined,
+    labNotes: (product as any).labNotes,
+    labNotesImage: (product as any).labNotesImage,
     faq: Array.isArray((product as any).faq) ? (product as any).faq : undefined,
   }
 }

@@ -55,3 +55,14 @@ export async function supabaseUpsertMany<T extends { id: string }>(table: Tables
 	}
 	return true
 }
+
+export async function supabaseDeleteMany(table: Tables, ids: string[]): Promise<boolean> {
+	const supabase = getSupabase()
+	if (!supabase || ids.length === 0) return true
+	const { error } = await supabase.from(table).delete().in('id', ids)
+	if (error) {
+		console.error(`[supabase] delete ${table} error`, error)
+		return false
+	}
+	return true
+}

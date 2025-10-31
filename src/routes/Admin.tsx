@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { NavLink, Route, Routes, Navigate } from 'react-router-dom'
 import type { Product } from '../data/products'
 import type { BlogPost } from '../data/posts'
+import ImageUpload from '../components/ImageUpload'
 import type { Customer } from '../data/customers'
 import type { InventoryItem } from '../data/inventory'
 import type { Order } from '../data/orders'
@@ -147,6 +148,11 @@ function ProductsPanel() {
         ogImage: undefined,
         canonicalUrl: undefined,
       },
+      themeColor: '#3d5b81',
+      benefits: [],
+      whyItWorks: [],
+      howToUse: [],
+      faq: [],
     }
     setState((prev) => ({ ...prev, draft: [...prev.draft, fresh] }))
   }
@@ -308,26 +314,40 @@ function ProductsPanel() {
                           <input
                             type="color"
                             value={product.themeColor || '#3d5b81'}
-                            onChange={(event) => handleField(index, 'themeColor')(event.target.value)}
-                            className="h-10 w-20 rounded border border-neutral-300"
+                            onChange={(event) => {
+                              const hex = event.target.value
+                              handleField(index, 'themeColor')(hex || undefined)
+                            }}
+                            className="h-10 w-20 rounded border border-neutral-300 cursor-pointer"
                           />
                           <input
                             type="text"
-                            value={product.themeColor || '#3d5b81'}
-                            onChange={(event) => handleField(index, 'themeColor')(event.target.value)}
+                            value={product.themeColor || ''}
+                            onChange={(event) => {
+                              let value = event.target.value.trim()
+                              // Validate hex color format
+                              if (value && !value.startsWith('#')) value = '#' + value
+                              if (value && /^#[0-9A-Fa-f]{6}$/.test(value)) {
+                                handleField(index, 'themeColor')(value)
+                              } else if (value === '') {
+                                handleField(index, 'themeColor')(undefined)
+                              }
+                            }}
                             placeholder="#3d5b81"
-                            className="admin-input flex-1"
+                            className="admin-input flex-1 font-mono"
+                            pattern="#[0-9A-Fa-f]{6}"
                           />
                         </div>
+                        {product.themeColor && (
+                          <p className="mt-1 text-xs text-neutral-500">Theme color: {product.themeColor}</p>
+                        )}
                       </Field>
-                      <Field label="Image">
-                        <input
-                          value={product.image}
-                          onChange={(event) => handleField(index, 'image')(event.target.value)}
-                          className="admin-input"
-                          placeholder="/images/product.jpg"
-                        />
-                      </Field>
+                      <ImageUpload
+                        label="Image"
+                        value={product.image}
+                        onChange={(url: string) => handleField(index, 'image')(url)}
+                        placeholder="/images/product.jpg"
+                      />
                       <Field label="Gallery (comma-separated URLs)">
                         <input
                           value={(product.gallery ?? []).join(', ')}
@@ -549,18 +569,16 @@ function ProductsPanel() {
                               rows={2}
                             />
                           </Field>
-                          <Field label="Image URL">
-                            <input
-                              value={benefit.image || ''}
-                              onChange={(event) => {
-                                const updated = [...(product.benefits || [])]
-                                updated[i] = { ...updated[i], image: event.target.value || undefined }
-                                handleField(index, 'benefits')(updated)
-                              }}
-                              className="admin-input"
-                              placeholder="/images/benefit-image.jpg"
-                            />
-                          </Field>
+                          <ImageUpload
+                            label="Image URL"
+                            value={benefit.image || ''}
+                            onChange={(url: string) => {
+                              const updated = [...(product.benefits || [])]
+                              updated[i] = { ...updated[i], image: url || undefined }
+                              handleField(index, 'benefits')(updated)
+                            }}
+                            placeholder="/images/benefit-image.jpg"
+                          />
                         </div>
                       </div>
                     ))}
@@ -577,14 +595,12 @@ function ProductsPanel() {
                         placeholder="Explain the science behind the product..."
                       />
                     </Field>
-                    <Field label="Science Image URL">
-                      <input
-                        value={product.scienceImage || ''}
-                        onChange={(event) => handleField(index, 'scienceImage')(event.target.value || undefined)}
-                        className="admin-input mt-3"
-                        placeholder="/images/science-image.jpg"
-                      />
-                    </Field>
+                    <ImageUpload
+                      label="Science Image URL"
+                      value={product.scienceImage || ''}
+                      onChange={(url: string) => handleField(index, 'scienceImage')(url || undefined)}
+                      placeholder="/images/science-image.jpg"
+                    />
                     
                     <div className="mt-4">
                       <div className="mb-3 flex items-center justify-between">
@@ -696,14 +712,12 @@ function ProductsPanel() {
                         placeholder="Lab notes and important information..."
                       />
                     </Field>
-                    <Field label="Lab Notes Image URL">
-                      <input
-                        value={product.labNotesImage || ''}
-                        onChange={(event) => handleField(index, 'labNotesImage')(event.target.value || undefined)}
-                        className="admin-input mt-3"
-                        placeholder="/images/lab-notes-image.jpg"
-                      />
-                    </Field>
+                    <ImageUpload
+                      label="Lab Notes Image URL"
+                      value={product.labNotesImage || ''}
+                      onChange={(url: string) => handleField(index, 'labNotesImage')(url || undefined)}
+                      placeholder="/images/lab-notes-image.jpg"
+                    />
                   </div>
 
                   {/* FAQ Section */}

@@ -18,7 +18,21 @@ CREATE TABLE IF NOT EXISTS products (
   "reorderPoint" INTEGER NOT NULL DEFAULT 0,
   "allowBackorder" BOOLEAN NOT NULL DEFAULT false,
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'draft', 'archived')),
-  seo JSONB NOT NULL DEFAULT '{}'::jsonb
+  seo JSONB NOT NULL DEFAULT '{}'::jsonb,
+  "themeColor" TEXT,
+  rating NUMERIC,
+  "reviewCount" INTEGER,
+  benefits JSONB DEFAULT '[]'::jsonb,
+  "whyItWorks" JSONB DEFAULT '[]'::jsonb,
+  "howToUse" JSONB DEFAULT '[]'::jsonb,
+  "scienceDescription" TEXT,
+  "scienceImage" TEXT,
+  "labNotes" TEXT,
+  "labNotesImage" TEXT,
+  faq JSONB DEFAULT '[]'::jsonb,
+  ingredients JSONB DEFAULT '[]'::jsonb,
+  "qualityClaims" JSONB DEFAULT '[]'::jsonb,
+  reviews JSONB DEFAULT '[]'::jsonb
 );
 
 -- Posts table

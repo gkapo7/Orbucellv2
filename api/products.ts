@@ -20,7 +20,7 @@ export default withCors(async function handler(req: any, res: any) {
       if (!Array.isArray(incoming)) {
         return badRequest(res, 'Expected products array')
       }
-      const sanitized: Product[] = incoming.map((item) => ({
+      const sanitized: Product[] = incoming.map((item: any) => ({
         id: String(item.id),
         name: String(item.name),
         slug: String(item.slug),
@@ -43,6 +43,20 @@ export default withCors(async function handler(req: any, res: any) {
           ogImage: item.seo?.ogImage ? String(item.seo.ogImage) : undefined,
           canonicalUrl: item.seo?.canonicalUrl ? String(item.seo.canonicalUrl) : undefined,
         },
+        themeColor: item.themeColor ? String(item.themeColor) : undefined,
+        rating: item.rating ? Number(item.rating) : undefined,
+        reviewCount: item.reviewCount ? Number(item.reviewCount) : undefined,
+        benefits: Array.isArray(item.benefits) ? item.benefits : undefined,
+        whyItWorks: Array.isArray(item.whyItWorks) ? item.whyItWorks : undefined,
+        scienceDescription: item.scienceDescription ? String(item.scienceDescription) : undefined,
+        scienceImage: item.scienceImage ? String(item.scienceImage) : undefined,
+        howToUse: Array.isArray(item.howToUse) ? item.howToUse.map((s: unknown) => String(s)) : undefined,
+        labNotes: item.labNotes ? String(item.labNotes) : undefined,
+        labNotesImage: item.labNotesImage ? String(item.labNotesImage) : undefined,
+        faq: Array.isArray(item.faq) ? item.faq : undefined,
+        ingredients: Array.isArray(item.ingredients) ? item.ingredients : undefined,
+        qualityClaims: Array.isArray(item.qualityClaims) ? item.qualityClaims : undefined,
+        reviews: Array.isArray(item.reviews) ? item.reviews : undefined,
       }))
       const updated = await setProducts(sanitized)
       return res.status(200).json(updated)
