@@ -1,6 +1,7 @@
-import { promises as fs } from 'node:fs'
-import path from 'node:path'
-import os from 'node:os'
+/// <reference types="node" />
+import { promises as fs } from 'fs'
+import path from 'path'
+import os from 'os'
 import type { Product, BlogPost, Customer, InventoryItem, Order } from './_data.js'
 
 export type Database = {

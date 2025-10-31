@@ -1,5 +1,5 @@
-import { readDb, writeDb } from './_storage'
-import { supabaseSelectAll, supabaseUpsertMany } from './_db'
+import { readDb, writeDb } from './_storage.js'
+import { supabaseSelectAll, supabaseUpsertMany } from './_db.js'
 
 export type SEO = {
   title: string
