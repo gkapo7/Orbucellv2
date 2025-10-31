@@ -155,12 +155,13 @@ export async function setCustomers(next: Customer[]): Promise<Customer[]> {
 
 export async function listInventory(): Promise<InventoryItem[]> {
   const db = await readDb()
-  return db.inventory
+  // Default missing collection to an empty array to avoid runtime errors
+  return Array.isArray((db as any).inventory) ? (db as any).inventory : []
 }
 
 export async function setInventory(next: InventoryItem[]): Promise<InventoryItem[]> {
   const db = await readDb()
-  db.inventory = next
+  db.inventory = Array.isArray(next) ? next : []
   await writeDb(db)
   return db.inventory
 }
@@ -177,12 +178,13 @@ export async function getInventoryItemById(id: string): Promise<InventoryItem | 
 
 export async function listOrders(): Promise<Order[]> {
   const db = await readDb()
-  return db.orders
+  // Default missing collection to an empty array to avoid runtime errors
+  return Array.isArray((db as any).orders) ? (db as any).orders : []
 }
 
 export async function setOrders(next: Order[]): Promise<Order[]> {
   const db = await readDb()
-  db.orders = next
+  db.orders = Array.isArray(next) ? next : []
   await writeDb(db)
   return db.orders
 }
