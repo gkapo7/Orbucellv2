@@ -1,6 +1,8 @@
 import type { Product as ApiProduct } from '../data/products'
 import type { BlogPost as ApiPost } from '../data/posts'
 import type { Customer } from '../data/customers'
+import type { InventoryItem } from '../data/inventory'
+import type { Order } from '../data/orders'
 
 const BASE = '' // same origin (Vercel / local dev)
 
@@ -76,6 +78,44 @@ export async function postCheckout(items: { id: string; qty: number }[]): Promis
     const text = await res.text()
     throw new Error(text || 'Checkout failed')
   }
+  return res.json()
+}
+
+export async function fetchInventory(): Promise<InventoryItem[]> {
+  const res = await fetch(`${BASE}/api/inventory`, { cache: 'no-store' })
+  if (!res.ok) throw new Error('Failed to load inventory')
+  return res.json()
+}
+
+export async function saveInventory(next: InventoryItem[]): Promise<InventoryItem[]> {
+  const res = await fetch(`${BASE}/api/inventory`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ inventory: next }),
+  })
+  if (!res.ok) throw new Error('Failed to save inventory')
+  return res.json()
+}
+
+export async function fetchOrders(): Promise<Order[]> {
+  const res = await fetch(`${BASE}/api/orders`, { cache: 'no-store' })
+  if (!res.ok) throw new Error('Failed to load orders')
+  return res.json()
+}
+
+export async function fetchOrder(id: string): Promise<Order> {
+  const res = await fetch(`${BASE}/api/orders?id=${encodeURIComponent(id)}`, { cache: 'no-store' })
+  if (!res.ok) throw new Error('Failed to load order')
+  return res.json()
+}
+
+export async function saveOrders(next: Order[]): Promise<Order[]> {
+  const res = await fetch(`${BASE}/api/orders`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orders: next }),
+  })
+  if (!res.ok) throw new Error('Failed to save orders')
   return res.json()
 }
 

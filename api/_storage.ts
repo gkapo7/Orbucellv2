@@ -1,11 +1,13 @@
 import { promises as fs } from 'fs'
 import path from 'path'
-import type { Product, BlogPost, Customer } from './_data'
+import type { Product, BlogPost, Customer, InventoryItem, Order } from './_data'
 
 export type Database = {
   products: Product[]
   posts: BlogPost[]
   customers: Customer[]
+  inventory: InventoryItem[]
+  orders: Order[]
 }
 
 const dataPath = path.join(process.cwd(), 'data', 'content.json')
@@ -14,7 +16,7 @@ async function ensureFile() {
   try {
     await fs.access(dataPath)
   } catch {
-    const initial: Database = { products: [], posts: [], customers: [] }
+    const initial: Database = { products: [], posts: [], customers: [], inventory: [], orders: [] }
     await fs.mkdir(path.dirname(dataPath), { recursive: true })
     await fs.writeFile(dataPath, JSON.stringify(initial, null, 2), 'utf-8')
   }

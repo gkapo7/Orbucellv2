@@ -1,3 +1,11 @@
+export type ArticleSEO = {
+  title: string
+  description: string
+  keywords: string[]
+  ogImage?: string
+  canonicalUrl?: string
+}
+
 export type BlogPost = {
   id: string
   title: string
@@ -8,6 +16,10 @@ export type BlogPost = {
   date: string
   author: string
   tags?: string[]
+  category?: string
+  featured?: boolean
+  readingTime?: string
+  seo: ArticleSEO
 }
 
 export const posts: BlogPost[] = [
@@ -23,6 +35,17 @@ export const posts: BlogPost[] = [
     date: '2025-02-12',
     author: 'Orbucell Team',
     tags: ['magnesium', 'supplements', 'evidence-based'],
+    category: 'Magnesium',
+    featured: true,
+    readingTime: '6 min read',
+    seo: {
+      title: 'Why Magnesium Bisglycinate Stands Out | Orbucell Learn',
+      description:
+        'Discover why magnesium bisglycinate delivers reliable absorption, how it compares to other forms, and practical tips for daily use.',
+      keywords: ['magnesium bisglycinate benefits', 'magnesium glycinate absorption', 'magnesium myths'],
+      ogImage: '/images/magnesium-og.png',
+      canonicalUrl: 'https://orbucell.com/learn/why-magnesium-bisglycinate-stands-out',
+    },
   },
   {
     id: '2',
@@ -36,6 +59,17 @@ export const posts: BlogPost[] = [
     date: '2025-02-19',
     author: 'Orbucell Team',
     tags: ['fiber', 'gut health', 'heart health'],
+    category: 'Fiber',
+    featured: false,
+    readingTime: '7 min read',
+    seo: {
+      title: 'Psyllium Fiber 101 | Orbucell Learn',
+      description:
+        'Understand how psyllium fiber supports digestion, blood sugar, and heart health with evidence-backed guidance on daily use.',
+      keywords: ['psyllium fiber benefits', 'soluble fiber supplement', 'gut health tips'],
+      ogImage: '/images/fiber-og.png',
+      canonicalUrl: 'https://orbucell.com/learn/psyllium-fiber-101',
+    },
   },
   {
     id: '3',
@@ -49,6 +83,17 @@ export const posts: BlogPost[] = [
     date: '2025-02-26',
     author: 'Orbucell Team',
     tags: ['magnesium', 'education'],
+    category: 'Magnesium',
+    featured: false,
+    readingTime: '5 min read',
+    seo: {
+      title: 'Magnesium Oxide vs. Citrate vs. Glycinate | Orbucell Learn',
+      description:
+        'Compare popular magnesium supplements—oxide, citrate, and glycinate—to find the form that best matches your needs.',
+      keywords: ['magnesium oxide', 'magnesium citrate', 'magnesium glycinate comparison'],
+      ogImage: '/images/magnesium-og.png',
+      canonicalUrl: 'https://orbucell.com/learn/comparing-magnesium-forms',
+    },
   },
   {
     id: '4',
@@ -62,5 +107,16 @@ export const posts: BlogPost[] = [
     date: '2025-03-05',
     author: 'Orbucell Team',
     tags: ['fiber', 'nutrition', 'lifestyle'],
+    category: 'Fiber',
+    featured: false,
+    readingTime: '4 min read',
+    seo: {
+      title: 'Fiber for a Busy Lifestyle | Orbucell Learn',
+      description:
+        'Practical strategies to boost daily fiber intake, plus how psyllium supports digestion, heart health, and satiety.',
+      keywords: ['daily fiber tips', 'psyllium routine', 'busy lifestyle nutrition'],
+      ogImage: '/images/fiber-og.png',
+      canonicalUrl: 'https://orbucell.com/learn/fiber-for-a-busy-lifestyle',
+    },
   },
 ]

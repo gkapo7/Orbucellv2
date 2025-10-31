@@ -30,6 +30,16 @@ export default withCors(async function handler(req: VercelRequest, res: VercelRe
       date: String(item.date ?? new Date().toISOString().slice(0, 10)),
       author: String(item.author ?? 'Orbucell Team'),
       tags: Array.isArray(item.tags) ? item.tags.map((tag: unknown) => String(tag)).filter(Boolean) : [],
+      category: item.category ? String(item.category) : undefined,
+      featured: Boolean(item.featured ?? false),
+      readingTime: item.readingTime ? String(item.readingTime) : undefined,
+      seo: {
+        title: String(item.seo?.title ?? item.title ?? ''),
+        description: String(item.seo?.description ?? item.excerpt ?? ''),
+        keywords: Array.isArray(item.seo?.keywords) ? item.seo.keywords.map((k: unknown) => String(k)).filter(Boolean) : [],
+        ogImage: item.seo?.ogImage ? String(item.seo.ogImage) : undefined,
+        canonicalUrl: item.seo?.canonicalUrl ? String(item.seo.canonicalUrl) : undefined,
+      },
     }))
     const updated = await setPosts(sanitized)
     return res.status(200).json(updated)

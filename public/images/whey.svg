@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#ff7a1a"/>
+      <stop offset="100%" stop-color="#ffb347"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="400" fill="#0f0e0d"/>
+  <rect x="160" y="70" width="320" height="260" rx="24" fill="url(#g)"/>
+  <text x="320" y="220" text-anchor="middle" font-size="48" fill="#fff" font-family="ui-sans-serif, system-ui">Whey Pro</text>
+</svg>
+

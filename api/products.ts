@@ -25,10 +25,24 @@ export default withCors(async function handler(req: VercelRequest, res: VercelRe
       name: String(item.name),
       slug: String(item.slug),
       description: String(item.description ?? ''),
+      longDescription: String(item.longDescription ?? ''),
       price: Number(item.price ?? 0),
       image: String(item.image ?? ''),
+      gallery: Array.isArray(item.gallery) ? item.gallery.map((g: unknown) => String(g)).filter(Boolean) : [],
       category: item.category === 'Fiber' ? 'Fiber' : 'Mineral',
       highlights: Array.isArray(item.highlights) ? item.highlights.map((h: unknown) => String(h)).filter(Boolean) : [],
+      sku: String(item.sku ?? ''),
+      stock: Number(item.stock ?? 0),
+      reorderPoint: Number(item.reorderPoint ?? 0),
+      allowBackorder: Boolean(item.allowBackorder ?? false),
+      status: item.status === 'draft' || item.status === 'archived' ? item.status : 'active',
+      seo: {
+        title: String(item.seo?.title ?? item.name ?? ''),
+        description: String(item.seo?.description ?? item.description ?? ''),
+        keywords: Array.isArray(item.seo?.keywords) ? item.seo.keywords.map((k: unknown) => String(k)).filter(Boolean) : [],
+        ogImage: item.seo?.ogImage ? String(item.seo.ogImage) : undefined,
+        canonicalUrl: item.seo?.canonicalUrl ? String(item.seo.canonicalUrl) : undefined,
+      },
     }))
     const updated = await setProducts(sanitized)
     return res.status(200).json(updated)

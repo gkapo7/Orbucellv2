@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400">
+  <defs>
+    <linearGradient id="g3" x1="0" x2="1">
+      <stop offset="0%" stop-color="#ff7a1a"/>
+      <stop offset="100%" stop-color="#ff9f4d"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="400" fill="#0f0e0d"/>
+  <polygon points="80,320 560,320 480,120 160,120" fill="url(#g3)"/>
+  <text x="320" y="210" text-anchor="middle" font-size="48" fill="#fff" font-family="ui-sans-serif, system-ui">BCAA</text>
+</svg>
+
