@@ -37,6 +37,15 @@ Both products include:
 - SEO metadata
 - Gallery images
 - Highlights and benefits
+- **Theme colors** (Blue for Magnesium, Orange for Psyllium)
+- **Benefits** (4 benefits each with titles and details)
+- **Why It Works** (3 items each explaining the formulation)
+- **How To Use** (3 steps with detailed instructions)
+- **Science Description** (Full scientific explanation)
+- **Lab Notes** (Quality and testing information)
+- **FAQ** (4 common questions with answers)
+- **Ratings & Reviews** (Sample ratings and review counts)
+- **Ingredients, Quality Claims, Reviews** (Ready for future data)
 
 After seeding, your products will automatically appear in:
 - `/products` catalog page
