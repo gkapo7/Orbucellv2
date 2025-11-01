@@ -30,7 +30,9 @@ CREATE TABLE IF NOT EXISTS products (
   "labNotes" TEXT,
   "labNotesImage" TEXT,
   faq JSONB DEFAULT '[]'::jsonb,
+  "faqImage" TEXT,
   ingredients JSONB DEFAULT '[]'::jsonb,
+  "howToUseImage" TEXT,
   "qualityClaims" JSONB DEFAULT '[]'::jsonb,
   reviews JSONB DEFAULT '[]'::jsonb
 );

@@ -19,12 +19,31 @@ function Header() {
   const [products, setProducts] = useState<Product[]>([])
   const hoverTimeout = useRef<number | null>(null)
 
+  // Fetch products on mount and refresh periodically
   useEffect(() => {
-    fetchProducts()
-      .then((data) => setProducts(data.filter((p) => p.status === 'active')))
-      .catch(() => {
-        // Silently fail - products menu will just be empty
-      })
+    const loadProducts = () => {
+      fetchProducts()
+        .then((data) => setProducts(data.filter((p) => p.status === 'active')))
+        .catch(() => {
+          // Silently fail - products menu will just be empty
+        })
+    }
+    
+    loadProducts()
+    
+    // Refresh every 30 seconds to pick up changes
+    const interval = setInterval(loadProducts, 30000)
+    
+    // Also listen for focus events to refresh when user returns to tab
+    const handleFocus = () => {
+      loadProducts()
+    }
+    window.addEventListener('focus', handleFocus)
+    
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('focus', handleFocus)
+    }
   }, [])
 
   useEffect(() => {

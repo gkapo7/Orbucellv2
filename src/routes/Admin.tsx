@@ -151,8 +151,11 @@ function ProductsPanel() {
       themeColor: '#3d5b81',
       benefits: [],
       whyItWorks: [],
+      ingredients: [],
       howToUse: [],
+      howToUseImage: undefined,
       faq: [],
+      faqImage: undefined,
     }
     setState((prev) => ({ ...prev, draft: [...prev.draft, fresh] }))
   }
@@ -661,6 +664,91 @@ function ProductsPanel() {
                     </div>
                   </div>
 
+                  {/* Ingredients Section */}
+                  <div className="mt-6 rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
+                    <div className="mb-4 flex items-center justify-between">
+                      <h3 className="text-base font-semibold text-neutral-900">Ingredients</h3>
+                      <button
+                        onClick={() => {
+                          const current = product.ingredients || []
+                          handleField(index, 'ingredients')([
+                            ...current,
+                            { name: '', amount: '', description: '' },
+                          ])
+                        }}
+                        className="rounded-full border border-neutral-300 px-3 py-1 text-xs text-neutral-700 hover:border-neutral-400"
+                      >
+                        Add Ingredient
+                      </button>
+                    </div>
+                    {(product.ingredients || []).map((ingredient, i) => (
+                      <div key={i} className="mb-4 rounded-xl border border-neutral-200 bg-white p-4">
+                        <div className="mb-3 flex items-center justify-between">
+                          <span className="text-sm font-medium text-neutral-700">Ingredient {i + 1}</span>
+                          <button
+                            onClick={() => {
+                              const updated = [...(product.ingredients || [])]
+                              updated.splice(i, 1)
+                              handleField(index, 'ingredients')(updated)
+                            }}
+                            className="text-xs text-red-600 hover:text-red-700"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                        <div className="grid gap-3">
+                          <Field label="Name">
+                            <input
+                              value={ingredient.name}
+                              onChange={(event) => {
+                                const updated = [...(product.ingredients || [])]
+                                updated[i] = { ...updated[i], name: event.target.value }
+                                handleField(index, 'ingredients')(updated)
+                              }}
+                              className="admin-input"
+                              placeholder="Ingredient name"
+                            />
+                          </Field>
+                          <Field label="Amount">
+                            <input
+                              value={ingredient.amount}
+                              onChange={(event) => {
+                                const updated = [...(product.ingredients || [])]
+                                updated[i] = { ...updated[i], amount: event.target.value }
+                                handleField(index, 'ingredients')(updated)
+                              }}
+                              className="admin-input"
+                              placeholder="e.g., 100 mg"
+                            />
+                          </Field>
+                          <Field label="Description">
+                            <textarea
+                              value={ingredient.description}
+                              onChange={(event) => {
+                                const updated = [...(product.ingredients || [])]
+                                updated[i] = { ...updated[i], description: event.target.value }
+                                handleField(index, 'ingredients')(updated)
+                              }}
+                              className="admin-textarea"
+                              placeholder="Description of the ingredient"
+                              rows={2}
+                            />
+                          </Field>
+                          <ImageUpload
+                            label="Ingredient Image (optional)"
+                            value={(ingredient as any).image || ''}
+                            onChange={(url: string) => {
+                              const updated = [...(product.ingredients || [])]
+                              updated[i] = { ...updated[i], image: url || undefined } as any
+                              handleField(index, 'ingredients')(updated)
+                            }}
+                            placeholder="/images/ingredient-image.jpg"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
                   {/* Directions / How To Use Section */}
                   <div className="mt-6 rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
                     <div className="mb-4 flex items-center justify-between">
@@ -675,6 +763,12 @@ function ProductsPanel() {
                         Add Step
                       </button>
                     </div>
+                    <ImageUpload
+                      label="Instructions Image (optional)"
+                      value={product.howToUseImage || ''}
+                      onChange={(url: string) => handleField(index, 'howToUseImage')(url || undefined)}
+                      placeholder="/images/instructions-image.jpg"
+                    />
                     {(product.howToUse || []).map((step, i) => (
                       <div key={i} className="mb-2 flex gap-2">
                         <input
@@ -729,7 +823,7 @@ function ProductsPanel() {
                           const current = product.faq || []
                           handleField(index, 'faq')([
                             ...current,
-                            { question: '', answer: '' },
+                            { question: '', answer: '', image: undefined },
                           ])
                         }}
                         className="rounded-full border border-neutral-300 px-3 py-1 text-xs text-neutral-700 hover:border-neutral-400"
@@ -737,6 +831,12 @@ function ProductsPanel() {
                         Add FAQ
                       </button>
                     </div>
+                    <ImageUpload
+                      label="FAQ Section Image (optional)"
+                      value={product.faqImage || ''}
+                      onChange={(url: string) => handleField(index, 'faqImage')(url || undefined)}
+                      placeholder="/images/faq-image.jpg"
+                    />
                     {(product.faq || []).map((faq, i) => (
                       <div key={i} className="mb-4 rounded-xl border border-neutral-200 bg-white p-4">
                         <div className="mb-3 flex items-center justify-between">
@@ -778,6 +878,16 @@ function ProductsPanel() {
                               rows={2}
                             />
                           </Field>
+                          <ImageUpload
+                            label="FAQ Item Image (optional)"
+                            value={(faq as any).image || ''}
+                            onChange={(url: string) => {
+                              const updated = [...(product.faq || [])]
+                              updated[i] = { ...updated[i], image: url || undefined } as any
+                              handleField(index, 'faq')(updated)
+                            }}
+                            placeholder="/images/faq-item-image.jpg"
+                          />
                         </div>
                       </div>
                     ))}

@@ -363,10 +363,10 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
                       <p className="mt-1 text-sm text-neutral-600">{ingredient.amount}</p>
                       <p className="mt-2 text-sm text-neutral-700">{ingredient.description}</p>
                     </div>
-                    {product.gallery && product.gallery[i % product.gallery.length] && (
+                    {((ingredient as any).image || (product.gallery && product.gallery.length > 0)) && (
                       <div className="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border border-neutral-200">
                         <img 
-                          src={product.gallery[i % product.gallery.length]} 
+                          src={(ingredient as any).image || product.gallery[i % product.gallery.length]} 
                           alt={ingredient.name}
                           className="h-full w-full object-cover"
                         />
@@ -455,6 +455,15 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
           <section className="grid gap-10 rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm lg:grid-cols-[1.1fr_0.9fr]">
             <div>
               <h2 className="text-2xl font-semibold text-neutral-900">{DEFAULT_SECTION_TITLES.directionsTitle}</h2>
+              {(product as any).howToUseImage && (
+                <div className="mt-4 rounded-2xl overflow-hidden border border-neutral-200">
+                  <img 
+                    src={(product as any).howToUseImage} 
+                    alt="Instructions illustration"
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              )}
               <ol className="mt-6 space-y-4 text-sm text-neutral-700">
                 {howToUse.map((step, i) => (
                   <li key={i} className="flex gap-3">
@@ -488,13 +497,33 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
         {faq.length > 0 && (
           <section className="rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm">
             <h2 className="text-2xl font-semibold text-neutral-900">Frequently Asked Questions</h2>
+            {(product as any).faqImage && (
+              <div className="mt-4 rounded-2xl overflow-hidden border border-neutral-200">
+                <img 
+                  src={(product as any).faqImage} 
+                  alt="FAQ illustration"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            )}
             <div className="mt-6 space-y-4">
               {faq.map((item, i) => (
                 <details key={i} className="group rounded-3xl border border-neutral-200 bg-neutral-50 p-5">
                   <summary className="cursor-pointer text-sm font-medium text-neutral-900 marker:hidden">
                     {item.question}
                   </summary>
-                  <p className="mt-3 text-sm text-neutral-600">{item.answer}</p>
+                  <div className="mt-3">
+                    {(item as any).image && (
+                      <div className="mb-3 rounded-xl overflow-hidden border border-neutral-200">
+                        <img 
+                          src={(item as any).image} 
+                          alt={`FAQ ${i + 1} illustration`}
+                          className="w-full h-auto object-cover"
+                        />
+                      </div>
+                    )}
+                    <p className="text-sm text-neutral-600">{item.answer}</p>
+                  </div>
                 </details>
               ))}
             </div>

@@ -12,6 +12,7 @@ export type Ingredient = {
   name: string
   amount: string
   description: string
+  image?: string // Optional image for ingredient
 }
 
 export type Review = {
@@ -58,11 +59,13 @@ export type Product = {
   scienceDescription?: string
   scienceImage?: string // Image for science section
   howToUse?: string[]
+  howToUseImage?: string // Image for instructions section
   benefits?: Array<{ title: string; detail: string; image?: string }> // Benefits with images
   whyItWorks?: Array<{ title: string; detail: string }> // Why it works items
   labNotes?: string // Need to know / Lab notes
   labNotesImage?: string // Image for lab notes section
-  faq?: { question: string; answer: string }[]
+  faq?: Array<{ question: string; answer: string; image?: string }> // FAQ with optional images
+  faqImage?: string // Image for FAQ section header
 }
 
 export const products: Product[] = [

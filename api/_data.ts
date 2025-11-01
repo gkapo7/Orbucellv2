@@ -222,9 +222,11 @@ export async function listProducts(): Promise<Product[]> {
     scienceDescription: (p as any).scienceDescription,
     scienceImage: (p as any).scienceImage,
     howToUse: Array.isArray((p as any).howToUse) ? (p as any).howToUse : undefined,
+    howToUseImage: (p as any).howToUseImage,
     labNotes: (p as any).labNotes,
     labNotesImage: (p as any).labNotesImage,
     faq: Array.isArray((p as any).faq) ? (p as any).faq : undefined,
+    faqImage: (p as any).faqImage,
   }))
 }
 
@@ -296,9 +298,11 @@ export async function getProductById(id: string): Promise<Product | undefined> {
       scienceDescription: p.scienceDescription,
       scienceImage: p.scienceImage,
       howToUse: Array.isArray(p.howToUse) ? p.howToUse : undefined,
+      howToUseImage: (p as any).howToUseImage,
       labNotes: p.labNotes,
       labNotesImage: p.labNotesImage,
       faq: Array.isArray(p.faq) ? p.faq : undefined,
+      faqImage: (p as any).faqImage,
     }
   }
   
@@ -341,9 +345,11 @@ export async function getProductById(id: string): Promise<Product | undefined> {
     scienceDescription: (product as any).scienceDescription,
     scienceImage: (product as any).scienceImage,
     howToUse: Array.isArray((product as any).howToUse) ? (product as any).howToUse : undefined,
+    howToUseImage: (product as any).howToUseImage,
     labNotes: (product as any).labNotes,
     labNotesImage: (product as any).labNotesImage,
     faq: Array.isArray((product as any).faq) ? (product as any).faq : undefined,
+    faqImage: (product as any).faqImage,
   }
 }
 
