@@ -179,11 +179,14 @@ function ProductsPanel() {
         error: null,
       })
     } catch (error) {
+      console.error('Save products error:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Unable to save products.'
       setState((prev) => ({
         ...prev,
         saving: false,
-        error: error instanceof Error ? error.message : 'Unable to save products.',
+        error: errorMessage + ' Check browser console for details.',
       }))
+      alert(`Error saving products: ${errorMessage}\n\nPlease check:\n1. Run the Supabase migration (supabase-migration.sql)\n2. Check browser console for details\n3. Verify Supabase connection`)
     }
   }
 
@@ -232,22 +235,22 @@ function ProductsPanel() {
             <div key={product.id} className="rounded-2xl border border-neutral-200 bg-white shadow-sm">
               {selectedProduct === index ? (
                 <div className="p-6">
-                  <div className="flex flex-col gap-4 md:flex-row md:justify-between md:gap-6">
-                    <div className="grid flex-1 gap-4 sm:grid-cols-2">
-                      <Field label="Name">
-                        <input
-                          value={product.name}
-                          onChange={(event) => handleField(index, 'name')(event.target.value)}
-                          className="admin-input"
-                        />
-                      </Field>
-                      <Field label="Slug">
-                        <input
-                          value={product.slug}
-                          onChange={(event) => handleField(index, 'slug')(event.target.value)}
-                          className="admin-input"
-                        />
-                      </Field>
+              <div className="flex flex-col gap-4 md:flex-row md:justify-between md:gap-6">
+                <div className="grid flex-1 gap-4 sm:grid-cols-2">
+                  <Field label="Name">
+                    <input
+                      value={product.name}
+                      onChange={(event) => handleField(index, 'name')(event.target.value)}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Slug">
+                    <input
+                      value={product.slug}
+                      onChange={(event) => handleField(index, 'slug')(event.target.value)}
+                      className="admin-input"
+                    />
+                  </Field>
                       <Field label="SKU">
                         <input
                           value={product.sku ?? ''}
@@ -266,28 +269,28 @@ function ProductsPanel() {
                           <option value="archived">Archived</option>
                         </select>
                       </Field>
-                      <Field label="Category">
-                        <select
-                          value={product.category}
-                          onChange={(event) => handleField(index, 'category')(event.target.value as Product['category'])}
-                          className="admin-input"
-                        >
-                          <option value="Mineral">Mineral</option>
-                          <option value="Fiber">Fiber</option>
-                        </select>
-                      </Field>
-                      <Field label="Price">
-                        <input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          value={product.price}
-                          onChange={(event) => handleField(index, 'price')(Number(event.target.value))}
-                          className="admin-input"
-                        />
-                      </Field>
+                  <Field label="Category">
+                    <select
+                      value={product.category}
+                      onChange={(event) => handleField(index, 'category')(event.target.value as Product['category'])}
+                      className="admin-input"
+                    >
+                      <option value="Mineral">Mineral</option>
+                      <option value="Fiber">Fiber</option>
+                    </select>
+                  </Field>
+                  <Field label="Price">
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={product.price}
+                      onChange={(event) => handleField(index, 'price')(Number(event.target.value))}
+                      className="admin-input"
+                    />
+                  </Field>
                       <Field label="Stock">
-                        <input
+                    <input
                           type="number"
                           min="0"
                           value={product.stock ?? 0}
@@ -347,7 +350,7 @@ function ProductsPanel() {
                       </Field>
                       <ImageUpload
                         label="Image"
-                        value={product.image}
+                      value={product.image}
                         onChange={(url: string) => handleField(index, 'image')(url)}
                         placeholder="/images/product.jpg"
                       />
@@ -362,36 +365,36 @@ function ProductsPanel() {
                                 .filter(Boolean)
                             )
                           }
-                          className="admin-input"
-                        />
-                      </Field>
+                      className="admin-input"
+                    />
+                  </Field>
                       <Field label="Highlights (comma-separated)">
-                        <input
+                    <input
                           value={(product.highlights ?? []).join(', ')}
-                          onChange={(event) =>
-                            handleField(index, 'highlights')(
-                              event.target.value
-                                .split(',')
-                                .map((item) => item.trim())
-                                .filter(Boolean)
-                            )
-                          }
-                          className="admin-input"
-                        />
-                      </Field>
-                    </div>
-                    <button
-                      onClick={() => removeProduct(index)}
-                      className="self-start rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                  <Field label="Description" stacked>
-                    <textarea
-                      value={product.description}
-                      onChange={(event) => handleField(index, 'description')(event.target.value)}
-                      className="admin-textarea"
+                      onChange={(event) =>
+                        handleField(index, 'highlights')(
+                          event.target.value
+                            .split(',')
+                            .map((item) => item.trim())
+                            .filter(Boolean)
+                        )
+                      }
+                      className="admin-input"
+                    />
+                  </Field>
+                </div>
+                <button
+                  onClick={() => removeProduct(index)}
+                  className="self-start rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
+                >
+                  Remove
+                </button>
+              </div>
+              <Field label="Description" stacked>
+                <textarea
+                  value={product.description}
+                  onChange={(event) => handleField(index, 'description')(event.target.value)}
+                  className="admin-textarea"
                     />
                   </Field>
                   <Field label="Long Description" stacked>
@@ -465,8 +468,8 @@ function ProductsPanel() {
                             })
                           }
                           className="admin-input"
-                        />
-                      </Field>
+                />
+              </Field>
                     </div>
                     <Field label="SEO Description" stacked>
                       <textarea
@@ -583,9 +586,9 @@ function ProductsPanel() {
                             placeholder="/images/benefit-image.jpg"
                           />
                         </div>
-                      </div>
-                    ))}
-                  </div>
+            </div>
+          ))}
+        </div>
 
                   {/* Science / Why It Works Section */}
                   <div className="mt-6 rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
@@ -1254,8 +1257,8 @@ function PostsPanel() {
                         })
                       }
                       className="admin-input"
-                    />
-                  </Field>
+                />
+              </Field>
                 </div>
                 <Field label="SEO Description" stacked>
                   <textarea
@@ -1411,7 +1414,7 @@ function CustomersPanel() {
         </div>
       ) : (
         <div className="grid gap-6">
-          {state.draft.map((customer, index) => (
+              {state.draft.map((customer, index) => (
             <div key={customer.id} className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm">
               <div className="flex flex-col gap-4 md:flex-row md:justify-between md:gap-6">
                 <div className="grid flex-1 gap-4 sm:grid-cols-2">
@@ -1563,12 +1566,12 @@ function CustomersPanel() {
                     />
                   </Field>
                 </div>
-                <button
-                  onClick={() => removeCustomer(index)}
+                    <button
+                      onClick={() => removeCustomer(index)}
                   className="self-start rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
-                >
-                  Remove
-                </button>
+                    >
+                      Remove
+                    </button>
               </div>
               <Field label="Notes" stacked>
                 <textarea

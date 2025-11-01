@@ -60,14 +60,22 @@ export default withCors(async function handler(req: any, res: any) {
         qualityClaims: Array.isArray(item.qualityClaims) ? item.qualityClaims : undefined,
         reviews: Array.isArray(item.reviews) ? item.reviews : undefined,
       }))
+      console.log(`[products API] Received ${sanitized.length} products to save`)
       const updated = await setProducts(sanitized)
+      console.log(`[products API] Successfully saved ${updated.length} products`)
       return res.status(200).json(updated)
     }
 
     res.status(405).json({ error: 'Method not allowed' })
   } catch (error) {
-    console.error('Products API error:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    console.error('[products API] Error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error'
+    console.error('[products API] Error details:', errorMessage)
+    res.status(500).json({ 
+      error: 'Internal server error',
+      details: errorMessage,
+      hint: 'Check Supabase connection and ensure migration SQL has been run'
+    })
   }
 })
 

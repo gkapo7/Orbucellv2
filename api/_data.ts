@@ -231,32 +231,43 @@ export async function listProducts(): Promise<Product[]> {
 }
 
 export async function setProducts(next: Product[]): Promise<Product[]> {
-  // Get existing products to find deleted ones
-  const existing = await listProducts()
-  const existingIds = new Set(existing.map(p => p.id))
-  const nextIds = new Set(next.map(p => p.id))
-  const deletedIds = Array.from(existingIds).filter(id => !nextIds.has(id))
-  
-  // Delete removed products from Supabase
-  if (deletedIds.length > 0) {
-    await supabaseDeleteMany('products', deletedIds)
-  }
-  
-  // Upsert remaining/updated products
-  const ok = await supabaseUpsertMany('products', next as any)
-  if (ok) {
-    // Also update file storage as backup
+  try {
+    // Get existing products to find deleted ones
+    const existing = await listProducts()
+    const existingIds = new Set(existing.map(p => p.id))
+    const nextIds = new Set(next.map(p => p.id))
+    const deletedIds = Array.from(existingIds).filter(id => !nextIds.has(id))
+    
+    // Delete removed products from Supabase
+    if (deletedIds.length > 0) {
+      const deleteResult = await supabaseDeleteMany('products', deletedIds)
+      console.log(`[setProducts] Deleted ${deletedIds.length} products:`, deleteResult)
+    }
+    
+    // Upsert remaining/updated products
+    console.log(`[setProducts] Upserting ${next.length} products to Supabase...`)
+    const ok = await supabaseUpsertMany('products', next as any)
+    if (ok) {
+      console.log('[setProducts] Successfully saved to Supabase')
+      // Also update file storage as backup
+      const db = await readDb()
+      db.products = next
+      await writeDb(db)
+      return next
+    } else {
+      console.warn('[setProducts] Supabase upsert failed, falling back to file storage')
+    }
+    
+    // Fallback to file storage only
     const db = await readDb()
     db.products = next
     await writeDb(db)
-    return next
+    console.log('[setProducts] Saved to file storage only')
+    return db.products
+  } catch (error) {
+    console.error('[setProducts] Error:', error)
+    throw error
   }
-  
-  // Fallback to file storage only
-  const db = await readDb()
-  db.products = next
-  await writeDb(db)
-  return db.products
 }
 
 export async function getProductById(id: string): Promise<Product | undefined> {

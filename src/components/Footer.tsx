@@ -27,14 +27,13 @@ function Footer() {
     <footer className="border-t border-neutral-200/60 bg-white">
       <div className="bg-gradient-to-br from-[#ee6b4d] via-[#f59f82] to-[#ee6b4d]">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_1fr] lg:px-8">
-          <div className="rounded-[28px] bg-white/92 p-6 shadow-xl shadow-[#ee6b4d]/20">
+          <div className="rounded-[28px] bg-white p-8 shadow-xl shadow-[#ee6b4d]/25 border-2 border-white">
             <p className="inline-flex items-center rounded-full border border-[#ee6b4d]/20 bg-[#ee6b4d]/10 px-3 py-1 text-xs uppercase tracking-[0.3em] text-[#9a3412]">
               Unlock your wellness guide
             </p>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">Get the Orbucell daily essentials guide.</h2>
-            <p className="mt-4 text-sm text-neutral-600">
-              Download our pharmacist-crafted guide featuring magnesium + fiber protocols, morning and evening routines, and
-              metabolic-friendly recipes.
+            <p className="mt-4 text-base text-neutral-700 leading-relaxed">
+              Download our pharmacist-crafted guide featuring magnesium + fiber protocols, morning and evening routines, and metabolic-friendly recipes.
             </p>
             {submitted ? (
               <p className="mt-6 rounded-3xl bg-[#ee6b4d]/10 px-4 py-3 text-sm text-[#9a3412]">
@@ -42,7 +41,7 @@ function Footer() {
               </p>
             ) : null}
           </div>
-          <form onSubmit={handleSubmit} className="grid gap-4 rounded-[32px] border border-[#ee6b4d]/20 bg-white/88 p-6 shadow-lg shadow-[#ee6b4d]/15">
+          <form onSubmit={handleSubmit} className="grid gap-4 rounded-[32px] border-2 border-white bg-white p-8 shadow-xl shadow-[#ee6b4d]/25">
             <label className="text-xs uppercase tracking-[0.3em] text-[#9a3412]">
               Name
               <input

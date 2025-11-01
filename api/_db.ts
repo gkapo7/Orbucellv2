@@ -7,8 +7,14 @@ let client: SupabaseClient | null = null
 export function getSupabase(): SupabaseClient | null {
 	const url = process.env.SUPABASE_URL
 	const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY
-	if (!url || !key) return null
-	if (!client) client = createClient(url, key)
+	if (!url || !key) {
+		console.warn('[supabase] Missing env vars - SUPABASE_URL:', !!url, 'SUPABASE_KEY:', !!key)
+		return null
+	}
+	if (!client) {
+		client = createClient(url, key)
+		console.log('[supabase] Client initialized')
+	}
 	return client
 }
 
@@ -47,12 +53,18 @@ export async function supabaseSelectByField<T>(table: Tables, field: string, val
 
 export async function supabaseUpsertMany<T extends { id: string }>(table: Tables, rows: T[]): Promise<boolean> {
 	const supabase = getSupabase()
-	if (!supabase) return false
-	const { error } = await supabase.from(table).upsert(rows, { onConflict: 'id' })
-	if (error) {
-		console.error(`[supabase] upsert ${table} error`, error)
+	if (!supabase) {
+		console.error(`[supabase] No Supabase client available. Check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY env variables.`)
 		return false
 	}
+	console.log(`[supabase] Upserting ${rows.length} rows to ${table}...`)
+	const { data, error } = await supabase.from(table).upsert(rows, { onConflict: 'id' })
+	if (error) {
+		console.error(`[supabase] upsert ${table} error:`, error)
+		console.error(`[supabase] Error details:`, JSON.stringify(error, null, 2))
+		return false
+	}
+	console.log(`[supabase] Successfully upserted ${rows.length} rows to ${table}`)
 	return true
 }
 
