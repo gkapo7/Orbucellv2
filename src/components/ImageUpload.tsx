@@ -15,32 +15,23 @@ export default function ImageUpload({ value, onChange, placeholder = '/images/up
   const handleUpload = async (file: File) => {
     setUploading(true)
     try {
-      // Create FormData
-      const formData = new FormData()
-      formData.append('file', file)
-      
-      // Upload to API endpoint
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-      
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Upload failed')
+      // Convert to base64 data URL for immediate use (no API call needed)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const base64String = reader.result as string
+        onChange(base64String)
+        setUploading(false)
       }
-      
-      const data = await response.json()
-      if (data.url) {
-        onChange(data.url)
-      } else {
-        throw new Error('No URL returned from upload')
+      reader.onerror = () => {
+        console.error('Failed to read file')
+        setUploading(false)
+        // Allow fallback to URL input - don't show alert
       }
+      reader.readAsDataURL(file)
     } catch (error) {
       console.error('Upload error:', error)
-      alert(`Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}. Please try uploading the image to your CDN/storage and paste the URL directly.`)
-    } finally {
       setUploading(false)
+      // Don't show alert - allow URL input fallback
     }
   }
 
