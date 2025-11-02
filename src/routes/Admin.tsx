@@ -169,6 +169,35 @@ function ProductsPanel() {
   const save = async () => {
     try {
       setState((prev) => ({ ...prev, saving: true, message: null, error: null }))
+      
+      // Check for large base64 images that might cause 413 errors
+      const hasLargeImages = state.draft.some(product => {
+        const checkImage = (img: string | undefined) => {
+          if (!img) return false
+          return img.startsWith('data:') && img.length > 1_000_000 // ~1MB base64
+        }
+        return checkImage(product.image) || 
+               product.gallery?.some(checkImage) ||
+               checkImage(product.scienceImage) ||
+               checkImage(product.labNotesImage) ||
+               checkImage(product.howToUseImage) ||
+               checkImage(product.faqImage) ||
+               product.benefits?.some(b => checkImage(b.image)) ||
+               product.ingredients?.some(i => checkImage(i.image)) ||
+               product.faq?.some(f => checkImage(f.image))
+      })
+      
+      if (hasLargeImages) {
+        const proceed = confirm(
+          'Warning: Some images are very large (base64 encoded). This may cause "Payload Too Large" errors.\n\n' +
+          'Consider using image URLs instead of uploading files. Continue anyway?'
+        )
+        if (!proceed) {
+          setState((prev) => ({ ...prev, saving: false }))
+          return
+        }
+      }
+      
       const persisted = await saveProducts(state.draft)
       setState({
         data: persisted,
@@ -181,12 +210,19 @@ function ProductsPanel() {
     } catch (error) {
       console.error('Save products error:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unable to save products.'
+      let userMessage = errorMessage
+      
+      // Provide helpful message for 413 errors
+      if (errorMessage.includes('413') || errorMessage.includes('Payload Too Large')) {
+        userMessage = 'Image files are too large! Please:\n1. Use image URLs instead of uploading files\n2. Or compress/optimize images before uploading'
+      }
+      
       setState((prev) => ({
         ...prev,
         saving: false,
-        error: errorMessage + ' Check browser console for details.',
+        error: userMessage + ' Check browser console for details.',
       }))
-      alert(`Error saving products: ${errorMessage}\n\nPlease check:\n1. Run the Supabase migration (supabase-migration.sql)\n2. Check browser console for details\n3. Verify Supabase connection`)
+      alert(`Error saving products: ${userMessage}\n\nPlease check:\n1. Run the Supabase migration (supabase-migration.sql)\n2. Check browser console for details\n3. Verify Supabase connection`)
     }
   }
 
@@ -371,14 +407,26 @@ function ProductsPanel() {
                       <Field label="Highlights (comma-separated)">
                     <input
                           value={(product.highlights ?? []).join(', ')}
-                      onChange={(event) =>
+                      onChange={(event) => {
+                        // Allow typing commas - only split when user finishes typing
+                        const value = event.target.value
                         handleField(index, 'highlights')(
-                          event.target.value
+                          value
                             .split(',')
                             .map((item) => item.trim())
                             .filter(Boolean)
                         )
-                      }
+                      }}
+                      onBlur={(event) => {
+                        // Ensure proper formatting on blur
+                        const value = event.target.value
+                        handleField(index, 'highlights')(
+                          value
+                            .split(',')
+                            .map((item) => item.trim())
+                            .filter(Boolean)
+                        )
+                      }}
                       className="admin-input"
                     />
                   </Field>
@@ -912,7 +960,8 @@ function ProductsPanel() {
                     </button>
                     <button
                       onClick={() => {
-                        window.open(`/products/${product.id}`, '_blank')
+                        const url = product.slug ? `/products/${product.slug}` : `/products/${product.id}`
+                        window.open(url, '_blank')
                       }}
                       className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
                     >
@@ -941,7 +990,10 @@ function ProductsPanel() {
                       Edit
                     </button>
                     <button
-                      onClick={() => window.open(`/products/${product.id}`, '_blank')}
+                      onClick={() => {
+                        const url = product.slug ? `/products/${product.slug}` : `/products/${product.id}`
+                        window.open(url, '_blank')
+                      }}
                       className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
                     >
                       Preview

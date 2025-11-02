@@ -72,41 +72,28 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
     ? product.faq 
     : []
   
-  // Helper function to generate theme from hex color
+  // Helper function to generate theme from hex color (using exact color, no lightening)
   const generateThemeFromColor = (hex: string): ProductTheme => {
     // Convert hex to RGB
     const r = parseInt(hex.slice(1, 3), 16)
     const g = parseInt(hex.slice(3, 5), 16)
     const b = parseInt(hex.slice(5, 7), 16)
     
-    // Create lighter and darker variants
-    const lighten = (color: number, amount: number) => Math.min(255, color + amount)
+    // Use exact color or minimal variants (no lightening)
     const darken = (color: number, amount: number) => Math.max(0, color - amount)
     
-    const rLight = lighten(r, 60)
-    const gLight = lighten(g, 60)
-    const bLight = lighten(b, 60)
-    
-    const rLighter = lighten(r, 120)
-    const gLighter = lighten(g, 120)
-    const bLighter = lighten(b, 120)
-    
-    const rDark = darken(r, 30)
-    const gDark = darken(g, 30)
-    const bDark = darken(b, 30)
-    
-    const rDarker = darken(r, 50)
-    const gDarker = darken(g, 50)
-    const bDarker = darken(b, 50)
+    const rDark = darken(r, 20)
+    const gDark = darken(g, 20)
+    const bDark = darken(b, 20)
     
     const toHex = (n: number) => n.toString(16).padStart(2, '0')
-    const button = `#${toHex(r)}${toHex(g)}${toHex(b)}`
+    const button = hex // Use exact color
     const buttonHover = `#${toHex(rDark)}${toHex(gDark)}${toHex(bDark)}`
-    const cardBorder = `#${toHex(rLight)}${toHex(gLight)}${toHex(bLight)}`
-    const chipBg = `rgb(${rLighter}, ${gLighter}, ${bLighter})`
-    const chipBorder = `#${toHex(rLight)}${toHex(gLight)}${toHex(bLight)}`
-    const accentText = `#${toHex(rDarker)}${toHex(gDarker)}${toHex(bDarker)}`
-    const heroGradient = `linear-gradient(135deg, ${button} 0%, ${cardBorder} 60%, ${chipBg} 100%)`
+    const cardBorder = hex // Use exact color
+    const chipBg = `rgba(${r}, ${g}, ${b}, 0.1)` // Very subtle background
+    const chipBorder = hex // Use exact color
+    const accentText = hex // Use exact color
+    const heroGradient = `linear-gradient(135deg, ${hex} 0%, ${hex} 100%)` // Solid color
     
     return {
       heroGradient,

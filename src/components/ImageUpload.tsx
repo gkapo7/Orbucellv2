@@ -15,10 +15,27 @@ export default function ImageUpload({ value, onChange, placeholder = '/images/up
   const handleUpload = async (file: File) => {
     setUploading(true)
     try {
+      // Check file size (warn if too large for base64 - can cause 413 errors)
+      const maxSize = 2 * 1024 * 1024 // 2MB
+      if (file.size > maxSize) {
+        const useBase64 = confirm(
+          `Image is ${(file.size / 1024 / 1024).toFixed(2)}MB. Large images may cause "Payload Too Large" errors.\n\n` +
+          `Would you like to continue? (Consider using a URL instead for large images)`
+        )
+        if (!useBase64) {
+          setUploading(false)
+          return
+        }
+      }
+      
       // Convert to base64 data URL for immediate use (no API call needed)
       const reader = new FileReader()
       reader.onloadend = () => {
         const base64String = reader.result as string
+        // Warn if base64 string is very large
+        if (base64String.length > 1_000_000) { // ~1MB base64 = ~750KB image
+          console.warn('Large base64 image - may cause 413 Payload Too Large errors. Consider using image URLs instead.')
+        }
         onChange(base64String)
         setUploading(false)
       }

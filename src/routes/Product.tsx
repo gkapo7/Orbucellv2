@@ -11,6 +11,9 @@ function Product() {
   const [loading, setLoading] = useState<boolean>(Boolean(id && !product))
 
   useEffect(() => {
+    // Scroll to top when product changes
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    
     if (!id) return
     let cancelled = false
     setLoading(true)

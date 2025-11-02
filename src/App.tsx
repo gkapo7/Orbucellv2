@@ -1,4 +1,5 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import './App.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -13,9 +14,18 @@ import Admin from './routes/Admin'
 import Login from './routes/Login'
 import Account from './routes/Account'
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [pathname])
+  return null
+}
+
 function App() {
   return (
     <div className="min-h-dvh flex flex-col bg-white text-neutral-900">
+      <ScrollToTop />
       <Header />
       <main className="flex-1">
         <Routes>
