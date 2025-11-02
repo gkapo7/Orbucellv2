@@ -5,8 +5,8 @@
 INSERT INTO products (
   id, name, slug, description, "longDescription", price, image, gallery, category, highlights, 
   sku, stock, "reorderPoint", "allowBackorder", status, seo,
-  "themeColor", rating, "reviewCount", benefits, "whyItWorks", "howToUse", 
-  "scienceDescription", "scienceImage", "labNotes", "labNotesImage", faq,
+  "themeColor", rating, "reviewCount", benefits, "whyItWorks", "howToUse", "howToUseImage",
+  "scienceDescription", "scienceImage", "labNotes", "labNotesImage", faq, "faqImage",
   ingredients, "qualityClaims", reviews
 )
 VALUES 
@@ -31,36 +31,47 @@ VALUES
   4.8,
   1200,
   '[
-    {"title": "Promotes relaxation and mood stability", "detail": "Magnesium helps modulate neurotransmitters and may reduce feelings of anxiety.", "image": null},
-    {"title": "Supports heart health", "detail": "Adequate magnesium intake is associated with healthy heart rhythms and may lower the risk of cardiovascular disease.", "image": null},
-    {"title": "Aids blood-sugar regulation", "detail": "Research suggests magnesium glycinate may help manage blood sugar in people with diabetes and could lower the risk of developing type 2 diabetes.", "image": null},
-    {"title": "Strengthens bones", "detail": "Magnesium plays a role in bone mineralisation alongside calcium and vitamin D.", "image": null}
+    {"title": "Promotes relaxation and mood stability", "detail": "Magnesium helps modulate neurotransmitters, supporting calm focus and steady mood.", "image": null},
+    {"title": "Supports cardiovascular rhythm", "detail": "Adequate magnesium intake is linked to healthy heart rhythms and smooth muscle function.", "image": null},
+    {"title": "Helps balance blood sugar", "detail": "Chelated magnesium bisglycinate may improve insulin sensitivity and metabolic balance.", "image": null},
+    {"title": "Strengthens bones", "detail": "Magnesium partners with calcium and vitamin D to maintain bone mineral density.", "image": null}
   ]'::jsonb,
   '[
-    {"title": "High bioavailability", "detail": "Combining magnesium with the amino acid glycine shields the mineral during digestion, allowing efficient absorption."},
-    {"title": "Gentle on digestion", "detail": "This form is less likely to cause loose stools or stomach upset."},
-    {"title": "Glycine synergy", "detail": "Glycine itself is a calming amino acid; its presence may enhance relaxation benefits."}
+    {"title": "High bioavailability", "detail": "Chelating magnesium with glycine shields the mineral during digestion for efficient uptake."},
+    {"title": "Gentle on digestion", "detail": "Bisglycinate skips the laxative effect common with oxide or citrate forms."},
+    {"title": "Glycine synergy", "detail": "Glycine is a calming amino acid that complements magnesium’s neuromuscular benefits."}
   ]'::jsonb,
   '[
-    "Dose: Follow the recommended serving on the label (usually 1-2 capsules or a scoop of powder providing around 100-200 mg elemental magnesium).",
-    "Timing: Many people prefer to take magnesium in the evening to unwind, but it can be taken any time. Consistency matters more than timing.",
-    "With or without food: Magnesium bisglycinate can be taken on an empty stomach or with meals. If you notice any digestive discomfort, take it with food."
+    "Follow the suggested serving on the label (commonly 1–2 capsules or a scoop of powder providing 100–200 mg elemental magnesium).",
+    "Take in the evening to unwind or any time you need calm focus. Consistency matters more than timing.",
+    "Can be taken with or without food. If you have a sensitive stomach, pair with a light snack."
   ]'::jsonb,
-  'Our Absorbable Calm supplement delivers a gentle, chelated form of magnesium called magnesium bisglycinate (also known as magnesium glycinate). Unlike some forms of magnesium, this chelate is easily absorbed and typically free from the laxative effects associated with magnesium oxide or citrate. Magnesium is an essential mineral involved in over 300 enzymatic reactions, including nerve and muscle function, energy production, and hormonal balance. Unfortunately, many adults consume less magnesium than recommended; supplementation can help bridge this gap.
-
-When magnesium is chelated to glycine (an amino acid), it becomes more bioavailable and gentler on the digestive system. This form is particularly suitable for those who experience digestive issues with other magnesium supplements. Glycine itself has calming properties and may enhance the relaxation benefits of magnesium.',
-  null,
-  'Tested for heavy metals, pesticides, and allergens. Made in a cGMP facility in Canada. Vegan, gluten-free, non-GMO.',
-  null,
+  '/images/magnesium.svg',
+  'Our Absorbable Calm supplement delivers a gentle, chelated form of magnesium known as magnesium bisglycinate (also called magnesium glycinate). This form is easily absorbed and typically free from the laxative effects associated with magnesium oxide or citrate. Magnesium is essential for more than 300 enzymatic reactions tied to nerve and muscle function, energy production, and hormonal balance. When magnesium is paired with glycine it becomes even more bioavailable and easier on digestion while reinforcing the relaxation response.',
+  '/images/magnesium.svg',
+  'Tested for heavy metals, pesticides, and allergens. Produced in a cGMP facility in Canada. Vegan, gluten-free, and non-GMO.',
+  '/images/magnesium.svg',
   '[
-    {"question": "Do I need magnesium if I eat a balanced diet?", "answer": "Whole foods like leafy greens, nuts, and legumes provide magnesium, yet surveys indicate many adults do not meet the recommended daily intake. Supplements can help fill the gap."},
-    {"question": "Will it make me sleepy?", "answer": "Magnesium is not a sedative but supports relaxation. Some people feel calmer and sleep better; others experience no noticeable change. Adjust dosing time based on your personal experience."},
-    {"question": "Is magnesium bisglycinate safe during pregnancy?", "answer": "Magnesium is important during pregnancy, but you should consult a healthcare provider to determine the right dose for your situation."},
-    {"question": "Can I take it with medications?", "answer": "Magnesium can interact with certain drugs, including some antibiotics or bisphosphonates. Take medications at least two hours apart and ask your pharmacist for guidance."}
+    {"question": "Do I still need magnesium if I eat a balanced diet?", "answer": "Leafy greens, nuts, and legumes provide magnesium, yet most adults fall short of the daily recommendation. Supplementation helps bridge that gap.", "image": null},
+    {"question": "Will it make me sleepy?", "answer": "Magnesium is not a sedative, but it supports relaxation. Many people find sleep quality improves—adjust timing based on how your body responds.", "image": null},
+    {"question": "Is magnesium bisglycinate safe during pregnancy?", "answer": "Magnesium is important during pregnancy, but always review supplementation with a healthcare provider to personalise the right dose.", "image": null},
+    {"question": "Can I take it with medications?", "answer": "Magnesium can interact with antibiotics or bisphosphonates. Space dosing at least two hours apart and consult your pharmacist for guidance.", "image": null}
   ]'::jsonb,
-  '[]'::jsonb,
-  '[]'::jsonb,
-  '[]'::jsonb
+  '/images/magnesium.svg',
+  '[
+    {"name": "Magnesium bisglycinate", "amount": "200 mg elemental magnesium", "description": "Chelated magnesium paired with glycine for optimal absorption and digestive comfort.", "image": null},
+    {"name": "Organic rice concentrate", "amount": "15 mg", "description": "Plant-based flow agent that keeps the powder free-flowing without synthetic additives.", "image": null},
+    {"name": "Vegetable capsule (pullulan)", "amount": "", "description": "Fermented tapioca-based capsule suitable for vegans and gentle on digestion.", "image": null}
+  ]'::jsonb,
+  '[
+    {"title": "Third-party verified", "description": "Every batch is independently tested for potency, purity, and contaminants.", "icon": null},
+    {"title": "Sustainably sourced", "description": "Made with ingredients traced back to suppliers who follow responsible environmental practices.", "icon": null},
+    {"title": "Pharmacist formulated", "description": "Developed with clinical evidence and compounding-pharmacy standards.", "icon": null}
+  ]'::jsonb,
+  '[
+    {"id": "rev-mg-001", "name": "Samantha L.", "rating": 5, "date": "2024-01-12", "text": "Started sleeping through the night within the first week. Zero digestive upset.", "verified": true, "country": "Canada"},
+    {"id": "rev-mg-002", "name": "Jordan M.", "rating": 5, "date": "2023-11-02", "text": "Noticeably calmer evenings and fewer muscle cramps after workouts.", "verified": true, "country": "USA"}
+  ]'::jsonb
 ),
 (
   'psyllium-fiber',
@@ -83,34 +94,47 @@ When magnesium is chelated to glycine (an amino acid), it becomes more bioavaila
   4.6,
   980,
   '[
-    {"title": "Relieves constipation", "detail": "Psyllium acts as a bulk-forming laxative, binding to partially digested food and increasing stool moisture.", "image": null},
-    {"title": "Eases mild diarrhea", "detail": "The gel-forming fiber helps firm loose stools and slows their passage through the colon.", "image": null},
-    {"title": "Promotes heart health", "detail": "Soluble fiber binds to cholesterol in the gut, aiding its excretion and lowering total and LDL cholesterol to reduce cardiovascular risk.", "image": null},
-    {"title": "Helps manage blood sugar", "detail": "Psyllium slows carbohydrate absorption, leading to more stable blood-sugar levels and better glycemic control.", "image": null}
+    {"title": "Relieves occasional constipation", "detail": "Forms a soft gel that increases stool bulk and eases elimination.", "image": null},
+    {"title": "Supports cholesterol balance", "detail": "Soluble fiber binds bile acids, helping lower total and LDL cholesterol.", "image": null},
+    {"title": "Steadies blood sugar", "detail": "Slows carbohydrate absorption for fewer post-meal spikes.", "image": null},
+    {"title": "Promotes satiety", "detail": "Swells in the gut to support fullness between meals, supporting weight management goals.", "image": null}
   ]'::jsonb,
   '[
     {"title": "Pure & natural", "detail": "Sourced from non-GMO Plantago ovata seeds with no artificial sweeteners or fillers."},
     {"title": "Versatile formats", "detail": "Choose a fine powder to stir into liquids or convenient capsules for travel."},
-    {"title": "Certified quality", "detail": "Every batch is third-party tested for purity, heavy metals and microbiological safety."}
+    {"title": "Certified quality", "detail": "Every batch is third-party tested for purity, heavy metals, and microbiological safety."}
   ]'::jsonb,
   '[
-    "Start slowly: Begin with 1 teaspoon (roughly 5 g) of psyllium powder or the equivalent in capsules once daily. Increase gradually to 10-15 g per day as tolerated.",
-    "Mix and drink immediately: Stir powder into 8-12 ounces of water or juice and drink promptly. The mixture thickens as it sits.",
-    "Hydrate: Follow with an additional glass of water. Adequate hydration is essential to prevent choking and promote proper fiber movement."
+    "Begin with 1 teaspoon (around 5 g) once daily and increase gradually to 10–15 g as tolerated.",
+    "Stir into 8–12 ounces of water or juice and drink immediately before it thickens.",
+    "Follow each serving with an extra glass of water to keep things moving comfortably."
   ]'::jsonb,
-  'Our Gentle Gut Harmony supplement harnesses the power of psyllium husk, a natural soluble fiber derived from Plantago ovata seeds. When mixed with water, psyllium absorbs liquid and forms a soft gel that moves through the digestive tract. This gel adds bulk to stools to relieve constipation and firms loose stools to ease mild diarrhea. Beyond digestive comfort, psyllium fiber has been shown to help regulate blood sugar and lower cholesterol levels.',
-  null,
-  'Always pair psyllium with adequate hydration and increase the serving gradually to minimize gas or bloating.',
-  null,
+  '/images/fiber.svg',
+  'Gentle Gut Harmony harnesses psyllium husk, a natural soluble fiber from Plantago ovata seeds. Mixed with liquid, psyllium absorbs water and creates a soft gel that moves through the digestive tract. This gel relieves constipation by increasing stool bulk while simultaneously firming loose stools. Beyond digestion, psyllium helps regulate blood sugar and supports healthy lipid profiles, making it a multitasking staple for daily wellness.',
+  '/images/fiber.svg',
+  'Always pair psyllium with plenty of water and increase slowly to minimise gas or bloating.',
+  '/images/fiber.svg',
   '[
-    {"question": "Can psyllium replace dietary fiber?", "answer": "No. Psyllium supplements daily intake but does not replace the fiber you get from fruits, vegetables, whole grains, and legumes."},
-    {"question": "Is psyllium safe for long-term use?", "answer": "Yes - when taken with sufficient water, psyllium is safe for most adults. If you experience persistent bloating, reduce the dose or speak with a healthcare professional."},
-    {"question": "Does it interact with medications?", "answer": "Psyllium can slow the absorption of certain medications. Take medications at least two hours before or after your fiber supplement."},
-    {"question": "Is psyllium gluten-free?", "answer": "Yes. Psyllium husk is naturally gluten-free and suitable for vegan, kosher, and halal diets."}
+    {"question": "Can psyllium replace dietary fiber from food?", "answer": "No. It complements a fiber-rich diet but should not replace fruits, vegetables, legumes, and whole grains.", "image": null},
+    {"question": "Is psyllium safe for long-term use?", "answer": "Yes, when taken with adequate water. If bloating persists, lower the serving or consult a healthcare professional.", "image": null},
+    {"question": "Does psyllium interact with medications?", "answer": "It can slow absorption of some medications. Take supplements at least two hours before or after prescriptions.", "image": null},
+    {"question": "Is psyllium gluten-free?", "answer": "Psyllium husk is naturally gluten-free and fits vegan, kosher, and halal diets.", "image": null}
   ]'::jsonb,
-  '[]'::jsonb,
-  '[]'::jsonb,
-  '[]'::jsonb
+  '/images/fiber.svg',
+  '[
+    {"name": "Organic psyllium husk powder", "amount": "5 g", "description": "Soluble fiber that forms a gel to regulate digestion and support gut balance.", "image": null},
+    {"name": "Organic psyllium husk (capsules)", "amount": "5 g", "description": "Same premium psyllium packed into plant-based capsules for convenience.", "image": null},
+    {"name": "Vegetable cellulose capsule", "amount": "", "description": "Hypoallergenic capsule shell sourced from fermented plant cellulose.", "image": null}
+  ]'::jsonb,
+  '[
+    {"title": "USDA organic", "description": "Certified organic psyllium husk sourced from trusted farms.", "icon": null},
+    {"title": "Prebiotic support", "description": "Feeds beneficial gut bacteria to nurture a resilient microbiome.", "icon": null},
+    {"title": "No added sugar", "description": "Naturally unsweetened and flavour-neutral so you can mix it your way.", "icon": null}
+  ]'::jsonb,
+  '[
+    {"id": "rev-ps-001", "name": "Devon K.", "rating": 5, "date": "2024-02-18", "text": "Best fiber supplement I’ve tried—keeps everything regular without bloating.", "verified": true, "country": "Canada"},
+    {"id": "rev-ps-002", "name": "Melissa Q.", "rating": 4, "date": "2023-09-04", "text": "Love the capsules for travel days. Powder mixes smoothly into smoothies at home.", "verified": false, "country": "USA"}
+  ]'::jsonb
 )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -142,4 +166,3 @@ ON CONFLICT (id) DO UPDATE SET
   ingredients = EXCLUDED.ingredients,
   "qualityClaims" = EXCLUDED."qualityClaims",
   reviews = EXCLUDED.reviews;
-
