@@ -22,7 +22,7 @@ function HeroAG() {
                 letterSpacing: '-0.02em'
               }}
             >
-              We're redefining what it means to feel good—daily.
+              Clinically proven. Naturally effective.
             </h1>
             <p className="text-base text-neutral-600 sm:text-lg">
               Our magnesium bisglycinate and psyllium fiber formulas address the root causes of restless sleep, daily stress, and
