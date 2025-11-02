@@ -14,8 +14,15 @@ function HeroAG() {
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-24 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
         <div className="space-y-8 text-left">
           <div className="space-y-4">
-            <h1 className="font-display text-4xl leading-tight text-neutral-900 sm:text-5xl md:text-6xl">
-              We’re redefining what it means to feel good—daily.
+            <h1 
+              className="text-4xl leading-tight text-neutral-900 sm:text-5xl md:text-6xl"
+              style={{
+                fontFamily: '"Satoshi", sans-serif',
+                fontWeight: 700,
+                letterSpacing: '-0.02em'
+              }}
+            >
+              We're redefining what it means to feel good—daily.
             </h1>
             <p className="text-base text-neutral-600 sm:text-lg">
               Our magnesium bisglycinate and psyllium fiber formulas address the root causes of restless sleep, daily stress, and
@@ -63,7 +70,7 @@ function HeroAG() {
               </div>
             </div>
             <div className="border-t border-neutral-200 bg-white/90 px-6 py-4 text-sm text-neutral-600">
-              Day & night support • Magnesium + fiber synergy • Results in 2–4 weeks
+              Day & night support •  • Evidence-based formulas
             </div>
           </div>
         </div>
