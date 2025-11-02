@@ -56,7 +56,7 @@ function HeroAG() {
                   <div className="absolute inset-0 animate-[pulse_8s_ease-in-out_infinite] rounded-[28px] bg-gradient-to-br from-[#ee6b4d]/15 via-transparent to-[#fbd4c7]/20" />
                 </div>
                 <img
-                  src="/images/wellness-stack.svg"
+                  src="/images/combo.png"
                   alt="Orbucell wellness collection mockup"
                   className="absolute inset-0 h-full w-full object-cover object-center"
                 />
