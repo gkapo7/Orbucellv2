@@ -25,3 +25,20 @@ ALTER TABLE products ADD COLUMN IF NOT EXISTS "howToUseImage" TEXT;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS "qualityClaims" JSONB DEFAULT '[]'::jsonb;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS reviews JSONB DEFAULT '[]'::jsonb;
 
+-- Fix: Ensure columns allow NULL values and have proper defaults
+-- Run these if you get "null value" errors after adding columns
+ALTER TABLE products ALTER COLUMN ingredients DROP NOT NULL;
+ALTER TABLE products ALTER COLUMN ingredients SET DEFAULT '[]'::jsonb;
+ALTER TABLE products ALTER COLUMN benefits DROP NOT NULL;
+ALTER TABLE products ALTER COLUMN benefits SET DEFAULT '[]'::jsonb;
+ALTER TABLE products ALTER COLUMN "whyItWorks" DROP NOT NULL;
+ALTER TABLE products ALTER COLUMN "whyItWorks" SET DEFAULT '[]'::jsonb;
+ALTER TABLE products ALTER COLUMN "howToUse" DROP NOT NULL;
+ALTER TABLE products ALTER COLUMN "howToUse" SET DEFAULT '[]'::jsonb;
+ALTER TABLE products ALTER COLUMN faq DROP NOT NULL;
+ALTER TABLE products ALTER COLUMN faq SET DEFAULT '[]'::jsonb;
+ALTER TABLE products ALTER COLUMN "qualityClaims" DROP NOT NULL;
+ALTER TABLE products ALTER COLUMN "qualityClaims" SET DEFAULT '[]'::jsonb;
+ALTER TABLE products ALTER COLUMN reviews DROP NOT NULL;
+ALTER TABLE products ALTER COLUMN reviews SET DEFAULT '[]'::jsonb;
+
