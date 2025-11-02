@@ -44,6 +44,7 @@ export type Product = {
     name: string
     amount: string
     description: string
+    image?: string
   }>
   qualityClaims?: Array<{
     title: string
@@ -62,12 +63,15 @@ export type Product = {
     detail: string
   }>
   howToUse?: string[]
+  howToUseImage?: string
   labNotes?: string
   labNotesImage?: string
   faq?: Array<{
     question: string
     answer: string
+    image?: string
   }>
+  faqImage?: string
 }
 
 export type BlogPost = {
@@ -181,9 +185,11 @@ export async function listProducts(): Promise<Product[]> {
       scienceDescription: p.scienceDescription,
       scienceImage: p.scienceImage,
       howToUse: Array.isArray(p.howToUse) ? p.howToUse : undefined,
+      howToUseImage: p.howToUseImage,
       labNotes: p.labNotes,
       labNotesImage: p.labNotesImage,
       faq: Array.isArray(p.faq) ? p.faq : undefined,
+      faqImage: p.faqImage,
     }))
   }
   const db = await readDb()
