@@ -38,9 +38,13 @@ The app uses Supabase as the primary database with file storage as a fallback.
    SUPABASE_ANON_KEY=your-anon-key
    ```
 
-### 3. Seed Initial Data (Optional)
+### 3. Run Migration (If Updating Existing Database)
 
-After creating tables, run `supabase-seed.sql` in Supabase SQL Editor to add initial products.
+If you already have a `products` table, run `supabase-migration.sql` in Supabase SQL Editor to add new product template fields.
+
+### 4. Seed Initial Data (Optional)
+
+After creating tables, run `supabase-seed.sql` in Supabase SQL Editor to add initial products (Magnesium and Psyllium).
 
 ## Develop
 
@@ -96,8 +100,21 @@ This ensures:
 - Development works without Supabase (local file fallback)
 - Data migration is seamless (file storage → Supabase)
 
+## Admin Panel
+
+Access the admin panel at `/admin` (login with `admin@orbucell.com`).
+
+**Features:**
+- Create/edit products with universal template (Benefits, Science, Ingredients, FAQ, etc.)
+- Theme color picker for product pages
+- Image upload via drag & drop (base64 conversion)
+- SEO fields for all products and posts
+- Customer, inventory, and order management
+
+**Important:** Before saving products, run `supabase-migration.sql` in Supabase SQL Editor to add all required template fields.
+
 ## Notes
 
 - CORS is enabled for demo; restrict origins in production.
 - Checkout totals use server-side pricing from the catalog.
-- Admin panel available at `/admin` (login with `admin@orbucell.com`)
+- Image upload uses base64 data URLs (client-side conversion).

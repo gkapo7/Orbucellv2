@@ -8,7 +8,12 @@ const BASE = '' // same origin (Vercel / local dev)
 
 export async function fetchProducts(): Promise<ApiProduct[]> {
   const res = await fetch(`${BASE}/api/products`, { cache: 'no-store' })
-  if (!res.ok) throw new Error('Failed to load products')
+  if (!res.ok) {
+    if (res.status === 404) {
+      throw new Error('API endpoint not found. Are you running with "vercel dev" or deployed on Vercel? The /api/products endpoint requires Vercel serverless functions.')
+    }
+    throw new Error(`Failed to load products (${res.status})`)
+  }
   return res.json()
 }
 
@@ -24,7 +29,18 @@ export async function saveProducts(next: ApiProduct[]): Promise<ApiProduct[]> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ products: next }),
   })
-  if (!res.ok) throw new Error('Failed to save products')
+  if (!res.ok) {
+    const errorText = await res.text()
+    let errorMessage = `Failed to save products (${res.status})`
+    try {
+      const errorJson = JSON.parse(errorText)
+      errorMessage = errorJson.error || errorJson.details || errorMessage
+      if (errorJson.hint) errorMessage += `\n\n${errorJson.hint}`
+    } catch {
+      if (errorText) errorMessage += `: ${errorText}`
+    }
+    throw new Error(errorMessage)
+  }
   return res.json()
 }
 

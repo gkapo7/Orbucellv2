@@ -1,5 +1,12 @@
--- Migration: Add new product fields to existing products table
--- Run this in Supabase SQL Editor if you already have a products table
+-- Migration: Add new product template fields to existing products table
+-- 
+-- IMPORTANT: Run this in Supabase SQL Editor if you already have a products table.
+-- This adds all the fields needed for the universal product template:
+-- - Theme customization (themeColor)
+-- - Product sections (benefits, ingredients, FAQ, howToUse, etc.)
+-- - Images for each section (scienceImage, labNotesImage, faqImage, howToUseImage)
+--
+-- If you're creating a fresh database, use supabase-schema.sql instead.
 
 ALTER TABLE products ADD COLUMN IF NOT EXISTS "themeColor" TEXT;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS rating NUMERIC;

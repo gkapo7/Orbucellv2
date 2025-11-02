@@ -1,5 +1,5 @@
 import { readDb, writeDb } from './_storage.js'
-import { supabaseSelectAll, supabaseSelectOne, supabaseSelectByField, supabaseUpsertMany, supabaseDeleteMany } from './_db.js'
+import { supabaseSelectAll, supabaseSelectOne, supabaseSelectByField, supabaseUpsertMany, supabaseDeleteMany, getSupabase } from './_db.js'
 
 export type SEO = {
   title: string
@@ -232,6 +232,12 @@ export async function listProducts(): Promise<Product[]> {
 
 export async function setProducts(next: Product[]): Promise<Product[]> {
   try {
+    // Check if Supabase is configured
+    const supabase = getSupabase()
+    if (!supabase) {
+      throw new Error('Supabase not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.')
+    }
+
     // Get existing products to find deleted ones
     const existing = await listProducts()
     const existingIds = new Set(existing.map(p => p.id))
@@ -241,29 +247,25 @@ export async function setProducts(next: Product[]): Promise<Product[]> {
     // Delete removed products from Supabase
     if (deletedIds.length > 0) {
       const deleteResult = await supabaseDeleteMany('products', deletedIds)
-      console.log(`[setProducts] Deleted ${deletedIds.length} products:`, deleteResult)
+      if (!deleteResult) {
+        throw new Error('Failed to delete products from Supabase. Check console for details.')
+      }
+      console.log(`[setProducts] Deleted ${deletedIds.length} products`)
     }
     
     // Upsert remaining/updated products
     console.log(`[setProducts] Upserting ${next.length} products to Supabase...`)
     const ok = await supabaseUpsertMany('products', next as any)
-    if (ok) {
-      console.log('[setProducts] Successfully saved to Supabase')
-      // Also update file storage as backup
-      const db = await readDb()
-      db.products = next
-      await writeDb(db)
-      return next
-    } else {
-      console.warn('[setProducts] Supabase upsert failed, falling back to file storage')
+    if (!ok) {
+      throw new Error('Failed to save products to Supabase. Common causes:\n1. Missing database columns - Run supabase-migration.sql\n2. Missing environment variables\n3. Check browser console for detailed error')
     }
     
-    // Fallback to file storage only
+    console.log('[setProducts] Successfully saved to Supabase')
+    // Also update file storage as backup
     const db = await readDb()
     db.products = next
     await writeDb(db)
-    console.log('[setProducts] Saved to file storage only')
-    return db.products
+    return next
   } catch (error) {
     console.error('[setProducts] Error:', error)
     throw error
