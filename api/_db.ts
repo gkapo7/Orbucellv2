@@ -51,21 +51,23 @@ export async function supabaseSelectByField<T>(table: Tables, field: string, val
 	return (data as T) || null
 }
 
-export async function supabaseUpsertMany<T extends { id: string }>(table: Tables, rows: T[]): Promise<boolean> {
+export async function supabaseUpsertMany<T extends { id: string }>(table: Tables, rows: T[]): Promise<{ success: boolean; error?: string }> {
 	const supabase = getSupabase()
 	if (!supabase) {
-		console.error(`[supabase] No Supabase client available. Check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY env variables.`)
-		return false
+		const errorMsg = `No Supabase client available. Check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY env variables.`
+		console.error(`[supabase] ${errorMsg}`)
+		return { success: false, error: errorMsg }
 	}
 	console.log(`[supabase] Upserting ${rows.length} rows to ${table}...`)
 	const { data, error } = await supabase.from(table).upsert(rows, { onConflict: 'id' })
 	if (error) {
 		console.error(`[supabase] upsert ${table} error:`, error)
 		console.error(`[supabase] Error details:`, JSON.stringify(error, null, 2))
-		return false
+		const errorMsg = error.message || JSON.stringify(error)
+		return { success: false, error: errorMsg }
 	}
 	console.log(`[supabase] Successfully upserted ${rows.length} rows to ${table}`)
-	return true
+	return { success: true }
 }
 
 export async function supabaseDeleteMany(table: Tables, ids: string[]): Promise<boolean> {

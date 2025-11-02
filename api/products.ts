@@ -158,10 +158,14 @@ export default withCors(async function handler(req: any, res: any) {
     console.error('[products API] Error:', error)
     const errorMessage = error instanceof Error ? error.message : 'Internal server error'
     console.error('[products API] Error details:', errorMessage)
+    const errorStack = error instanceof Error ? error.stack : undefined
+    if (errorStack) {
+      console.error('[products API] Error stack:', errorStack)
+    }
     res.status(500).json({ 
-      error: 'Internal server error',
-      details: errorMessage,
-      hint: 'Check Supabase connection and ensure migration SQL has been run'
+      error: errorMessage,
+      details: errorStack || errorMessage,
+      hint: errorMessage.includes('column') ? 'Missing database columns - run supabase-migration.sql' : 'Check Supabase connection and ensure migration SQL has been run'
     })
   }
 })

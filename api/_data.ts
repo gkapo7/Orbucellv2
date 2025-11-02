@@ -255,9 +255,19 @@ export async function setProducts(next: Product[]): Promise<Product[]> {
     
     // Upsert remaining/updated products
     console.log(`[setProducts] Upserting ${next.length} products to Supabase...`)
-    const ok = await supabaseUpsertMany('products', next as any)
-    if (!ok) {
-      throw new Error('Failed to save products to Supabase. Common causes:\n1. Missing database columns - Run supabase-migration.sql\n2. Missing environment variables\n3. Check browser console for detailed error')
+    const result = await supabaseUpsertMany('products', next as any)
+    if (!result.success) {
+      const errorMsg = result.error || 'Unknown error'
+      // Check for common errors
+      let userMessage = 'Failed to save products to Supabase.'
+      if (errorMsg.includes('column') && errorMsg.includes('does not exist')) {
+        userMessage += '\n\nERROR: Missing database columns!\n\nSolution: Run supabase-migration.sql in Supabase SQL Editor to add the required columns.'
+      } else if (errorMsg.includes('permission') || errorMsg.includes('policy')) {
+        userMessage += '\n\nERROR: Database permissions issue.\n\nSolution: Check your Supabase service role key has write permissions.'
+      } else {
+        userMessage += `\n\nError details: ${errorMsg}\n\nCommon solutions:\n1. Run supabase-migration.sql in Supabase SQL Editor\n2. Check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables\n3. Verify Supabase connection in browser console`
+      }
+      throw new Error(userMessage)
     }
     
     console.log('[setProducts] Successfully saved to Supabase')
@@ -411,8 +421,8 @@ export async function listPosts(): Promise<BlogPost[]> {
 }
 
 export async function setPosts(next: BlogPost[]): Promise<BlogPost[]> {
-  const ok = await supabaseUpsertMany('posts', next as any)
-  if (ok) return next
+  const result = await supabaseUpsertMany('posts', next as any)
+  if (result.success) return next
   const db = await readDb()
   db.posts = next
   await writeDb(db)
@@ -524,8 +534,8 @@ export async function listCustomers(): Promise<Customer[]> {
 }
 
 export async function setCustomers(next: Customer[]): Promise<Customer[]> {
-  const ok = await supabaseUpsertMany('customers', next as any)
-  if (ok) return next
+  const result = await supabaseUpsertMany('customers', next as any)
+  if (result.success) return next
   const db = await readDb()
   db.customers = next
   await writeDb(db)
@@ -541,8 +551,8 @@ export async function listInventory(): Promise<InventoryItem[]> {
 }
 
 export async function setInventory(next: InventoryItem[]): Promise<InventoryItem[]> {
-  const ok = await supabaseUpsertMany('inventory', next as any)
-  if (ok) return next
+  const result = await supabaseUpsertMany('inventory', next as any)
+  if (result.success) return next
   const db = await readDb()
   db.inventory = Array.isArray(next) ? next : []
   await writeDb(db)
@@ -575,8 +585,8 @@ export async function listOrders(): Promise<Order[]> {
 }
 
 export async function setOrders(next: Order[]): Promise<Order[]> {
-  const ok = await supabaseUpsertMany('orders', next as any)
-  if (ok) return next
+  const result = await supabaseUpsertMany('orders', next as any)
+  if (result.success) return next
   const db = await readDb()
   db.orders = Array.isArray(next) ? next : []
   await writeDb(db)
