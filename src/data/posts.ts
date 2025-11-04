@@ -20,6 +20,11 @@ export type BlogPost = {
   featured?: boolean
   readingTime?: string
   seo: ArticleSEO
+  // Styling options
+  headingLevel?: 'h1' | 'h2'
+  fontFamily?: string
+  fontSize?: string
+  textColor?: string
 }
 
 export const posts: BlogPost[] = [

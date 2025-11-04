@@ -84,6 +84,11 @@ export type BlogPost = {
   featured?: boolean
   readingTime?: string
   seo: SEO
+  // Styling options
+  headingLevel?: 'h1' | 'h2'
+  fontFamily?: string
+  fontSize?: string
+  textColor?: string
 }
 
 export type Customer = {
@@ -393,6 +398,10 @@ export async function listPosts(): Promise<BlogPost[]> {
       featured: p.featured || false,
       readingTime: p.readingTime,
       seo: p.seo || { title: p.title || '', description: p.excerpt || '', keywords: [] },
+      headingLevel: p.headingLevel,
+      fontFamily: p.fontFamily,
+      fontSize: p.fontSize,
+      textColor: p.textColor,
     }))
   }
   const db = await readDb()
@@ -417,6 +426,10 @@ export async function listPosts(): Promise<BlogPost[]> {
       ogImage: undefined,
       canonicalUrl: undefined,
     },
+    headingLevel: p.headingLevel,
+    fontFamily: p.fontFamily,
+    fontSize: p.fontSize,
+    textColor: p.textColor,
   }))
 }
 
@@ -454,6 +467,10 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | undefined>
         ogImage: undefined,
         canonicalUrl: undefined,
       },
+      headingLevel: p.headingLevel,
+      fontFamily: p.fontFamily,
+      fontSize: p.fontSize,
+      textColor: p.textColor,
     }
   }
   
@@ -482,6 +499,10 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | undefined>
       ogImage: undefined,
       canonicalUrl: undefined,
     },
+    headingLevel: (post as any).headingLevel,
+    fontFamily: (post as any).fontFamily,
+    fontSize: (post as any).fontSize,
+    textColor: (post as any).textColor,
   }
 }
 

@@ -40,6 +40,10 @@ export default withCors(async function handler(req: any, res: any) {
           ogImage: item.seo?.ogImage ? String(item.seo.ogImage) : undefined,
           canonicalUrl: item.seo?.canonicalUrl ? String(item.seo.canonicalUrl) : undefined,
         },
+        headingLevel: item.headingLevel === 'h1' || item.headingLevel === 'h2' ? item.headingLevel : undefined,
+        fontFamily: item.fontFamily ? String(item.fontFamily) : undefined,
+        fontSize: item.fontSize ? String(item.fontSize) : undefined,
+        textColor: item.textColor ? String(item.textColor) : undefined,
       }))
       const updated = await setPosts(sanitized)
       return res.status(200).json(updated)

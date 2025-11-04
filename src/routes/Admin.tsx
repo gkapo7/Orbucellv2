@@ -1074,6 +1074,10 @@ function PostsPanel() {
         ogImage: undefined,
         canonicalUrl: undefined,
       },
+      headingLevel: undefined,
+      fontFamily: undefined,
+      fontSize: undefined,
+      textColor: undefined,
     }
     setState((prev) => ({ ...prev, draft: [...prev.draft, fresh] }))
   }
@@ -1245,8 +1249,98 @@ function PostsPanel() {
                   className="admin-textarea min-h-[160px]"
                 />
               </Field>
+              
+              {/* Content Styling Section */}
               <div className="mt-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
-                <h3 className="mb-4 text-sm font-semibold text-neutral-700">SEO Settings</h3>
+                <h3 className="mb-4 text-sm font-semibold text-neutral-700">Content Styling</h3>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="Heading Level">
+                    <select
+                      value={post.headingLevel ?? ''}
+                      onChange={(event) => handleField(index, 'headingLevel')(event.target.value === '' ? undefined : (event.target.value as 'h1' | 'h2'))}
+                      className="admin-input"
+                    >
+                      <option value="">Default</option>
+                      <option value="h1">H1</option>
+                      <option value="h2">H2</option>
+                    </select>
+                  </Field>
+                  <Field label="Font Family">
+                    <select
+                      value={post.fontFamily ?? ''}
+                      onChange={(event) => handleField(index, 'fontFamily')(event.target.value || undefined)}
+                      className="admin-input"
+                    >
+                      <option value="">Default</option>
+                      <option value="Arial, sans-serif">Arial</option>
+                      <option value="'Times New Roman', serif">Times New Roman</option>
+                      <option value="'Georgia', serif">Georgia</option>
+                      <option value="'Courier New', monospace">Courier New</option>
+                      <option value="'Helvetica Neue', Helvetica, Arial, sans-serif">Helvetica Neue</option>
+                      <option value="'Inter', sans-serif">Inter</option>
+                      <option value="'Roboto', sans-serif">Roboto</option>
+                      <option value="'Open Sans', sans-serif">Open Sans</option>
+                      <option value="'Lato', sans-serif">Lato</option>
+                      <option value="'Montserrat', sans-serif">Montserrat</option>
+                    </select>
+                  </Field>
+                  <Field label="Font Size">
+                    <select
+                      value={post.fontSize ?? ''}
+                      onChange={(event) => handleField(index, 'fontSize')(event.target.value || undefined)}
+                      className="admin-input"
+                    >
+                      <option value="">Default</option>
+                      <option value="12px">12px</option>
+                      <option value="14px">14px</option>
+                      <option value="16px">16px</option>
+                      <option value="18px">18px</option>
+                      <option value="20px">20px</option>
+                      <option value="22px">22px</option>
+                      <option value="24px">24px</option>
+                      <option value="28px">28px</option>
+                      <option value="32px">32px</option>
+                    </select>
+                  </Field>
+                  <Field label="Text Color">
+                    <div className="flex gap-2">
+                      <input
+                        type="color"
+                        value={post.textColor || '#000000'}
+                        onChange={(event) => {
+                          const hex = event.target.value
+                          handleField(index, 'textColor')(hex || undefined)
+                        }}
+                        className="h-10 w-20 rounded border border-neutral-300 cursor-pointer"
+                      />
+                      <input
+                        type="text"
+                        value={post.textColor || ''}
+                        onChange={(event) => {
+                          let value = event.target.value.trim()
+                          // Validate hex color format
+                          if (value && !value.startsWith('#')) value = '#' + value
+                          if (value && /^#[0-9A-Fa-f]{6}$/.test(value)) {
+                            handleField(index, 'textColor')(value)
+                          } else if (value === '') {
+                            handleField(index, 'textColor')(undefined)
+                          }
+                        }}
+                        placeholder="#000000"
+                        className="admin-input flex-1 font-mono"
+                        pattern="#[0-9A-Fa-f]{6}"
+                      />
+                    </div>
+                    {post.textColor && (
+                      <p className="mt-1 text-xs text-neutral-500">Text color: {post.textColor}</p>
+                    )}
+                  </Field>
+                </div>
+              </div>
+
+              {/* SEO Settings Section */}
+              <div className="mt-4 rounded-2xl border-2 border-blue-200 bg-blue-50 p-4">
+                <h3 className="mb-4 text-base font-semibold text-blue-900">SEO Settings</h3>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="SEO Title">
                     <input
@@ -1261,7 +1355,13 @@ function PostsPanel() {
                         })
                       }
                       className="admin-input"
+                      placeholder="Optimized title for search engines (50-60 characters recommended)"
                     />
+                    {post.seo?.title && (
+                      <p className="mt-1 text-xs text-neutral-500">
+                        {post.seo.title.length} characters {post.seo.title.length > 60 ? '(too long)' : post.seo.title.length < 50 ? '(consider adding more)' : ''}
+                      </p>
+                    )}
                   </Field>
                   <Field label="OG Image URL">
                     <input
@@ -1309,8 +1409,9 @@ function PostsPanel() {
                         })
                       }
                       className="admin-input"
-                />
-              </Field>
+                      placeholder="keyword1, keyword2, keyword3"
+                    />
+                  </Field>
                 </div>
                 <Field label="SEO Description" stacked>
                   <textarea
@@ -1325,7 +1426,14 @@ function PostsPanel() {
                       })
                     }
                     className="admin-textarea"
+                    placeholder="A compelling meta description for search engines (150-160 characters recommended)"
+                    rows={3}
                   />
+                  {post.seo?.description && (
+                    <p className="mt-1 text-xs text-neutral-500">
+                      {post.seo.description.length} characters {post.seo.description.length > 160 ? '(too long)' : post.seo.description.length < 120 ? '(consider adding more)' : ''}
+                    </p>
+                  )}
                 </Field>
               </div>
             </div>
