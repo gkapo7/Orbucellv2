@@ -1,6 +1,12 @@
-import { useMemo, useRef, useEffect } from 'react'
-import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import Link from '@tiptap/extension-link'
+import Image from '@tiptap/extension-image'
+import { TextStyle } from '@tiptap/extension-text-style'
+import Color from '@tiptap/extension-color'
+import TextAlign from '@tiptap/extension-text-align'
+import Underline from '@tiptap/extension-underline'
+import { useEffect, useRef } from 'react'
 
 interface RichTextEditorProps {
   value: string
@@ -8,10 +14,50 @@ interface RichTextEditorProps {
   placeholder?: string
 }
 
-export default function RichTextEditor({ value, onChange, placeholder = 'Start typing...' }: RichTextEditorProps) {
-  const quillRef = useRef<ReactQuill>(null)
+export default function RichTextEditor({ value, onChange }: RichTextEditorProps) {
+  const draggingImageRef = useRef<string | null>(null)
+  const draggingImagePosRef = useRef<number | null>(null)
 
-  const imageHandler = () => {
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3, 4, 5, 6],
+        },
+      }),
+      Underline,
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-[#f97316] hover:underline',
+        },
+      }),
+      Image.configure({
+        inline: true,
+        allowBase64: true,
+        HTMLAttributes: {
+          class: 'max-w-full h-auto my-2 cursor-move border-2 border-dashed border-transparent hover:border-[#f97316] transition-all',
+        },
+      }),
+      TextStyle,
+      Color,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+    ],
+    content: value,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML())
+    },
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none focus:outline-none min-h-[200px] px-4 py-3',
+      },
+    },
+  })
+
+  // Handle image upload button
+  const handleImageUpload = () => {
     const input = document.createElement('input')
     input.setAttribute('type', 'file')
     input.setAttribute('accept', 'image/*')
@@ -19,9 +65,9 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start t
 
     input.onchange = async () => {
       const file = input.files?.[0]
-      if (!file) return
+      if (!file || !editor) return
 
-      // Check file size (warn if too large)
+      // Check file size
       const maxSize = 5 * 1024 * 1024 // 5MB
       if (file.size > maxSize) {
         const proceed = confirm(
@@ -35,12 +81,7 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start t
       const reader = new FileReader()
       reader.onloadend = () => {
         const base64String = reader.result as string
-        const quill = quillRef.current?.getEditor()
-        if (quill) {
-          const range = quill.getSelection(true)
-          quill.insertEmbed(range.index, 'image', base64String, 'user')
-          quill.setSelection(range.index + 1, 0)
-        }
+        editor.chain().focus().setImage({ src: base64String }).run()
       }
       reader.onerror = () => {
         alert('Failed to read image file')
@@ -49,232 +90,50 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start t
     }
   }
 
-  const modules = useMemo(
-    () => ({
-      toolbar: {
-        container: [
-          [{ header: [1, 2, 3, 4, 5, 6, false] }],
-          [{ font: [] }],
-          [{ size: ['12px', '14px', '16px', '18px', '20px', '22px', '24px', '28px', '32px', '36px', '48px'] }],
-          ['bold', 'italic', 'underline', 'strike'],
-          [{ color: [] }, { background: [] }],
-          [{ script: 'sub' }, { script: 'super' }],
-          [{ list: 'ordered' }, { list: 'bullet' }],
-          [{ indent: '-1' }, { indent: '+1' }],
-          [{ align: [] }],
-          ['link', 'image'],
-          ['clean'],
-        ],
-        handlers: {
-          image: imageHandler,
-        },
-      },
-      clipboard: {
-        matchVisual: false,
-      },
-    }),
-    []
-  )
-
-  const formats = [
-    'header',
-    'font',
-    'size',
-    'bold',
-    'italic',
-    'underline',
-    'strike',
-    'color',
-    'background',
-    'script',
-    'list',
-    'bullet',
-    'indent',
-    'align',
-    'link',
-    'image',
-  ]
-
-  // Enable drag and drop for images
+  // Handle paste images
   useEffect(() => {
-    const quill = quillRef.current?.getEditor()
-    if (!quill) return
+    if (!editor) return
 
-    const editor = quill.root
-
-    const makeImagesDraggable = () => {
-      const images = editor.querySelectorAll('img:not([data-draggable])') as NodeListOf<HTMLImageElement>
-      images.forEach((img) => {
-        img.setAttribute('data-draggable', 'true')
-        img.setAttribute('draggable', 'true')
-        img.style.cursor = 'move'
-        
-        // Store original image data
-        const imageSrc = img.src
-
-        // Find the image's index in Quill
-        const getImageIndex = (): number | null => {
-          const delta = quill.getContents()
-          for (let i = 0; i < delta.ops.length; i++) {
-            const op = delta.ops[i]
-            if (op.insert && typeof op.insert === 'object' && op.insert.image === imageSrc) {
-              let index = 0
-              for (let j = 0; j < i; j++) {
-                const prevOp = delta.ops[j]
-                if (typeof prevOp.insert === 'string') {
-                  index += prevOp.insert.length
-                } else if (prevOp.insert && typeof prevOp.insert === 'object') {
-                  index += 1
-                }
-              }
-              return index
-            }
-          }
-          return null
-        }
-
-        // Add drag handlers
-        img.addEventListener('dragstart', (e: DragEvent) => {
-          if (!e.dataTransfer) return
-          e.dataTransfer.effectAllowed = 'move'
-          e.dataTransfer.setData('text/plain', imageSrc)
-          const imageIndex = getImageIndex()
-          ;(quill as any).draggingImageSrc = imageSrc
-          ;(quill as any).draggingImageIndex = imageIndex
-          img.style.opacity = '0.5'
-        })
-
-        img.addEventListener('dragend', () => {
-          img.style.opacity = '1'
-          ;(quill as any).draggingImageSrc = null
-          ;(quill as any).draggingImageIndex = null
-        })
-      })
-    }
-
-    // Handle drop for repositioning images within editor
-    const handleImageDrop = (e: DragEvent) => {
-      const draggedSrc = (quill as any).draggingImageSrc
-      const draggedIndex = (quill as any).draggingImageIndex
-      
-      // Only handle if we're dragging an image from within the editor
-      if (!draggedSrc || draggedIndex === null || draggedIndex === undefined) {
-        return // Let file drop handler handle it
-      }
-
-      e.preventDefault()
-      e.stopPropagation()
-
-      // Get the drop position
-      const selection = quill.getSelection(true)
-      if (!selection) {
-        // If no selection, insert at end
-        const length = quill.getLength()
-        quill.setSelection(length - 1, 0)
-      }
-
-      const newRange = quill.getSelection(true)
-      if (!newRange) return
-
-      const dropIndex = newRange.index
-
-      // Remove the original image if it exists
-      try {
-        quill.deleteText(draggedIndex, 1)
-        // Adjust drop index if dropping after the removed image
-        const adjustedIndex = dropIndex > draggedIndex ? dropIndex - 1 : dropIndex
-        quill.insertEmbed(adjustedIndex, 'image', draggedSrc, 'user')
-        quill.setSelection(adjustedIndex + 1, 0)
-      } catch (error) {
-        // If deletion fails, just insert at new position (duplicate will occur)
-        quill.insertEmbed(dropIndex, 'image', draggedSrc, 'user')
-        quill.setSelection(dropIndex + 1, 0)
-      }
-
-      ;(quill as any).draggingImageSrc = null
-      ;(quill as any).draggingImageIndex = null
-    }
-
-    // Make existing images draggable
-    makeImagesDraggable()
-
-    // Watch for new images added
-    const observer = new MutationObserver(() => {
-      makeImagesDraggable()
-    })
-
-    observer.observe(editor, {
-      childList: true,
-      subtree: true,
-    })
-
-    // Add drop handler to editor for image repositioning
-    editor.addEventListener('drop', handleImageDrop, true) // Use capture phase
-    editor.addEventListener('dragover', (e: DragEvent) => {
-      // Only set move effect if dragging an image from within editor
-      if ((quill as any).draggingImageSrc && e.dataTransfer) {
-        e.preventDefault()
-        e.stopPropagation()
-        e.dataTransfer.dropEffect = 'move'
-      }
-    }, true) // Use capture phase
-
-    return () => {
-      observer.disconnect()
-      editor.removeEventListener('drop', handleImageDrop, true)
-    }
-  }, [value, onChange])
-
-  // Handle paste events for images
-  useEffect(() => {
-    const quill = quillRef.current?.getEditor()
-    if (!quill) return
-
-    const editor = quill.root
-
-    const handlePaste = (e: ClipboardEvent) => {
-      const items = e.clipboardData?.items
+    const handlePaste = (event: ClipboardEvent) => {
+      const items = event.clipboardData?.items
       if (!items) return
 
       for (let i = 0; i < items.length; i++) {
         const item = items[i]
         if (item.type.indexOf('image') !== -1) {
-          e.preventDefault()
+          event.preventDefault()
           const file = item.getAsFile()
           if (file) {
             const reader = new FileReader()
             reader.onloadend = () => {
               const base64String = reader.result as string
-              const range = quill.getSelection(true)
-              quill.insertEmbed(range.index, 'image', base64String, 'user')
-              quill.setSelection(range.index + 1, 0)
+              editor.chain().focus().setImage({ src: base64String }).run()
             }
             reader.readAsDataURL(file)
           }
+          return
         }
       }
     }
 
-    editor.addEventListener('paste', handlePaste)
+    editor.view.dom.addEventListener('paste', handlePaste)
+
     return () => {
-      editor.removeEventListener('paste', handlePaste)
+      editor.view.dom.removeEventListener('paste', handlePaste)
     }
-  }, [])
+  }, [editor])
 
-  // Handle drag and drop from file system
+  // Handle drag and drop images from file system
   useEffect(() => {
-    const quill = quillRef.current?.getEditor()
-    if (!quill) return
+    if (!editor) return
 
-    const editor = quill.root
+    const editorElement = editor.view.dom
 
-    const handleFileDragOver = (e: DragEvent) => {
-      // Only handle if not dragging an image from within editor
-      if ((quill as any).draggingImageSrc) {
+    const handleDragOver = (e: DragEvent) => {
+      if (draggingImageRef.current) {
         return // Let image drag handler handle it
       }
       
-      // Check if dragging files
       if (e.dataTransfer && e.dataTransfer.types.includes('Files')) {
         e.preventDefault()
         e.stopPropagation()
@@ -282,9 +141,8 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start t
       }
     }
 
-    const handleFileDrop = (e: DragEvent) => {
-      // Only handle if not dragging an image from within editor
-      if ((quill as any).draggingImageSrc) {
+    const handleDrop = (e: DragEvent) => {
+      if (draggingImageRef.current) {
         return // Let image drag handler handle it
       }
 
@@ -310,10 +168,7 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start t
           const reader = new FileReader()
           reader.onloadend = () => {
             const base64String = reader.result as string
-            const range = quill.getSelection(true)
-            const insertIndex = range ? range.index : quill.getLength() - 1
-            quill.insertEmbed(insertIndex, 'image', base64String, 'user')
-            quill.setSelection(insertIndex + 1, 0)
+            editor.chain().focus().setImage({ src: base64String }).run()
           }
           reader.onerror = () => {
             alert(`Failed to read image file: ${file.name}`)
@@ -323,92 +178,269 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start t
       }
     }
 
-    editor.addEventListener('dragover', handleFileDragOver)
-    editor.addEventListener('drop', handleFileDrop)
+    editorElement.addEventListener('dragover', handleDragOver)
+    editorElement.addEventListener('drop', handleDrop)
 
     return () => {
-      editor.removeEventListener('dragover', handleFileDragOver)
-      editor.removeEventListener('drop', handleFileDrop)
+      editorElement.removeEventListener('dragover', handleDragOver)
+      editorElement.removeEventListener('drop', handleDrop)
     }
-  }, [])
+  }, [editor])
+
+  // Make images draggable and handle repositioning
+  useEffect(() => {
+    if (!editor) return
+
+    const editorElement = editor.view.dom
+
+    const makeImagesDraggable = () => {
+      const images = editorElement.querySelectorAll('img:not([data-draggable])') as NodeListOf<HTMLImageElement>
+      images.forEach((img) => {
+        img.setAttribute('data-draggable', 'true')
+        img.setAttribute('draggable', 'true')
+        img.style.cursor = 'move'
+        img.style.userSelect = 'none'
+
+        // Find image position in editor
+        const getImagePos = (): number | null => {
+          const { doc } = editor.state
+          let pos = 0
+          
+          doc.descendants((node, position) => {
+            if (node.type.name === 'image' && node.attrs.src === img.src) {
+              pos = position
+              return false
+            }
+            return true
+          })
+          
+          return pos > 0 ? pos : null
+        }
+
+        img.addEventListener('dragstart', (e: DragEvent) => {
+          if (!e.dataTransfer) return
+          e.dataTransfer.effectAllowed = 'move'
+          e.dataTransfer.setData('text/plain', img.src)
+          
+          const pos = getImagePos()
+          draggingImageRef.current = img.src
+          draggingImagePosRef.current = pos
+          
+          img.style.opacity = '0.5'
+        })
+
+        img.addEventListener('dragend', () => {
+          img.style.opacity = '1'
+          draggingImageRef.current = null
+          draggingImagePosRef.current = null
+        })
+      })
+    }
+
+    // Handle drop for repositioning images
+    const handleImageDrop = (e: DragEvent) => {
+      if (!draggingImageRef.current || draggingImagePosRef.current === null) {
+        return
+      }
+
+      e.preventDefault()
+      e.stopPropagation()
+
+      const { from } = editor.state.selection
+      const oldPos = draggingImagePosRef.current
+      const imageSrc = draggingImageRef.current
+
+      // Remove old image
+      editor.chain().focus().deleteRange({ from: oldPos, to: oldPos + 1 }).run()
+
+      // Insert at new position (adjust for deletion)
+      const newPos = from > oldPos ? from - 1 : from
+      editor.chain().focus().setTextSelection(newPos).setImage({ src: imageSrc }).run()
+
+      draggingImageRef.current = null
+      draggingImagePosRef.current = null
+    }
+
+    makeImagesDraggable()
+
+    // Watch for new images
+    const observer = new MutationObserver(() => {
+      makeImagesDraggable()
+    })
+
+    observer.observe(editorElement, {
+      childList: true,
+      subtree: true,
+    })
+
+    editorElement.addEventListener('drop', handleImageDrop, true)
+
+    return () => {
+      observer.disconnect()
+      editorElement.removeEventListener('drop', handleImageDrop, true)
+    }
+  }, [editor])
+
+  // Update editor content when value prop changes
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value)
+    }
+  }, [value, editor])
+
+  if (!editor) {
+    return null
+  }
 
   return (
-    <div className="rich-text-editor">
-      <ReactQuill
-        ref={quillRef}
-        theme="snow"
-        value={value}
-        onChange={onChange}
-        modules={modules}
-        formats={formats}
-        placeholder={placeholder}
-        style={{
-          backgroundColor: 'white',
-        }}
-      />
-      <style>{`
-        .rich-text-editor .ql-container {
-          font-size: 14px;
-          min-height: 200px;
-        }
-        .rich-text-editor .ql-editor {
-          min-height: 200px;
-          font-family: inherit;
-        }
-        .rich-text-editor .ql-toolbar {
-          border-top: 1px solid #e5e7eb;
-          border-left: 1px solid #e5e7eb;
-          border-right: 1px solid #e5e7eb;
-          border-bottom: none;
-          border-radius: 0.5rem 0.5rem 0 0;
-          background: #f9fafb;
-          padding: 8px;
-        }
-        .rich-text-editor .ql-container {
-          border-bottom: 1px solid #e5e7eb;
-          border-left: 1px solid #e5e7eb;
-          border-right: 1px solid #e5e7eb;
-          border-top: none;
-          border-radius: 0 0 0.5rem 0.5rem;
-        }
-        .rich-text-editor .ql-stroke {
-          stroke: #374151;
-        }
-        .rich-text-editor .ql-fill {
-          fill: #374151;
-        }
-        .rich-text-editor .ql-picker-label {
-          color: #374151;
-        }
-        .rich-text-editor .ql-toolbar button:hover,
-        .rich-text-editor .ql-toolbar button.ql-active {
-          color: #f97316;
-        }
-        .rich-text-editor .ql-toolbar button:hover .ql-stroke,
-        .rich-text-editor .ql-toolbar button.ql-active .ql-stroke {
-          stroke: #f97316;
-        }
-        .rich-text-editor .ql-toolbar button:hover .ql-fill,
-        .rich-text-editor .ql-toolbar button.ql-active .ql-fill {
-          fill: #f97316;
-        }
-        .rich-text-editor .ql-editor img {
-          cursor: move;
-          max-width: 100%;
-          height: auto;
-          margin: 8px 0;
-          border: 2px dashed transparent;
-          transition: border-color 0.2s;
-        }
-        .rich-text-editor .ql-editor img:hover {
-          border-color: #f97316;
-          opacity: 0.9;
-        }
-        .rich-text-editor .ql-editor img[draggable="true"] {
-          user-select: none;
-        }
-      `}</style>
+    <div className="rich-text-editor border border-neutral-300 rounded-xl overflow-hidden bg-white">
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center gap-2 p-2 bg-neutral-50 border-b border-neutral-300">
+        {/* Heading */}
+        <div className="flex items-center gap-1 border-r border-neutral-300 pr-2">
+          <select
+            value={editor.getAttributes('heading').level || ''}
+            onChange={(e) => {
+              const level = e.target.value ? parseInt(e.target.value) : null
+              if (level) {
+                editor.chain().focus().toggleHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 }).run()
+              } else {
+                editor.chain().focus().setParagraph().run()
+              }
+            }}
+            className="text-xs border border-neutral-300 rounded px-2 py-1 bg-white"
+          >
+            <option value="">Normal</option>
+            <option value="1">H1</option>
+            <option value="2">H2</option>
+            <option value="3">H3</option>
+            <option value="4">H4</option>
+            <option value="5">H5</option>
+            <option value="6">H6</option>
+          </select>
+        </div>
+
+        {/* Font formatting */}
+        <div className="flex items-center gap-1 border-r border-neutral-300 pr-2">
+          <button
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            className={`p-1.5 rounded hover:bg-neutral-200 ${editor.isActive('bold') ? 'bg-[#f97316] text-white' : ''}`}
+            title="Bold"
+          >
+            <strong>B</strong>
+          </button>
+          <button
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            className={`p-1.5 rounded hover:bg-neutral-200 ${editor.isActive('italic') ? 'bg-[#f97316] text-white' : ''}`}
+            title="Italic"
+          >
+            <em>I</em>
+          </button>
+          <button
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            className={`p-1.5 rounded hover:bg-neutral-200 ${editor.isActive('underline') ? 'bg-[#f97316] text-white' : ''}`}
+            title="Underline"
+          >
+            <u>U</u>
+          </button>
+          <button
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            className={`p-1.5 rounded hover:bg-neutral-200 ${editor.isActive('strike') ? 'bg-[#f97316] text-white' : ''}`}
+            title="Strikethrough"
+          >
+            <s>S</s>
+          </button>
+        </div>
+
+        {/* Color */}
+        <div className="flex items-center gap-1 border-r border-neutral-300 pr-2">
+          <input
+            type="color"
+            value={editor.getAttributes('textStyle').color || '#000000'}
+            onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
+            className="w-8 h-8 rounded border border-neutral-300 cursor-pointer"
+            title="Text Color"
+          />
+        </div>
+
+        {/* Lists */}
+        <div className="flex items-center gap-1 border-r border-neutral-300 pr-2">
+          <button
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            className={`p-1.5 rounded hover:bg-neutral-200 ${editor.isActive('bulletList') ? 'bg-[#f97316] text-white' : ''}`}
+            title="Bullet List"
+          >
+            •
+          </button>
+          <button
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            className={`p-1.5 rounded hover:bg-neutral-200 ${editor.isActive('orderedList') ? 'bg-[#f97316] text-white' : ''}`}
+            title="Numbered List"
+          >
+            1.
+          </button>
+        </div>
+
+        {/* Alignment */}
+        <div className="flex items-center gap-1 border-r border-neutral-300 pr-2">
+          <button
+            onClick={() => editor.chain().focus().setTextAlign('left').run()}
+            className={`p-1.5 rounded hover:bg-neutral-200 ${editor.isActive({ textAlign: 'left' }) ? 'bg-[#f97316] text-white' : ''}`}
+            title="Align Left"
+          >
+            ←
+          </button>
+          <button
+            onClick={() => editor.chain().focus().setTextAlign('center').run()}
+            className={`p-1.5 rounded hover:bg-neutral-200 ${editor.isActive({ textAlign: 'center' }) ? 'bg-[#f97316] text-white' : ''}`}
+            title="Align Center"
+          >
+            ↔
+          </button>
+          <button
+            onClick={() => editor.chain().focus().setTextAlign('right').run()}
+            className={`p-1.5 rounded hover:bg-neutral-200 ${editor.isActive({ textAlign: 'right' }) ? 'bg-[#f97316] text-white' : ''}`}
+            title="Align Right"
+          >
+            →
+          </button>
+        </div>
+
+        {/* Link */}
+        <button
+          onClick={() => {
+            const url = window.prompt('Enter URL:')
+            if (url) {
+              editor.chain().focus().setLink({ href: url }).run()
+            }
+          }}
+          className={`p-1.5 rounded hover:bg-neutral-200 ${editor.isActive('link') ? 'bg-[#f97316] text-white' : ''}`}
+          title="Link"
+        >
+          🔗
+        </button>
+
+        {/* Image */}
+        <button
+          onClick={handleImageUpload}
+          className="p-1.5 rounded hover:bg-neutral-200"
+          title="Insert Image"
+        >
+          🖼️
+        </button>
+
+        {/* Clean */}
+        <button
+          onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}
+          className="p-1.5 rounded hover:bg-neutral-200 ml-auto"
+          title="Clear Formatting"
+        >
+          Clear
+        </button>
+      </div>
+
+      {/* Editor */}
+      <EditorContent editor={editor} />
     </div>
   )
 }
-

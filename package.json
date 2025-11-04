@@ -11,11 +11,17 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.78.0",
+    "@tiptap/extension-color": "^3.10.1",
+    "@tiptap/extension-image": "^3.10.1",
+    "@tiptap/extension-link": "^3.10.1",
+    "@tiptap/extension-text-align": "^3.10.1",
+    "@tiptap/extension-text-style": "^3.10.1",
+    "@tiptap/extension-underline": "^3.10.1",
+    "@tiptap/react": "^3.10.1",
+    "@tiptap/starter-kit": "^3.10.1",
     "@vercel/analytics": "^1.5.0",
-    "quill": "^2.0.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-quill": "^2.0.0",
     "react-router-dom": "^7.9.5"
   },
   "devDependencies": {
