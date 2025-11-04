@@ -1,6 +1,5 @@
 import { useMemo, useRef, useEffect } from 'react'
 import ReactQuill from 'react-quill'
-import type { Quill } from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 
 interface RichTextEditorProps {
@@ -104,7 +103,7 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start t
     const editor = quill.root
 
     const makeImagesDraggable = () => {
-      const images = editor.querySelectorAll('img:not([data-draggable])')
+      const images = editor.querySelectorAll('img:not([data-draggable])') as NodeListOf<HTMLImageElement>
       images.forEach((img) => {
         img.setAttribute('data-draggable', 'true')
         img.setAttribute('draggable', 'true')
@@ -114,7 +113,7 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start t
         const imageSrc = img.src
 
         // Find the image's index in Quill
-        const getImageIndex = (imageElement: HTMLImageElement): number | null => {
+        const getImageIndex = (): number | null => {
           const delta = quill.getContents()
           for (let i = 0; i < delta.ops.length; i++) {
             const op = delta.ops[i]
@@ -135,10 +134,11 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start t
         }
 
         // Add drag handlers
-        img.addEventListener('dragstart', (e) => {
+        img.addEventListener('dragstart', (e: DragEvent) => {
+          if (!e.dataTransfer) return
           e.dataTransfer.effectAllowed = 'move'
           e.dataTransfer.setData('text/plain', imageSrc)
-          const imageIndex = getImageIndex(img)
+          const imageIndex = getImageIndex()
           ;(quill as any).draggingImageSrc = imageSrc
           ;(quill as any).draggingImageIndex = imageIndex
           img.style.opacity = '0.5'
@@ -210,9 +210,9 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start t
 
     // Add drop handler to editor for image repositioning
     editor.addEventListener('drop', handleImageDrop, true) // Use capture phase
-    editor.addEventListener('dragover', (e) => {
+    editor.addEventListener('dragover', (e: DragEvent) => {
       // Only set move effect if dragging an image from within editor
-      if ((quill as any).draggingImageSrc) {
+      if ((quill as any).draggingImageSrc && e.dataTransfer) {
         e.preventDefault()
         e.stopPropagation()
         e.dataTransfer.dropEffect = 'move'
@@ -275,7 +275,7 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Start t
       }
       
       // Check if dragging files
-      if (e.dataTransfer?.types.includes('Files')) {
+      if (e.dataTransfer && e.dataTransfer.types.includes('Files')) {
         e.preventDefault()
         e.stopPropagation()
         e.dataTransfer.dropEffect = 'copy'
