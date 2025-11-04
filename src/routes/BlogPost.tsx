@@ -4,10 +4,6 @@ import type { BlogPost } from '../data/posts'
 import { posts as localPosts } from '../data/posts'
 import { fetchPost } from '../lib/api'
 
-function formatParagraphs(content: string) {
-  return content.split(/\n{2,}/).map((chunk) => chunk.trim()).filter(Boolean)
-}
-
 function BlogPostRoute() {
   const { slug } = useParams()
   const [post, setPost] = useState<BlogPost | null>(null)
@@ -56,7 +52,8 @@ function BlogPostRoute() {
     )
   }
 
-  const paragraphs = formatParagraphs(post.content)
+  // Check if content is HTML (from rich text editor) or plain text (legacy)
+  const isHTML = post.content.includes('<') && (post.content.includes('<p>') || post.content.includes('<div>') || post.content.includes('<h'))
 
   return (
     <article className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
@@ -83,9 +80,22 @@ function BlogPostRoute() {
         </div>
       ) : null}
       <div className="prose prose-neutral max-w-none mt-6 text-left">
-        {paragraphs.map((para, index) => (
-          <p key={index}>{para}</p>
-        ))}
+        {isHTML ? (
+          <div
+            className="ql-editor"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+            style={{
+              fontFamily: 'inherit',
+              fontSize: 'inherit',
+              lineHeight: '1.75',
+            }}
+          />
+        ) : (
+          // Legacy support for plain text content
+          post.content.split(/\n{2,}/).map((para, index) => (
+            <p key={index}>{para.trim()}</p>
+          ))
+        )}
       </div>
     </article>
   )

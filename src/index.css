@@ -47,4 +47,65 @@ body h3,
   .admin-textarea {
     @apply rounded-2xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-700 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#f97316];
   }
+
+  /* Quill editor display styles */
+  .prose .ql-editor {
+    @apply text-neutral-900;
+  }
+
+  .prose .ql-editor h1,
+  .prose .ql-editor h2,
+  .prose .ql-editor h3,
+  .prose .ql-editor h4,
+  .prose .ql-editor h5,
+  .prose .ql-editor h6 {
+    @apply font-semibold text-neutral-900;
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+  }
+
+  .prose .ql-editor h1 {
+    @apply text-3xl;
+  }
+
+  .prose .ql-editor h2 {
+    @apply text-2xl;
+  }
+
+  .prose .ql-editor h3 {
+    @apply text-xl;
+  }
+
+  .prose .ql-editor p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  .prose .ql-editor a {
+    @apply text-[#f97316] hover:underline;
+  }
+
+  .prose .ql-editor ul,
+  .prose .ql-editor ol {
+    @apply mb-4 ml-6;
+  }
+
+  .prose .ql-editor ul {
+    @apply list-disc;
+  }
+
+  .prose .ql-editor ol {
+    @apply list-decimal;
+  }
+
+  .prose .ql-editor li {
+    @apply mb-2;
+  }
+
+  .prose .ql-editor img {
+    @apply max-w-full rounded-lg my-4;
+  }
+
+  .prose .ql-editor blockquote {
+    @apply border-l-4 border-neutral-300 pl-4 italic my-4 text-neutral-600;
+  }
 }
