@@ -1,27 +1,23 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { NavLink, Route, Routes, Navigate } from 'react-router-dom'
-import type { Product } from '../data/products'
+import type { Product, InventoryStatus } from '../data/products'
 import type { BlogPost } from '../data/posts'
 import ImageUpload from '../components/ImageUpload'
 import RichTextEditor from '../components/RichTextEditor'
 import type { Customer } from '../data/customers'
-import type { InventoryItem } from '../data/inventory'
 import type { Order } from '../data/orders'
 import { products as fallbackProducts } from '../data/products'
 import { posts as fallbackPosts } from '../data/posts'
 import { customers as fallbackCustomers } from '../data/customers'
-import { inventory as fallbackInventory } from '../data/inventory'
 import { orders as fallbackOrders } from '../data/orders'
 import {
   fetchProducts,
   fetchPosts,
   fetchCustomers,
-  fetchInventory,
   fetchOrders,
   saveProducts,
   savePosts,
   saveCustomers,
-  saveInventory,
   saveOrders,
 } from '../lib/api'
 
@@ -29,7 +25,6 @@ const tabs = [
   { to: 'products', label: 'Products' },
   { to: 'posts', label: 'Articles' },
   { to: 'customers', label: 'Customers' },
-  { to: 'inventory', label: 'Inventory' },
   { to: 'orders', label: 'Orders' },
 ]
 
@@ -142,6 +137,13 @@ function ProductsPanel() {
       reorderPoint: 0,
       allowBackorder: false,
       status: 'active',
+      stockAllocated: undefined,
+      incoming: undefined,
+      supplier: undefined,
+      restockEta: undefined,
+      warehouseLocation: undefined,
+      inventoryStatus: undefined,
+      inventoryNotes: undefined,
       seo: {
         title: '',
         description: '',
@@ -352,6 +354,84 @@ function ProductsPanel() {
                           className="h-4 w-4"
                         />
                       </Field>
+                    </div>
+                  </div>
+                  
+                  {/* Inventory Management Section */}
+                  <div className="mt-6 rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
+                    <h3 className="mb-4 text-base font-semibold text-neutral-900">Inventory Management</h3>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <Field label="Stock Allocated">
+                        <input
+                          type="number"
+                          min="0"
+                          value={product.stockAllocated ?? ''}
+                          onChange={(event) => handleField(index, 'stockAllocated')(event.target.value ? Number(event.target.value) : undefined)}
+                          className="admin-input"
+                          placeholder="0"
+                        />
+                      </Field>
+                      <Field label="Incoming Stock">
+                        <input
+                          type="number"
+                          min="0"
+                          value={product.incoming ?? ''}
+                          onChange={(event) => handleField(index, 'incoming')(event.target.value ? Number(event.target.value) : undefined)}
+                          className="admin-input"
+                          placeholder="0"
+                        />
+                      </Field>
+                      <Field label="Supplier">
+                        <input
+                          value={product.supplier ?? ''}
+                          onChange={(event) => handleField(index, 'supplier')(event.target.value || undefined)}
+                          className="admin-input"
+                          placeholder="Supplier name"
+                        />
+                      </Field>
+                      <Field label="Restock ETA">
+                        <input
+                          type="date"
+                          value={product.restockEta ?? ''}
+                          onChange={(event) => handleField(index, 'restockEta')(event.target.value || undefined)}
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="Warehouse Location">
+                        <input
+                          value={product.warehouseLocation ?? ''}
+                          onChange={(event) => handleField(index, 'warehouseLocation')(event.target.value || undefined)}
+                          className="admin-input"
+                          placeholder="e.g., WH-A1-Row3"
+                        />
+                      </Field>
+                      <Field label="Inventory Status">
+                        <select
+                          value={product.inventoryStatus ?? 'in-stock'}
+                          onChange={(event) => handleField(index, 'inventoryStatus')(event.target.value as Product['inventoryStatus'])}
+                          className="admin-input"
+                        >
+                          <option value="in-stock">In Stock</option>
+                          <option value="low-stock">Low Stock</option>
+                          <option value="out-of-stock">Out of Stock</option>
+                          <option value="backorder">Backorder</option>
+                          <option value="discontinued">Discontinued</option>
+                        </select>
+                      </Field>
+                    </div>
+                    <Field label="Inventory Notes" stacked>
+                      <textarea
+                        value={product.inventoryNotes ?? ''}
+                        onChange={(event) => handleField(index, 'inventoryNotes')(event.target.value || undefined)}
+                        className="admin-textarea"
+                        placeholder="Inventory notes..."
+                        rows={3}
+                      />
+                    </Field>
+                  </div>
+                  
+                  <div className="mt-6">
+                    <div className="grid flex-1 gap-4 sm:grid-cols-2">
                       <Field label="Theme Color (Hex)">
                         <div className="flex gap-2">
                           <input
@@ -1658,243 +1738,6 @@ function CustomersPanel() {
   )
 }
 
-function InventoryPanel() {
-  const [state, setState] = useState<PanelState<InventoryItem>>(() => initialPanelState(fallbackInventory))
-
-  useEffect(() => {
-    let cancelled = false
-    setState((prev) => ({ ...prev, loading: true, error: null }))
-    fetchInventory()
-      .then((remote) => {
-        if (cancelled) return
-        setState({
-          data: remote,
-          draft: remote.map((item) => ({ ...item })),
-          loading: false,
-          saving: false,
-          message: null,
-          error: null,
-        })
-      })
-      .catch((err) => {
-        console.warn('Falling back to local inventory data', err)
-        if (cancelled) return
-        setState((prev) => ({ ...prev, loading: false }))
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  const handleField =
-    <K extends keyof InventoryItem>(index: number, key: K) =>
-    (value: InventoryItem[K]) => {
-      setState((prev) => {
-        const draft = prev.draft.map((item, i) => (i === index ? { ...item, [key]: value } : item))
-        return { ...prev, draft }
-      })
-    }
-
-  const addInventoryItem = () => {
-    const timestamp = Date.now().toString(36)
-    const fresh: InventoryItem = {
-      id: `inv-${timestamp}`,
-      productId: '',
-      sku: '',
-      stockOnHand: 0,
-      stockAllocated: 0,
-      incoming: 0,
-      reorderPoint: 0,
-      supplier: undefined,
-      restockEta: undefined,
-      warehouseLocation: undefined,
-      status: 'in-stock',
-      notes: undefined,
-    }
-    setState((prev) => ({ ...prev, draft: [...prev.draft, fresh] }))
-  }
-
-  const removeInventoryItem = (index: number) => {
-    setState((prev) => ({ ...prev, draft: prev.draft.filter((_, i) => i !== index) }))
-  }
-
-  const reset = () => setState((prev) => ({ ...prev, draft: prev.data.map((item) => ({ ...item })), message: null, error: null }))
-
-  const save = async () => {
-    try {
-      setState((prev) => ({ ...prev, saving: true, message: null, error: null }))
-      const persisted = await saveInventory(state.draft)
-      setState({
-        data: persisted,
-        draft: persisted.map((item) => ({ ...item })),
-        loading: false,
-        saving: false,
-        message: 'Inventory updated successfully.',
-        error: null,
-      })
-    } catch (error) {
-      setState((prev) => ({
-        ...prev,
-        saving: false,
-        error: error instanceof Error ? error.message : 'Unable to save inventory.',
-      }))
-    }
-  }
-
-  return (
-    <div className="space-y-8">
-      <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="space-y-1 text-center md:text-left">
-          <h2 className="text-xl font-semibold text-neutral-900">Inventory Management</h2>
-          <p className="text-sm text-neutral-600">Track stock levels, orders, receiving, and reconcile inventory.</p>
-        </div>
-        <div className="flex justify-center gap-2 md:justify-end">
-          <button
-            onClick={addInventoryItem}
-            className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
-          >
-            Add item
-          </button>
-          <button
-            onClick={reset}
-            className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
-          >
-            Reset
-          </button>
-          <button
-            onClick={save}
-            disabled={state.saving}
-            className="rounded-full bg-[#f97316] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#ea580c] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {state.saving ? 'Saving…' : 'Save changes'}
-          </button>
-        </div>
-      </header>
-      {state.error && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</div>}
-      {state.message && (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{state.message}</div>
-      )}
-      {state.loading ? (
-        <p className="text-sm text-neutral-500">Loading inventory…</p>
-      ) : state.draft.length === 0 ? (
-        <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-8 text-center">
-          <p className="text-sm text-neutral-600">No inventory items yet. Click "Add item" to create your first one.</p>
-        </div>
-      ) : (
-        <div className="grid gap-6">
-          {state.draft.map((item, index) => (
-            <div key={item.id} className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm">
-              <div className="flex flex-col gap-4 md:flex-row md:justify-between md:gap-6">
-                <div className="grid flex-1 gap-4 sm:grid-cols-2">
-                  <Field label="Product ID">
-                    <input
-                      value={item.productId}
-                      onChange={(event) => handleField(index, 'productId')(event.target.value)}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="SKU">
-                    <input
-                      value={item.sku}
-                      onChange={(event) => handleField(index, 'sku')(event.target.value)}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Stock On Hand">
-                    <input
-                      type="number"
-                      min="0"
-                      value={item.stockOnHand}
-                      onChange={(event) => handleField(index, 'stockOnHand')(Number(event.target.value))}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Stock Allocated">
-                    <input
-                      type="number"
-                      min="0"
-                      value={item.stockAllocated}
-                      onChange={(event) => handleField(index, 'stockAllocated')(Number(event.target.value))}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Incoming">
-                    <input
-                      type="number"
-                      min="0"
-                      value={item.incoming}
-                      onChange={(event) => handleField(index, 'incoming')(Number(event.target.value))}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Reorder Point">
-                    <input
-                      type="number"
-                      min="0"
-                      value={item.reorderPoint}
-                      onChange={(event) => handleField(index, 'reorderPoint')(Number(event.target.value))}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Supplier">
-                    <input
-                      value={item.supplier ?? ''}
-                      onChange={(event) => handleField(index, 'supplier')(event.target.value || undefined)}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Restock ETA">
-                    <input
-                      type="date"
-                      value={item.restockEta ?? ''}
-                      onChange={(event) => handleField(index, 'restockEta')(event.target.value || undefined)}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Warehouse Location">
-                    <input
-                      value={item.warehouseLocation ?? ''}
-                      onChange={(event) => handleField(index, 'warehouseLocation')(event.target.value || undefined)}
-                      className="admin-input"
-                    />
-                  </Field>
-                  <Field label="Status">
-                    <select
-                      value={item.status}
-                      onChange={(event) => handleField(index, 'status')(event.target.value as InventoryItem['status'])}
-                      className="admin-input"
-                    >
-                      <option value="in-stock">In Stock</option>
-                      <option value="low-stock">Low Stock</option>
-                      <option value="out-of-stock">Out of Stock</option>
-                      <option value="backorder">Backorder</option>
-                      <option value="discontinued">Discontinued</option>
-                    </select>
-                  </Field>
-                </div>
-                <button
-                  onClick={() => removeInventoryItem(index)}
-                  className="self-start rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
-                >
-                  Remove
-                </button>
-              </div>
-              <Field label="Notes" stacked>
-                <textarea
-                  value={item.notes ?? ''}
-                  onChange={(event) => handleField(index, 'notes')(event.target.value || undefined)}
-                  className="admin-textarea"
-                  placeholder="Inventory notes..."
-                />
-              </Field>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
 function OrdersPanel() {
   const [state, setState] = useState<PanelState<Order>>(() => initialPanelState(fallbackOrders))
 
@@ -2305,7 +2148,6 @@ function Admin() {
         <Route path="products" element={<ProductsPanel />} />
         <Route path="posts" element={<PostsPanel />} />
         <Route path="customers" element={<CustomersPanel />} />
-        <Route path="inventory" element={<InventoryPanel />} />
         <Route path="orders" element={<OrdersPanel />} />
         <Route path="*" element={<Navigate to="/admin/products" replace />} />
       </Routes>

@@ -24,6 +24,9 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
         heading: {
           levels: [1, 2, 3, 4, 5, 6],
         },
+        // Disable built-in link and underline to use our configured versions
+        link: false,
+        underline: false,
       }),
       Underline,
       Link.configure({
@@ -55,6 +58,43 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
       },
     },
   })
+
+  // Handle paste images
+  useEffect(() => {
+    if (!editor) return
+
+    const handlePaste = (event: ClipboardEvent) => {
+      const items = event.clipboardData?.items
+      if (!items) return
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+        if (item.type.indexOf('image') !== -1) {
+          event.preventDefault()
+          const file = item.getAsFile()
+          if (file) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+              const base64String = reader.result as string
+              editor.chain().focus().setImage({ src: base64String }).run()
+            }
+            reader.readAsDataURL(file)
+          }
+          return
+        }
+      }
+    }
+
+    if (editor.view) {
+      editor.view.dom.addEventListener('paste', handlePaste)
+    }
+
+    return () => {
+      if (editor.view) {
+        editor.view.dom.removeEventListener('paste', handlePaste)
+      }
+    }
+  }, [editor])
 
   // Handle image upload button
   const handleImageUpload = () => {
@@ -90,42 +130,10 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
     }
   }
 
-  // Handle paste images
-  useEffect(() => {
-    if (!editor) return
-
-    const handlePaste = (event: ClipboardEvent) => {
-      const items = event.clipboardData?.items
-      if (!items) return
-
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i]
-        if (item.type.indexOf('image') !== -1) {
-          event.preventDefault()
-          const file = item.getAsFile()
-          if (file) {
-            const reader = new FileReader()
-            reader.onloadend = () => {
-              const base64String = reader.result as string
-              editor.chain().focus().setImage({ src: base64String }).run()
-            }
-            reader.readAsDataURL(file)
-          }
-          return
-        }
-      }
-    }
-
-    editor.view.dom.addEventListener('paste', handlePaste)
-
-    return () => {
-      editor.view.dom.removeEventListener('paste', handlePaste)
-    }
-  }, [editor])
 
   // Handle drag and drop images from file system
   useEffect(() => {
-    if (!editor) return
+    if (!editor || !editor.view) return
 
     const editorElement = editor.view.dom
 
@@ -189,7 +197,7 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
 
   // Make images draggable and handle repositioning
   useEffect(() => {
-    if (!editor) return
+    if (!editor || !editor.view) return
 
     const editorElement = editor.view.dom
 
@@ -261,23 +269,33 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
       draggingImagePosRef.current = null
     }
 
-    makeImagesDraggable()
-
-    // Watch for new images
-    const observer = new MutationObserver(() => {
+    // Wait for editor to be fully mounted
+    let observer: MutationObserver | null = null
+    const timeoutId = setTimeout(() => {
+      if (!editor.view) return
       makeImagesDraggable()
-    })
 
-    observer.observe(editorElement, {
-      childList: true,
-      subtree: true,
-    })
+      // Watch for new images
+      observer = new MutationObserver(() => {
+        makeImagesDraggable()
+      })
 
-    editorElement.addEventListener('drop', handleImageDrop, true)
+      observer.observe(editorElement, {
+        childList: true,
+        subtree: true,
+      })
+
+      editorElement.addEventListener('drop', handleImageDrop, true)
+    }, 100)
 
     return () => {
-      observer.disconnect()
-      editorElement.removeEventListener('drop', handleImageDrop, true)
+      clearTimeout(timeoutId)
+      if (observer) {
+        observer.disconnect()
+      }
+      if (editor.view) {
+        editor.view.dom.removeEventListener('drop', handleImageDrop, true)
+      }
     }
   }, [editor])
 

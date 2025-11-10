@@ -1,5 +1,7 @@
 export type ProductStatus = 'active' | 'draft' | 'archived'
 
+export type InventoryStatus = 'in-stock' | 'low-stock' | 'out-of-stock' | 'backorder' | 'discontinued'
+
 export type ProductSEO = {
   title: string
   description: string
@@ -47,6 +49,14 @@ export type Product = {
   reorderPoint: number
   allowBackorder: boolean
   status: ProductStatus
+  // Additional inventory management fields
+  stockAllocated?: number
+  incoming?: number
+  supplier?: string
+  restockEta?: string
+  warehouseLocation?: string
+  inventoryStatus?: InventoryStatus
+  inventoryNotes?: string
   seo: ProductSEO
   // Theme customization
   themeColor?: string // Hex color for product page theme
