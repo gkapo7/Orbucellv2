@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { NavLink, Route, Routes, Navigate } from 'react-router-dom'
-import type { Product, InventoryStatus } from '../data/products'
+import type { Product } from '../data/products'
 import type { BlogPost } from '../data/posts'
 import ImageUpload from '../components/ImageUpload'
 import RichTextEditor from '../components/RichTextEditor'
