@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { NavLink, Route, Routes, Navigate, useLocation } from 'react-router-dom'
 import type { Product } from '../data/products'
 import type { BlogPost } from '../data/posts'
-import type { Customer } from '../data/customers'
+import type { Customer, CustomerStatus } from '../data/customers'
 import { products as fallbackProducts } from '../data/products'
 import { posts as fallbackPosts } from '../data/posts'
 import { customers as fallbackCustomers } from '../data/customers'
@@ -118,10 +118,22 @@ function ProductsPanel() {
       name: 'New product',
       slug: `new-product-${timestamp}`,
       description: '',
+      longDescription: '',
       price: 0,
       image: '',
+      gallery: [],
       category: 'Mineral',
       highlights: [],
+      sku: '',
+      stock: 0,
+      reorderPoint: 0,
+      allowBackorder: false,
+      status: 'active',
+      seo: {
+        title: '',
+        description: '',
+        keywords: [],
+      },
     }
     setState((prev) => ({ ...prev, draft: [...prev.draft, fresh] }))
   }
@@ -321,6 +333,11 @@ function PostsPanel() {
       date: new Date().toISOString().slice(0, 10),
       author: 'Orbucell Team',
       tags: [],
+      seo: {
+        title: '',
+        description: '',
+        keywords: [],
+      },
     }
     setState((prev) => ({ ...prev, draft: [...prev.draft, fresh] }))
   }
@@ -542,6 +559,8 @@ function CustomersPanel() {
       status: 'Lead',
       orders: 0,
       lifetimeValue: 0,
+      tags: [],
+      preferredProducts: [],
     }
     setState((prev) => ({ ...prev, draft: [...prev.draft, fresh] }))
   }
@@ -618,7 +637,7 @@ function CustomersPanel() {
                   <td className="px-4 py-3">
                     <select
                       value={customer.status}
-                      onChange={(event) => handleField(index, 'status')(event.target.value)}
+                      onChange={(event) => handleField(index, 'status')(event.target.value as CustomerStatus)}
                       className="admin-input w-full text-sm"
                     >
                       <option value="Lead">Lead</option>

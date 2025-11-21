@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useMemo, useEffect, useState, useRef } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import type { Product } from '../data/products'
 import { useCart } from '../context/CartContext'
 
