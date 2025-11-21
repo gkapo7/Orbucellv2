@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import type { Product as ProductType } from '../data/products'
 import { getProductById, products as localProducts } from '../data/products'
 import { fetchProduct } from '../lib/api'
-import ProductTemplate from '../components/ProductTemplate'
+import ProductPageSeedRitual from '../components/ProductPageSeedRitual'
 
 function Product() {
   const { id } = useParams()
@@ -59,7 +59,7 @@ function Product() {
 
   if (!product) return null
 
-  return <ProductTemplate product={product} relatedProducts={relatedProducts} />
+  return <ProductPageSeedRitual product={product} relatedProducts={relatedProducts} />
 }
 
 export default Product

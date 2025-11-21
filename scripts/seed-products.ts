@@ -22,3 +22,4 @@ async function seedProducts() {
 
 seedProducts()
 
+
