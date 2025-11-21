@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useMemo } from 'react'
+import { useMemo, useEffect, useState, useRef } from 'react'
 import type { Product } from '../data/products'
 import { useCart } from '../context/CartContext'
 
@@ -40,6 +40,32 @@ interface ProductTemplateProps {
 
 export default function ProductTemplate({ product, relatedProducts = [] }: ProductTemplateProps) {
   const { add } = useCart()
+  const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
+  
+  // Intersection Observer for fade-in animations
+  useEffect(() => {
+    const observers: IntersectionObserver[] = []
+    const sections = document.querySelectorAll('[data-animate-section]')
+    
+    sections.forEach((section) => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setVisibleSections((prev) => new Set([...prev, entry.target.id]))
+            }
+          })
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+      )
+      observer.observe(section)
+      observers.push(observer)
+    })
+
+    return () => {
+      observers.forEach((obs) => obs.disconnect())
+    }
+  }, [])
   
   // All data comes from product database fields - completely universal
   const hero = {
@@ -225,10 +251,14 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
             
             {/* Product Image Card with Gallery */}
             <div className="lg:sticky lg:top-24">
-              <div className="overflow-hidden rounded-[32px] border bg-white/95 shadow-xl" style={{ borderColor: `${theme.cardBorder}55` }}>
+              <div className="overflow-hidden rounded-[32px] border bg-white/95 shadow-xl transition-all duration-300 hover:shadow-2xl" style={{ borderColor: `${theme.cardBorder}55` }}>
                 {/* Main Product Image */}
                 <div className="aspect-[4/5] w-full overflow-hidden bg-white">
-                  <img src={product.image} alt={product.name} className="h-full w-full object-cover object-center" />
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="h-full w-full object-cover object-center transition-transform duration-500 hover:scale-105" 
+                  />
                 </div>
                 
                 {/* Gallery Images */}
@@ -275,13 +305,19 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
 
         {/* C. Benefits Section */}
         {benefits.length > 0 && (
-          <section className="rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm">
+          <section 
+            id="benefits-section"
+            data-animate-section
+            className={`rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm transition-opacity duration-1000 ${
+              visibleSections.has('benefits-section') ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
             <h2 className="text-2xl font-semibold text-neutral-900">{DEFAULT_SECTION_TITLES.benefitsTitle}</h2>
             <div className="mt-8 grid gap-6 md:grid-cols-3">
               {benefits.map((benefit, i) => (
                 <div
                   key={i}
-                  className="rounded-3xl border p-6 text-left shadow-sm"
+                  className="rounded-3xl border p-6 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
                   style={{ borderColor: theme.cardBorder, backgroundColor: theme.chipBg }}
                 >
                   {(benefit as any).image && (
@@ -303,7 +339,13 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
 
         {/* D. Product Science / Why It Works */}
         {(science || scienceImage || whyItWorks.length > 0) && (
-          <section className="grid gap-10 rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm lg:grid-cols-[1.1fr_0.9fr]">
+          <section 
+            id="science-section"
+            data-animate-section
+            className={`grid gap-10 rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm lg:grid-cols-[1.1fr_0.9fr] transition-opacity duration-1000 ${
+              visibleSections.has('science-section') ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
             <div>
               <h2 className="text-2xl font-semibold text-neutral-900">{DEFAULT_SECTION_TITLES.overviewTitle}</h2>
               <p className="mt-4 text-sm text-neutral-600 whitespace-pre-line">{science}</p>
@@ -339,7 +381,13 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
 
         {/* E. Ingredients Section */}
         {product.ingredients && product.ingredients.length > 0 && (
-          <section className="rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm">
+          <section 
+            id="ingredients-section"
+            data-animate-section
+            className={`rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm transition-opacity duration-1000 ${
+              visibleSections.has('ingredients-section') ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
             <h2 className="text-2xl font-semibold text-neutral-900">Ingredients</h2>
             <div className="mt-6 space-y-4">
               {product.ingredients.map((ingredient, i) => (
@@ -368,7 +416,13 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
 
         {/* F. Reviews Section */}
         {product.reviews && product.reviews.length > 0 && (
-          <section className="rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm">
+          <section 
+            id="reviews-section"
+            data-animate-section
+            className={`rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm transition-opacity duration-1000 ${
+              visibleSections.has('reviews-section') ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
             <div className="mb-8 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-semibold text-neutral-900">Customer Reviews</h2>
@@ -413,7 +467,13 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
 
         {/* G. Quality & Testing Section */}
         {product.qualityClaims && product.qualityClaims.length > 0 && (
-          <section className="rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm">
+          <section 
+            id="quality-section"
+            data-animate-section
+            className={`rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm transition-opacity duration-1000 ${
+              visibleSections.has('quality-section') ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
             <h2 className="text-2xl font-semibold text-neutral-900">Quality & Testing</h2>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
               {product.qualityClaims.map((claim, i) => (
@@ -439,7 +499,13 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
 
         {/* H. How To Use / Directions */}
         {howToUse.length > 0 && (
-          <section className="grid gap-10 rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm lg:grid-cols-[1.1fr_0.9fr]">
+          <section 
+            id="how-to-use-section"
+            data-animate-section
+            className={`grid gap-10 rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm lg:grid-cols-[1.1fr_0.9fr] transition-opacity duration-1000 ${
+              visibleSections.has('how-to-use-section') ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
             <div>
               <h2 className="text-2xl font-semibold text-neutral-900">{DEFAULT_SECTION_TITLES.directionsTitle}</h2>
               {(product as any).howToUseImage && (
@@ -482,7 +548,13 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
 
         {/* I. FAQ Section */}
         {faq.length > 0 && (
-          <section className="rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm">
+          <section 
+            id="faq-section"
+            data-animate-section
+            className={`rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm transition-opacity duration-1000 ${
+              visibleSections.has('faq-section') ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
             <h2 className="text-2xl font-semibold text-neutral-900">Frequently Asked Questions</h2>
             {(product as any).faqImage && (
               <div className="mt-4 rounded-2xl overflow-hidden border border-neutral-200">
@@ -519,7 +591,13 @@ export default function ProductTemplate({ product, relatedProducts = [] }: Produ
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <section className="space-y-6">
+          <section 
+            id="related-products-section"
+            data-animate-section
+            className={`space-y-6 transition-opacity duration-1000 ${
+              visibleSections.has('related-products-section') ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
             <div className="flex flex-col items-start justify-between gap-2 text-left sm:flex-row sm:items-center">
               <h2 className="text-2xl font-semibold text-neutral-900">You might also like</h2>
               <Link to="/products" className="text-sm text-neutral-600 transition hover:text-neutral-900">
