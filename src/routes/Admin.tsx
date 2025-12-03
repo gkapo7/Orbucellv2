@@ -1,28 +1,39 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { NavLink, Route, Routes, Navigate, useLocation } from 'react-router-dom'
+import { NavLink, Route, Routes, Navigate } from 'react-router-dom'
 import type { Product } from '../data/products'
 import type { BlogPost } from '../data/posts'
-import type { Customer, CustomerStatus } from '../data/customers'
+import ImageUpload from '../components/ImageUpload'
+import RichTextEditor from '../components/RichTextEditor'
+import type { Customer } from '../data/customers'
+import type { InventoryItem } from '../data/inventory'
+import type { Order } from '../data/orders'
 import { products as fallbackProducts } from '../data/products'
 import { posts as fallbackPosts } from '../data/posts'
 import { customers as fallbackCustomers } from '../data/customers'
+import { inventory as fallbackInventory } from '../data/inventory'
+import { orders as fallbackOrders } from '../data/orders'
 import {
   fetchProducts,
   fetchPosts,
   fetchCustomers,
+  fetchInventory,
+  fetchOrders,
   saveProducts,
   savePosts,
   saveCustomers,
+  saveInventory,
+  saveOrders,
 } from '../lib/api'
 
 const tabs = [
   { to: 'products', label: 'Products' },
   { to: 'posts', label: 'Articles' },
   { to: 'customers', label: 'Customers' },
+  { to: 'inventory', label: 'Inventory' },
+  { to: 'orders', label: 'Orders' },
 ]
 
 function AdminLayout({ children }: { children: ReactNode }) {
-  const location = useLocation()
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
       <header className="text-center md:text-left">
@@ -37,11 +48,12 @@ function AdminLayout({ children }: { children: ReactNode }) {
         {tabs.map((tab) => (
           <NavLink
             key={tab.to}
-            to={tab.to}
+            to={`/admin/${tab.to}`}
+            end={tab.to === 'products'}
             className={({ isActive }) =>
               [
                 'rounded-full px-4 py-2 text-sm transition',
-                isActive || location.pathname.endsWith(`/${tab.to}`)
+                isActive
                   ? 'bg-neutral-900 text-white shadow-sm'
                   : 'bg-neutral-100 text-neutral-600 hover:text-neutral-900',
               ].join(' ')
@@ -240,13 +252,71 @@ function ProductsPanel() {
                       className="admin-input"
                     />
                   </Field>
-                  <Field label="Image">
-                    <input
-                      value={product.image}
-                      onChange={(event) => handleField(index, 'image')(event.target.value)}
-                      className="admin-input"
-                    />
-                  </Field>
+                      <Field label="Stock">
+                        <input
+                          type="number"
+                          min="0"
+                          value={product.stock ?? 0}
+                          onChange={(event) => handleField(index, 'stock')(Number(event.target.value))}
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="Reorder Point">
+                        <input
+                          type="number"
+                          min="0"
+                          value={product.reorderPoint ?? 0}
+                          onChange={(event) => handleField(index, 'reorderPoint')(Number(event.target.value))}
+                          className="admin-input"
+                        />
+                      </Field>
+                      <Field label="Allow Backorder">
+                        <input
+                          type="checkbox"
+                          checked={product.allowBackorder ?? false}
+                          onChange={(event) => handleField(index, 'allowBackorder')(event.target.checked)}
+                          className="h-4 w-4"
+                        />
+                      </Field>
+                      <Field label="Theme Color (Hex)">
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={product.themeColor || '#3d5b81'}
+                            onChange={(event) => {
+                              const hex = event.target.value
+                              handleField(index, 'themeColor')(hex || undefined)
+                            }}
+                            className="h-10 w-20 rounded border border-neutral-300 cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={product.themeColor || ''}
+                            onChange={(event) => {
+                              let value = event.target.value.trim()
+                              // Validate hex color format
+                              if (value && !value.startsWith('#')) value = '#' + value
+                              if (value && /^#[0-9A-Fa-f]{6}$/.test(value)) {
+                                handleField(index, 'themeColor')(value)
+                              } else if (value === '') {
+                                handleField(index, 'themeColor')(undefined)
+                              }
+                            }}
+                            placeholder="#3d5b81"
+                            className="admin-input flex-1 font-mono"
+                            pattern="#[0-9A-Fa-f]{6}"
+                          />
+                        </div>
+                        {product.themeColor && (
+                          <p className="mt-1 text-xs text-neutral-500">Theme color: {product.themeColor}</p>
+                        )}
+                      </Field>
+                      <ImageUpload
+                        label="Image"
+                        value={product.image}
+                        onChange={(url: string) => handleField(index, 'image')(url)}
+                        placeholder="/images/product.jpg"
+                      />
                   <Field label="Highlights">
                     <input
                       value={product.highlights.join(', ')}
@@ -671,11 +741,639 @@ function CustomersPanel() {
                     >
                       Remove
                     </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              </div>
+              <Field label="Notes" stacked>
+                <textarea
+                  value={customer.notes ?? ''}
+                  onChange={(event) => handleField(index, 'notes')(event.target.value || undefined)}
+                  className="admin-textarea"
+                  placeholder="Internal notes about this customer..."
+                />
+              </Field>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function InventoryPanel() {
+  const [state, setState] = useState<PanelState<InventoryItem>>(() => initialPanelState(fallbackInventory))
+
+  useEffect(() => {
+    let cancelled = false
+    setState((prev) => ({ ...prev, loading: true, error: null }))
+    fetchInventory()
+      .then((remote) => {
+        if (cancelled) return
+        setState({
+          data: remote,
+          draft: remote.map((item) => ({ ...item })),
+          loading: false,
+          saving: false,
+          message: null,
+          error: null,
+        })
+      })
+      .catch((err) => {
+        console.warn('Falling back to local inventory data', err)
+        if (cancelled) return
+        setState((prev) => ({ ...prev, loading: false }))
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const handleField =
+    <K extends keyof InventoryItem>(index: number, key: K) =>
+    (value: InventoryItem[K]) => {
+      setState((prev) => {
+        const draft = prev.draft.map((item, i) => (i === index ? { ...item, [key]: value } : item))
+        return { ...prev, draft }
+      })
+    }
+
+  const addInventoryItem = () => {
+    const timestamp = Date.now().toString(36)
+    const fresh: InventoryItem = {
+      id: `inv-${timestamp}`,
+      productId: '',
+      sku: '',
+      stockOnHand: 0,
+      stockAllocated: 0,
+      incoming: 0,
+      reorderPoint: 0,
+      supplier: undefined,
+      restockEta: undefined,
+      warehouseLocation: undefined,
+      status: 'in-stock',
+      notes: undefined,
+    }
+    setState((prev) => ({ ...prev, draft: [...prev.draft, fresh] }))
+  }
+
+  const removeInventoryItem = (index: number) => {
+    setState((prev) => ({ ...prev, draft: prev.draft.filter((_, i) => i !== index) }))
+  }
+
+  const reset = () => setState((prev) => ({ ...prev, draft: prev.data.map((item) => ({ ...item })), message: null, error: null }))
+
+  const save = async () => {
+    try {
+      setState((prev) => ({ ...prev, saving: true, message: null, error: null }))
+      const persisted = await saveInventory(state.draft)
+      setState({
+        data: persisted,
+        draft: persisted.map((item) => ({ ...item })),
+        loading: false,
+        saving: false,
+        message: 'Inventory updated successfully.',
+        error: null,
+      })
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        saving: false,
+        error: error instanceof Error ? error.message : 'Unable to save inventory.',
+      }))
+    }
+  }
+
+  return (
+    <div className="space-y-8">
+      <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1 text-center md:text-left">
+          <h2 className="text-xl font-semibold text-neutral-900">Inventory Management</h2>
+          <p className="text-sm text-neutral-600">Track stock levels, orders, receiving, and reconcile inventory.</p>
+        </div>
+        <div className="flex justify-center gap-2 md:justify-end">
+          <button
+            onClick={addInventoryItem}
+            className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+          >
+            Add item
+          </button>
+          <button
+            onClick={reset}
+            className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+          >
+            Reset
+          </button>
+          <button
+            onClick={save}
+            disabled={state.saving}
+            className="rounded-full bg-[#f97316] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#ea580c] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {state.saving ? 'Saving…' : 'Save changes'}
+          </button>
+        </div>
+      </header>
+      {state.error && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</div>}
+      {state.message && (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{state.message}</div>
+      )}
+      {state.loading ? (
+        <p className="text-sm text-neutral-500">Loading inventory…</p>
+      ) : state.draft.length === 0 ? (
+        <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-8 text-center">
+          <p className="text-sm text-neutral-600">No inventory items yet. Click "Add item" to create your first one.</p>
+        </div>
+      ) : (
+        <div className="grid gap-6">
+          {state.draft.map((item, index) => (
+            <div key={item.id} className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm">
+              <div className="flex flex-col gap-4 md:flex-row md:justify-between md:gap-6">
+                <div className="grid flex-1 gap-4 sm:grid-cols-2">
+                  <Field label="Product ID">
+                    <input
+                      value={item.productId}
+                      onChange={(event) => handleField(index, 'productId')(event.target.value)}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="SKU">
+                    <input
+                      value={item.sku}
+                      onChange={(event) => handleField(index, 'sku')(event.target.value)}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Stock On Hand">
+                    <input
+                      type="number"
+                      min="0"
+                      value={item.stockOnHand}
+                      onChange={(event) => handleField(index, 'stockOnHand')(Number(event.target.value))}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Stock Allocated">
+                    <input
+                      type="number"
+                      min="0"
+                      value={item.stockAllocated}
+                      onChange={(event) => handleField(index, 'stockAllocated')(Number(event.target.value))}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Incoming">
+                    <input
+                      type="number"
+                      min="0"
+                      value={item.incoming}
+                      onChange={(event) => handleField(index, 'incoming')(Number(event.target.value))}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Reorder Point">
+                    <input
+                      type="number"
+                      min="0"
+                      value={item.reorderPoint}
+                      onChange={(event) => handleField(index, 'reorderPoint')(Number(event.target.value))}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Supplier">
+                    <input
+                      value={item.supplier ?? ''}
+                      onChange={(event) => handleField(index, 'supplier')(event.target.value || undefined)}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Restock ETA">
+                    <input
+                      type="date"
+                      value={item.restockEta ?? ''}
+                      onChange={(event) => handleField(index, 'restockEta')(event.target.value || undefined)}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Warehouse Location">
+                    <input
+                      value={item.warehouseLocation ?? ''}
+                      onChange={(event) => handleField(index, 'warehouseLocation')(event.target.value || undefined)}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Status">
+                    <select
+                      value={item.status}
+                      onChange={(event) => handleField(index, 'status')(event.target.value as InventoryItem['status'])}
+                      className="admin-input"
+                    >
+                      <option value="in-stock">In Stock</option>
+                      <option value="low-stock">Low Stock</option>
+                      <option value="out-of-stock">Out of Stock</option>
+                      <option value="backorder">Backorder</option>
+                      <option value="discontinued">Discontinued</option>
+                    </select>
+                  </Field>
+                </div>
+                <button
+                  onClick={() => removeInventoryItem(index)}
+                  className="self-start rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
+                >
+                  Remove
+                </button>
+              </div>
+              <Field label="Notes" stacked>
+                <textarea
+                  value={item.notes ?? ''}
+                  onChange={(event) => handleField(index, 'notes')(event.target.value || undefined)}
+                  className="admin-textarea"
+                  placeholder="Inventory notes..."
+                />
+              </Field>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function OrdersPanel() {
+  const [state, setState] = useState<PanelState<Order>>(() => initialPanelState(fallbackOrders))
+
+  useEffect(() => {
+    let cancelled = false
+    setState((prev) => ({ ...prev, loading: true, error: null }))
+    fetchOrders()
+      .then((remote) => {
+        if (cancelled) return
+        setState({
+          data: remote,
+          draft: remote.map((item) => ({ ...item })),
+          loading: false,
+          saving: false,
+          message: null,
+          error: null,
+        })
+      })
+      .catch((err) => {
+        console.warn('Falling back to local orders data', err)
+        if (cancelled) return
+        setState((prev) => ({ ...prev, loading: false }))
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const handleField =
+    <K extends keyof Order>(index: number, key: K) =>
+    (value: Order[K]) => {
+      setState((prev) => {
+        const draft = prev.draft.map((item, i) => (i === index ? { ...item, [key]: value } : item))
+        return { ...prev, draft }
+      })
+    }
+
+  const handleOrderItemField =
+    (orderIndex: number, itemIndex: number, key: keyof Order['items'][0], value: any) => {
+      setState((prev) => {
+        const draft = prev.draft.map((order, i) => {
+          if (i !== orderIndex) return order
+          const items = order.items.map((item, j) => {
+            if (j !== itemIndex) return item
+            return { ...item, [key]: value }
+          })
+          return { ...order, items }
+        })
+        return { ...prev, draft }
+      })
+    }
+
+  const addOrder = () => {
+    const timestamp = Date.now().toString(36)
+    const fresh: Order = {
+      id: `order-${timestamp}`,
+      orderNumber: `ORB-${Date.now()}`,
+      customerId: '',
+      status: 'pending',
+      orderedAt: new Date().toISOString(),
+      fulfilledAt: undefined,
+      trackingNumber: undefined,
+      shippingMethod: undefined,
+      subtotal: 0,
+      shipping: 0,
+      tax: 0,
+      discount: undefined,
+      total: 0,
+      currency: 'USD',
+      items: [],
+      notes: undefined,
+    }
+    setState((prev) => ({ ...prev, draft: [...prev.draft, fresh] }))
+  }
+
+  const addOrderItem = (orderIndex: number) => {
+    setState((prev) => {
+      const draft = prev.draft.map((order, i) => {
+        if (i !== orderIndex) return order
+        const newItem = {
+          id: `item-${Date.now()}`,
+          productId: '',
+          name: '',
+          sku: '',
+          quantity: 1,
+          unitPrice: 0,
+        }
+        return { ...order, items: [...order.items, newItem] }
+      })
+      return { ...prev, draft }
+    })
+  }
+
+  const removeOrderItem = (orderIndex: number, itemIndex: number) => {
+    setState((prev) => {
+      const draft = prev.draft.map((order, i) => {
+        if (i !== orderIndex) return order
+        return { ...order, items: order.items.filter((_, j) => j !== itemIndex) }
+      })
+      return { ...prev, draft }
+    })
+  }
+
+  const removeOrder = (index: number) => {
+    setState((prev) => ({ ...prev, draft: prev.draft.filter((_, i) => i !== index) }))
+  }
+
+  const reset = () => setState((prev) => ({ ...prev, draft: prev.data.map((item) => ({ ...item })), message: null, error: null }))
+
+  const save = async () => {
+    try {
+      setState((prev) => ({ ...prev, saving: true, message: null, error: null }))
+      const persisted = await saveOrders(state.draft)
+      setState({
+        data: persisted,
+        draft: persisted.map((item) => ({ ...item })),
+        loading: false,
+        saving: false,
+        message: 'Orders updated successfully.',
+        error: null,
+      })
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        saving: false,
+        error: error instanceof Error ? error.message : 'Unable to save orders.',
+      }))
+    }
+  }
+
+  return (
+    <div className="space-y-8">
+      <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1 text-center md:text-left">
+          <h2 className="text-xl font-semibold text-neutral-900">Order Management</h2>
+          <p className="text-sm text-neutral-600">Track orders as they come in, manage fulfillment, and shipping.</p>
+        </div>
+        <div className="flex justify-center gap-2 md:justify-end">
+          <button
+            onClick={addOrder}
+            className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+          >
+            Add order
+          </button>
+          <button
+            onClick={reset}
+            className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-400"
+          >
+            Reset
+          </button>
+          <button
+            onClick={save}
+            disabled={state.saving}
+            className="rounded-full bg-[#f97316] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#ea580c] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {state.saving ? 'Saving…' : 'Save changes'}
+          </button>
+        </div>
+      </header>
+      {state.error && <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</div>}
+      {state.message && (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{state.message}</div>
+      )}
+      {state.loading ? (
+        <p className="text-sm text-neutral-500">Loading orders…</p>
+      ) : state.draft.length === 0 ? (
+        <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-8 text-center">
+          <p className="text-sm text-neutral-600">No orders yet. Orders will appear here when customers make purchases.</p>
+        </div>
+      ) : (
+        <div className="grid gap-6">
+          {state.draft.map((order, index) => (
+            <div key={order.id} className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm">
+              <div className="flex flex-col gap-4 md:flex-row md:justify-between md:gap-6">
+                <div className="grid flex-1 gap-4 sm:grid-cols-2">
+                  <Field label="Order Number">
+                    <input
+                      value={order.orderNumber}
+                      onChange={(event) => handleField(index, 'orderNumber')(event.target.value)}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Customer ID">
+                    <input
+                      value={order.customerId}
+                      onChange={(event) => handleField(index, 'customerId')(event.target.value)}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Status">
+                    <select
+                      value={order.status}
+                      onChange={(event) => handleField(index, 'status')(event.target.value as Order['status'])}
+                      className="admin-input"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="processing">Processing</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                      <option value="refunded">Refunded</option>
+                    </select>
+                  </Field>
+                  <Field label="Ordered At">
+                    <input
+                      type="datetime-local"
+                      value={order.orderedAt.slice(0, 16)}
+                      onChange={(event) => handleField(index, 'orderedAt')(new Date(event.target.value).toISOString())}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Fulfilled At">
+                    <input
+                      type="datetime-local"
+                      value={order.fulfilledAt ? order.fulfilledAt.slice(0, 16) : ''}
+                      onChange={(event) =>
+                        handleField(index, 'fulfilledAt')(event.target.value ? new Date(event.target.value).toISOString() : undefined)
+                      }
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Tracking Number">
+                    <input
+                      value={order.trackingNumber ?? ''}
+                      onChange={(event) => handleField(index, 'trackingNumber')(event.target.value || undefined)}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Shipping Method">
+                    <input
+                      value={order.shippingMethod ?? ''}
+                      onChange={(event) => handleField(index, 'shippingMethod')(event.target.value || undefined)}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Subtotal">
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={order.subtotal}
+                      onChange={(event) => handleField(index, 'subtotal')(Number(event.target.value))}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Shipping">
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={order.shipping}
+                      onChange={(event) => handleField(index, 'shipping')(Number(event.target.value))}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Tax">
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={order.tax}
+                      onChange={(event) => handleField(index, 'tax')(Number(event.target.value))}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Discount">
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={order.discount ?? ''}
+                      onChange={(event) =>
+                        handleField(index, 'discount')(event.target.value ? Number(event.target.value) : undefined)
+                      }
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Total">
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={order.total}
+                      onChange={(event) => handleField(index, 'total')(Number(event.target.value))}
+                      className="admin-input"
+                    />
+                  </Field>
+                  <Field label="Currency">
+                    <input
+                      value={order.currency}
+                      onChange={(event) => handleField(index, 'currency')(event.target.value)}
+                      className="admin-input"
+                    />
+                  </Field>
+                </div>
+                <button
+                  onClick={() => removeOrder(index)}
+                  className="self-start rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
+                >
+                  Remove
+                </button>
+              </div>
+              <div className="mt-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-neutral-700">Order Items</h3>
+                  <button
+                    onClick={() => addOrderItem(index)}
+                    className="rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
+                  >
+                    Add Item
+                  </button>
+                </div>
+                <div className="grid gap-4">
+                  {order.items.map((orderItem, itemIndex) => (
+                    <div key={orderItem.id} className="rounded-xl border border-neutral-200 bg-white p-4">
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <Field label="Product ID">
+                          <input
+                            value={orderItem.productId}
+                            onChange={(event) => handleOrderItemField(index, itemIndex, 'productId', event.target.value)}
+                            className="admin-input text-sm"
+                          />
+                        </Field>
+                        <Field label="Name">
+                          <input
+                            value={orderItem.name}
+                            onChange={(event) => handleOrderItemField(index, itemIndex, 'name', event.target.value)}
+                            className="admin-input text-sm"
+                          />
+                        </Field>
+                        <Field label="SKU">
+                          <input
+                            value={orderItem.sku}
+                            onChange={(event) => handleOrderItemField(index, itemIndex, 'sku', event.target.value)}
+                            className="admin-input text-sm"
+                          />
+                        </Field>
+                        <Field label="Quantity">
+                          <input
+                            type="number"
+                            min="1"
+                            value={orderItem.quantity}
+                            onChange={(event) => handleOrderItemField(index, itemIndex, 'quantity', Number(event.target.value))}
+                            className="admin-input text-sm"
+                          />
+                        </Field>
+                        <Field label="Unit Price">
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={orderItem.unitPrice}
+                            onChange={(event) => handleOrderItemField(index, itemIndex, 'unitPrice', Number(event.target.value))}
+                            className="admin-input text-sm"
+                          />
+                        </Field>
+                        <div className="flex items-end">
+                          <button
+                            onClick={() => removeOrderItem(index, itemIndex)}
+                            className="rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-600 hover:border-neutral-400"
+                          >
+                            Remove Item
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Field label="Notes" stacked>
+                <textarea
+                  value={order.notes ?? ''}
+                  onChange={(event) => handleField(index, 'notes')(event.target.value || undefined)}
+                  className="admin-textarea"
+                  placeholder="Order notes..."
+                />
+              </Field>
+            </div>
+          ))}
         </div>
       )}
     </div>
@@ -707,7 +1405,9 @@ function Admin() {
         <Route path="products" element={<ProductsPanel />} />
         <Route path="posts" element={<PostsPanel />} />
         <Route path="customers" element={<CustomersPanel />} />
-        <Route path="*" element={<Navigate to="products" replace />} />
+        <Route path="inventory" element={<InventoryPanel />} />
+        <Route path="orders" element={<OrdersPanel />} />
+        <Route path="*" element={<Navigate to="/admin/products" replace />} />
       </Routes>
     </AdminLayout>
   )
